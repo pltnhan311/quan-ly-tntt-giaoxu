@@ -124,7 +124,7 @@ export default function ClassDetail() {
         </Button>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
           <Card variant="elevated">
             <CardContent className="flex items-center gap-4 p-6">
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
@@ -270,31 +270,21 @@ export default function ClassDetail() {
                   assignedCatechists.map(cat => (
                     <div 
                       key={cat.id} 
-                      className="flex items-center justify-between rounded-lg border p-3 gap-2 min-w-0"
+                      className="flex items-center justify-between rounded-lg border p-3"
                     >
-                      <div className="flex items-center gap-3 min-w-0 flex-1">
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent/10 font-medium text-accent">
-                          {(cat.baptism_name || cat.name || '?').charAt(0)}
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 font-medium text-accent">
+                          {cat.name.charAt(0)}
                         </div>
-                        <div className="min-w-0 flex-1">
-                          <p className="font-medium truncate">
-                            {cat.baptism_name && (
-                              <span className="text-muted-foreground font-normal text-sm mr-1">
-                                {cat.baptism_name}
-                              </span>
-                            )}
-                            {cat.name}
-                          </p>
-                          {cat.email && (
-                            <p className="text-xs text-muted-foreground truncate">{cat.email}</p>
-                          )}
+                        <div>
+                          <p className="font-medium">{cat.name}</p>
                         </div>
                       </div>
                       {userRole === 'admin' && (
                         <Button 
                           variant="ghost" 
                           size="sm"
-                          className="text-destructive hover:text-destructive shrink-0"
+                          className="text-destructive hover:text-destructive"
                           onClick={() => handleRemoveGlv(cat.id)}
                           disabled={removeCatechist.isPending}
                         >
