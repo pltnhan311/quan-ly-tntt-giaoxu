@@ -39,6 +39,8 @@ import {
 import { useStudents, useCreateStudent, useUpdateStudent, Student } from '@/hooks/useStudents';
 import { supabase } from '@/integrations/supabase/client';
 import { useClasses } from '@/hooks/useClasses';
+import { useCatechists } from '@/hooks/useCatechists';
+import { useAuth } from '@/contexts/AuthContext';
 import { Plus, Search, Eye, Pencil, User, Phone, MapPin, Calendar, Loader2, Database, Upload, Download, MoreHorizontal } from 'lucide-react';
 import { toast } from 'sonner';
 import { ImportStudentsDialog } from '@/components/students/ImportStudentsDialog';
@@ -58,10 +60,25 @@ export default function Students() {
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
 
+  const { user, userRole } = useAuth();
   const { data: students, isLoading } = useStudents(selectedClass || undefined);
   const { data: classes } = useClasses();
+  const { data: catechists } = useCatechists();
   const createStudent = useCreateStudent();
   const updateStudent = useUpdateStudent();
+
+  const canManageClass = (() => {
+    if (userRole === 'admin') return true;
+    if (userRole === 'truong_nganh') return false;
+    if (userRole === 'glv' && selectedClass && classes && catechists && user) {
+      const currentCatechist = catechists.find(c => c.user_id === user.id);
+      if (!currentCatechist) return false;
+      const targetClass = classes.find(c => c.id === selectedClass);
+      if (!targetClass) return false;
+      return targetClass.class_catechists?.some(cc => cc.catechists?.id === currentCatechist.id) || false;
+    }
+    return false;
+  })();
 
   const [newStudent, setNewStudent] = useState({
     name: '',
@@ -267,10 +284,12 @@ export default function Students() {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => setIsImportDialogOpen(true)} disabled={!classes || classes.length === 0}>
-                      <Upload className="mr-2 h-4 w-4" />
-                      Import từ CSV
-                    </DropdownMenuItem>
+                    {canManageClass && (
+                      <DropdownMenuItem onClick={() => setIsImportDialogOpen(true)} disabled={!classes || classes.length === 0}>
+                        <Upload className="mr-2 h-4 w-4" />
+                        Import từ CSV
+                      </DropdownMenuItem>
+                    )}
                     <DropdownMenuItem onClick={handleExportStudents} disabled={isExporting || !filteredStudents.length}>
                       <Download className="mr-2 h-4 w-4" />
                       Xuất danh sách
@@ -278,132 +297,134 @@ export default function Students() {
                   </DropdownMenuContent>
                 </DropdownMenu>
 
-                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                  <DialogTrigger asChild>
-                    <Button variant="gold" disabled={!classes || classes.length === 0}>
-                      <Plus className="mr-2 h-4 w-4" />
-                      Thêm đoàn viên
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-[600px]">
-                  <DialogHeader>
-                    <DialogTitle>Thêm đoàn viên mới</DialogTitle>
-                    <DialogDescription>
-                      Điền thông tin để thêm đoàn viên vào chi đoàn.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="grid gap-4 py-4">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="studentName">Họ và tên *</Label>
-                        <Input
-                          id="studentName"
-                          placeholder="Nguyễn Văn A"
-                          value={newStudent.name}
-                          onChange={(e) => setNewStudent({ ...newStudent, name: e.target.value })}
-                        />
+                {canManageClass && (
+                  <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button variant="gold" disabled={!classes || classes.length === 0}>
+                        <Plus className="mr-2 h-4 w-4" />
+                        Thêm đoàn viên
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[600px]">
+                    <DialogHeader>
+                      <DialogTitle>Thêm đoàn viên mới</DialogTitle>
+                      <DialogDescription>
+                        Điền thông tin để thêm đoàn viên vào chi đoàn.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="studentName">Họ và tên *</Label>
+                          <Input
+                            id="studentName"
+                            placeholder="Nguyễn Văn A"
+                            value={newStudent.name}
+                            onChange={(e) => setNewStudent({ ...newStudent, name: e.target.value })}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="baptismName">Tên Thánh</Label>
+                          <Input
+                            id="baptismName"
+                            placeholder="Giuse"
+                            value={newStudent.baptism_name}
+                            onChange={(e) => setNewStudent({ ...newStudent, baptism_name: e.target.value })}
+                          />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="birthDate">Ngày sinh *</Label>
+                          <Input
+                            id="birthDate"
+                            type="date"
+                            value={newStudent.birth_date}
+                            onChange={(e) => setNewStudent({ ...newStudent, birth_date: e.target.value })}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="gender">Giới tính</Label>
+                          <Select
+                            value={newStudent.gender}
+                            onValueChange={(value: 'male' | 'female') => setNewStudent({ ...newStudent, gender: value })}
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="male">Nam</SelectItem>
+                              <SelectItem value="female">Nữ</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="baptismName">Tên Thánh</Label>
-                        <Input
-                          id="baptismName"
-                          placeholder="Giuse"
-                          value={newStudent.baptism_name}
-                          onChange={(e) => setNewStudent({ ...newStudent, baptism_name: e.target.value })}
-                        />
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="birthDate">Ngày sinh *</Label>
-                        <Input
-                          id="birthDate"
-                          type="date"
-                          value={newStudent.birth_date}
-                          onChange={(e) => setNewStudent({ ...newStudent, birth_date: e.target.value })}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="gender">Giới tính</Label>
+                        <Label htmlFor="classId">Lớp học *</Label>
                         <Select
-                          value={newStudent.gender}
-                          onValueChange={(value: 'male' | 'female') => setNewStudent({ ...newStudent, gender: value })}
+                          value={newStudent.class_id}
+                          onValueChange={(value) => setNewStudent({ ...newStudent, class_id: value })}
                         >
                           <SelectTrigger>
-                            <SelectValue />
+                            <SelectValue placeholder="Chọn lớp" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="male">Nam</SelectItem>
-                            <SelectItem value="female">Nữ</SelectItem>
+                            {(classes || []).map(cls => (
+                              <SelectItem key={cls.id} value={cls.id}>
+                                {cls.name}
+                              </SelectItem>
+                            ))}
                           </SelectContent>
                         </Select>
                       </div>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="classId">Lớp học *</Label>
-                      <Select
-                        value={newStudent.class_id}
-                        onValueChange={(value) => setNewStudent({ ...newStudent, class_id: value })}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Chọn lớp" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {(classes || []).map(cls => (
-                            <SelectItem key={cls.id} value={cls.id}>
-                              {cls.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="phone">SĐT học viên</Label>
-                        <Input
-                          id="phone"
-                          placeholder="0901234567"
-                          value={newStudent.phone}
-                          onChange={(e) => setNewStudent({ ...newStudent, phone: e.target.value })}
-                        />
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="phone">SĐT học viên</Label>
+                          <Input
+                            id="phone"
+                            placeholder="0901234567"
+                            value={newStudent.phone}
+                            onChange={(e) => setNewStudent({ ...newStudent, phone: e.target.value })}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="parentPhone">SĐT phụ huynh</Label>
+                          <Input
+                            id="parentPhone"
+                            placeholder="0901234567"
+                            value={newStudent.parent_phone}
+                            onChange={(e) => setNewStudent({ ...newStudent, parent_phone: e.target.value })}
+                          />
+                        </div>
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="parentPhone">SĐT phụ huynh</Label>
+                        <Label htmlFor="address">Địa chỉ</Label>
                         <Input
-                          id="parentPhone"
-                          placeholder="0901234567"
-                          value={newStudent.parent_phone}
-                          onChange={(e) => setNewStudent({ ...newStudent, parent_phone: e.target.value })}
+                          id="address"
+                          placeholder="123 Đường ABC, Quận XYZ"
+                          value={newStudent.address}
+                          onChange={(e) => setNewStudent({ ...newStudent, address: e.target.value })}
                         />
                       </div>
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="address">Địa chỉ</Label>
-                      <Input
-                        id="address"
-                        placeholder="123 Đường ABC, Quận XYZ"
-                        value={newStudent.address}
-                        onChange={(e) => setNewStudent({ ...newStudent, address: e.target.value })}
-                      />
-                    </div>
-                  </div>
-                  <DialogFooter>
-                    <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
-                      Hủy
-                    </Button>
-                    <Button onClick={handleCreateStudent} disabled={createStudent.isPending}>
-                      {createStudent.isPending ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Đang thêm...
-                        </>
-                      ) : (
-                        'Thêm học viên'
-                      )}
-                    </Button>
-                  </DialogFooter>
-                  </DialogContent>
-                </Dialog>
+                    <DialogFooter>
+                      <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+                        Hủy
+                      </Button>
+                      <Button onClick={handleCreateStudent} disabled={createStudent.isPending}>
+                        {createStudent.isPending ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Đang thêm...
+                          </>
+                        ) : (
+                          'Thêm học viên'
+                        )}
+                      </Button>
+                    </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                )}
               </div>
             </div>
           </CardContent>
@@ -483,16 +504,18 @@ export default function Students() {
                           >
                             <Eye className="h-4 w-4" />
                           </Button>
-                          <Button 
-                            variant="ghost" 
-                            size="icon"
-                            onClick={() => {
-                              setEditingStudent(student);
-                              setIsEditDialogOpen(true);
-                            }}
-                          >
-                            <Pencil className="h-4 w-4" />
-                          </Button>
+                          {canManageClass && (
+                            <Button 
+                              variant="ghost" 
+                              size="icon"
+                              onClick={() => {
+                                setEditingStudent(student);
+                                setIsEditDialogOpen(true);
+                              }}
+                            >
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+                          )}
                         </div>
                       </TableCell>
                     </TableRow>

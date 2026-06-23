@@ -32,10 +32,12 @@ import { useStudents } from '@/hooks/useStudents';
 import { useCatechists } from '@/hooks/useCatechists';
 import { ArrowLeft, Users, Clock, UserCheck, Plus, Calendar, TrendingUp, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function ClassDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { userRole } = useAuth();
   
   const { data: classInfo, isLoading: classLoading } = useClass(id || '');
   const { data: allStudents, isLoading: studentsLoading } = useStudents(id);
@@ -211,44 +213,46 @@ export default function ClassDetail() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle>Giáo lý viên</CardTitle>
-                <Dialog open={isAssignOpen} onOpenChange={setIsAssignOpen}>
-                  <DialogTrigger asChild>
-                    <Button variant="gold" size="sm">
-                      <Plus className="mr-2 h-4 w-4" />
-                      Gán GLV
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Gán Giáo lý viên</DialogTitle>
-                      <DialogDescription>
-                        Chọn GLV để phụ trách lớp {classInfo.name}
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="py-4">
-                      <Select value={selectedGlv} onValueChange={setSelectedGlv}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Chọn GLV" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {availableCatechists.map(cat => (
-                            <SelectItem key={cat.id} value={cat.id}>
-                              {cat.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <DialogFooter>
-                      <Button variant="outline" onClick={() => setIsAssignOpen(false)}>
-                        Hủy
+                {userRole === 'admin' && (
+                  <Dialog open={isAssignOpen} onOpenChange={setIsAssignOpen}>
+                    <DialogTrigger asChild>
+                      <Button variant="gold" size="sm">
+                        <Plus className="mr-2 h-4 w-4" />
+                        Gán GLV
                       </Button>
-                      <Button onClick={handleAssignGlv} disabled={assignCatechist.isPending}>
-                        {assignCatechist.isPending ? 'Đang gán...' : 'Gán vào lớp'}
-                      </Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Gán Giáo lý viên</DialogTitle>
+                        <DialogDescription>
+                          Chọn GLV để phụ trách lớp {classInfo.name}
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="py-4">
+                        <Select value={selectedGlv} onValueChange={setSelectedGlv}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Chọn GLV" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {availableCatechists.map(cat => (
+                              <SelectItem key={cat.id} value={cat.id}>
+                                {cat.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <DialogFooter>
+                        <Button variant="outline" onClick={() => setIsAssignOpen(false)}>
+                          Hủy
+                        </Button>
+                        <Button onClick={handleAssignGlv} disabled={assignCatechist.isPending}>
+                          {assignCatechist.isPending ? 'Đang gán...' : 'Gán vào lớp'}
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                )}
               </div>
             </CardHeader>
             <CardContent>
@@ -267,15 +271,17 @@ export default function ClassDetail() {
                           <p className="font-medium">{cat.name}</p>
                         </div>
                       </div>
-                      <Button 
-                        variant="ghost" 
-                        size="sm"
-                        className="text-destructive hover:text-destructive"
-                        onClick={() => handleRemoveGlv(cat.id)}
-                        disabled={removeCatechist.isPending}
-                      >
-                        Gỡ
-                      </Button>
+                      {userRole === 'admin' && (
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          className="text-destructive hover:text-destructive"
+                          onClick={() => handleRemoveGlv(cat.id)}
+                          disabled={removeCatechist.isPending}
+                        >
+                          Gỡ
+                        </Button>
+                      )}
                     </div>
                   ))
                 ) : (

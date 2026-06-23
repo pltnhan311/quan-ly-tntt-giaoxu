@@ -28,6 +28,7 @@ import { useAcademicYears, useActiveAcademicYear } from '@/hooks/useAcademicYear
 import { useBranches } from '@/hooks/useBranches';
 import { Plus, Users, Clock, UserCheck, ChevronRight, Loader2, Database, Pencil, GitBranch } from 'lucide-react';
 import { toast } from 'sonner';
+import { useAuth } from '@/contexts/AuthContext';
 
 const DEFAULT_CLASSES_BY_BRANCH: Record<string, string[]> = {
   'Chiên Con': [
@@ -71,6 +72,7 @@ const DEFAULT_CLASSES_BY_BRANCH: Record<string, string[]> = {
 
 export default function Classes() {
   const navigate = useNavigate();
+  const { userRole } = useAuth();
   const { data: classes, isLoading } = useClasses();
   const { data: academicYears } = useAcademicYears();
   const { data: activeYear } = useActiveAcademicYear();
@@ -242,141 +244,143 @@ export default function Classes() {
               {filteredClasses.length} chi đoàn
             </p>
           </div>
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button variant="gold" disabled={!academicYears || academicYears.length === 0}>
-                <Plus className="mr-2 h-4 w-4" />
-                Tạo lớp mới
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[500px]">
-              <DialogHeader>
-                <DialogTitle>Tạo lớp mới</DialogTitle>
-                <DialogDescription>
-                  Điền thông tin để tạo lớp học mới trong niên khóa.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="space-y-4 py-4">
-                <div className="space-y-2">
-                  <Label htmlFor="academicYear">Niên khóa *</Label>
-                  <Select
-                    value={newClass.academic_year_id}
-                    onValueChange={(value) => {
-                      setNewClass({ ...newClass, academic_year_id: value, branch_id: '', name: '' });
-                      setUseCustomName(false);
-                    }}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Chọn niên khóa" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {(academicYears || []).map(year => (
-                        <SelectItem key={year.id} value={year.id}>
-                          {year.name} {year.is_active && '(Đang hoạt động)'}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                {newClass.academic_year_id && (
+          {userRole === 'admin' && (
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="gold" disabled={!academicYears || academicYears.length === 0}>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Tạo lớp mới
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[500px]">
+                <DialogHeader>
+                  <DialogTitle>Tạo lớp mới</DialogTitle>
+                  <DialogDescription>
+                    Điền thông tin để tạo lớp học mới trong niên khóa.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
                   <div className="space-y-2">
-                    <Label htmlFor="branchId">Ngành</Label>
+                    <Label htmlFor="academicYear">Niên khóa *</Label>
                     <Select
-                      value={newClass.branch_id || 'none'}
-                      onValueChange={handleBranchChange}
+                      value={newClass.academic_year_id}
+                      onValueChange={(value) => {
+                        setNewClass({ ...newClass, academic_year_id: value, branch_id: '', name: '' });
+                        setUseCustomName(false);
+                      }}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Chọn ngành (tuỳ chọn)" />
+                        <SelectValue placeholder="Chọn niên khóa" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="none">— Không thuộc ngành nào —</SelectItem>
-                        {(branches || []).map(branch => (
-                          <SelectItem key={branch.id} value={branch.id}>{branch.name}</SelectItem>
+                        {(academicYears || []).map(year => (
+                          <SelectItem key={year.id} value={year.id}>
+                            {year.name} {year.is_active && '(Đang hoạt động)'}
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </div>
-                )}
-                <div className="space-y-2">
-                  <Label htmlFor="className">Tên chi đoàn *</Label>
-                  {classOptions.length > 0 ? (
+                  {newClass.academic_year_id && (
                     <div className="space-y-2">
+                      <Label htmlFor="branchId">Ngành</Label>
                       <Select
-                        value={useCustomName ? 'custom' : newClass.name}
-                        onValueChange={(val) => {
-                          if (val === 'custom') {
-                            setUseCustomName(true);
-                            setNewClass({ ...newClass, name: '' });
-                          } else {
-                            setUseCustomName(false);
-                            setNewClass({ ...newClass, name: val });
-                          }
-                        }}
+                        value={newClass.branch_id || 'none'}
+                        onValueChange={handleBranchChange}
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Chọn tên chi đoàn từ danh sách" />
+                          <SelectValue placeholder="Chọn ngành (tuỳ chọn)" />
                         </SelectTrigger>
                         <SelectContent>
-                          {classOptions.map(opt => (
-                            <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                          <SelectItem value="none">— Không thuộc ngành nào —</SelectItem>
+                          {(branches || []).map(branch => (
+                            <SelectItem key={branch.id} value={branch.id}>{branch.name}</SelectItem>
                           ))}
-                          <SelectItem value="custom">— Tên khác (tự nhập) —</SelectItem>
                         </SelectContent>
                       </Select>
-                      {useCustomName && (
-                        <Input
-                          id="className"
-                          placeholder="Nhập tên chi đoàn tự chọn"
-                          value={newClass.name}
-                          onChange={(e) => setNewClass({ ...newClass, name: e.target.value })}
-                        />
-                      )}
                     </div>
-                  ) : (
+                  )}
+                  <div className="space-y-2">
+                    <Label htmlFor="className">Tên chi đoàn *</Label>
+                    {classOptions.length > 0 ? (
+                      <div className="space-y-2">
+                        <Select
+                          value={useCustomName ? 'custom' : newClass.name}
+                          onValueChange={(val) => {
+                            if (val === 'custom') {
+                              setUseCustomName(true);
+                              setNewClass({ ...newClass, name: '' });
+                            } else {
+                              setUseCustomName(false);
+                              setNewClass({ ...newClass, name: val });
+                            }
+                          }}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Chọn tên chi đoàn từ danh sách" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {classOptions.map(opt => (
+                              <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                            ))}
+                            <SelectItem value="custom">— Tên khác (tự nhập) —</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        {useCustomName && (
+                          <Input
+                            id="className"
+                            placeholder="Nhập tên chi đoàn tự chọn"
+                            value={newClass.name}
+                            onChange={(e) => setNewClass({ ...newClass, name: e.target.value })}
+                          />
+                        )}
+                      </div>
+                    ) : (
+                      <Input
+                        id="className"
+                        placeholder="VD: CHI ĐOÀN ANRÊ – CHIÊN A"
+                        value={newClass.name}
+                        onChange={(e) => setNewClass({ ...newClass, name: e.target.value })}
+                      />
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="schedule">Lịch học</Label>
                     <Input
-                      id="className"
-                      placeholder="VD: CHI ĐOÀN ANRÊ – CHIÊN A"
-                      value={newClass.name}
-                      onChange={(e) => setNewClass({ ...newClass, name: e.target.value })}
+                      id="schedule"
+                      placeholder="VD: Chủ nhật, 8:00 - 9:30"
+                      value={newClass.schedule}
+                      onChange={(e) => setNewClass({ ...newClass, schedule: e.target.value })}
                     />
-                  )}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="description">Mô tả</Label>
+                    <Textarea
+                      id="description"
+                      placeholder="Mô tả về lớp học..."
+                      value={newClass.description}
+                      onChange={(e) => setNewClass({ ...newClass, description: e.target.value })}
+                    />
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="schedule">Lịch học</Label>
-                  <Input
-                    id="schedule"
-                    placeholder="VD: Chủ nhật, 8:00 - 9:30"
-                    value={newClass.schedule}
-                    onChange={(e) => setNewClass({ ...newClass, schedule: e.target.value })}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="description">Mô tả</Label>
-                  <Textarea
-                    id="description"
-                    placeholder="Mô tả về lớp học..."
-                    value={newClass.description}
-                    onChange={(e) => setNewClass({ ...newClass, description: e.target.value })}
-                  />
-                </div>
-              </div>
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
-                  Hủy
-                </Button>
-                <Button onClick={handleCreateClass} disabled={createClass.isPending}>
-                  {createClass.isPending ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Đang tạo...
-                    </>
-                  ) : (
-                    'Tạo chi đoàn'
-                  )}
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+                    Hủy
+                  </Button>
+                  <Button onClick={handleCreateClass} disabled={createClass.isPending}>
+                    {createClass.isPending ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Đang tạo...
+                      </>
+                    ) : (
+                      'Tạo chi đoàn'
+                    )}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          )}
         </div>
 
         {/* Edit Class Dialog */}
@@ -563,17 +567,19 @@ export default function Classes() {
                       </CardDescription>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleOpenEditClass(cls);
-                        }}
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
+                      {userRole === 'admin' && (
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleOpenEditClass(cls);
+                          }}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                      )}
                       <ChevronRight className="h-5 w-5 text-muted-foreground" />
                     </div>
                   </div>

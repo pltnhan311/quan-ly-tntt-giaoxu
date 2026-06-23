@@ -25,8 +25,10 @@ import {
 import { useCatechists, useCreateCatechist, useUpdateCatechist, useDeleteCatechist, Catechist } from '@/hooks/useCatechists';
 import { Plus, Search, Eye, Pencil, Trash2, Phone, Mail, GraduationCap, Loader2, Database } from 'lucide-react';
 import { toast } from 'sonner';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function Catechists() {
+  const { userRole } = useAuth();
   const { data: catechists, isLoading } = useCatechists();
   const createCatechist = useCreateCatechist();
   const updateCatechist = useUpdateCatechist();
@@ -160,89 +162,92 @@ export default function Catechists() {
                   className="pl-10"
                 />
               </div>
-              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button variant="gold" onClick={() => setIsDialogOpen(true)}>
-                    <Plus className="mr-2 h-4 w-4" />
-                    Thêm GLV
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Thêm Giáo lý viên mới</DialogTitle>
-                    <DialogDescription>
-                      Tạo tài khoản và thông tin cho giáo lý viên mới
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="space-y-4 py-4">
-                    <div className="space-y-2">
-                      <Label>Họ và tên *</Label>
-                      <Input
-                        value={newCatechist.name}
-                        onChange={(e) => setNewCatechist({ ...newCatechist, name: e.target.value })}
-                        placeholder="Nguyễn Văn A"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Email *</Label>
-                      <Input
-                        type="email"
-                        value={newCatechist.email}
-                        onChange={(e) => setNewCatechist({ ...newCatechist, email: e.target.value })}
-                        placeholder="email@example.com"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Mật khẩu *</Label>
-                      <Input
-                        type="password"
-                        value={newCatechist.password}
-                        onChange={(e) => setNewCatechist({ ...newCatechist, password: e.target.value })}
-                        placeholder="Ít nhất 6 ký tự"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Tên Thánh</Label>
-                      <Input
-                        value={newCatechist.baptism_name}
-                        onChange={(e) => setNewCatechist({ ...newCatechist, baptism_name: e.target.value })}
-                        placeholder="Tên Thánh"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Số điện thoại</Label>
-                      <Input
-                        value={newCatechist.phone}
-                        onChange={(e) => setNewCatechist({ ...newCatechist, phone: e.target.value })}
-                        placeholder="0123456789"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Địa chỉ</Label>
-                      <Input
-                        value={newCatechist.address}
-                        onChange={(e) => setNewCatechist({ ...newCatechist, address: e.target.value })}
-                        placeholder="Địa chỉ"
-                      />
-                    </div>
-                  </div>
-                  <DialogFooter>
-                    <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
-                      Hủy
+              
+              {userRole === 'admin' && (
+                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button variant="gold" onClick={() => setIsDialogOpen(true)}>
+                      <Plus className="mr-2 h-4 w-4" />
+                      Thêm GLV
                     </Button>
-                    <Button onClick={handleCreateCatechist} disabled={createCatechist.isPending}>
-                      {createCatechist.isPending ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Đang tạo...
-                        </>
-                      ) : (
-                        'Tạo tài khoản'
-                      )}
-                    </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Thêm Giáo lý viên mới</DialogTitle>
+                      <DialogDescription>
+                        Tạo tài khoản và thông tin cho giáo lý viên mới
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4 py-4">
+                      <div className="space-y-2">
+                        <Label>Họ và tên *</Label>
+                        <Input
+                          value={newCatechist.name}
+                          onChange={(e) => setNewCatechist({ ...newCatechist, name: e.target.value })}
+                          placeholder="Nguyễn Văn A"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Email *</Label>
+                        <Input
+                          type="email"
+                          value={newCatechist.email}
+                          onChange={(e) => setNewCatechist({ ...newCatechist, email: e.target.value })}
+                          placeholder="email@example.com"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Mật khẩu *</Label>
+                        <Input
+                          type="password"
+                          value={newCatechist.password}
+                          onChange={(e) => setNewCatechist({ ...newCatechist, password: e.target.value })}
+                          placeholder="Ít nhất 6 ký tự"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Tên Thánh</Label>
+                        <Input
+                          value={newCatechist.baptism_name}
+                          onChange={(e) => setNewCatechist({ ...newCatechist, baptism_name: e.target.value })}
+                          placeholder="Tên Thánh"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Số điện thoại</Label>
+                        <Input
+                          value={newCatechist.phone}
+                          onChange={(e) => setNewCatechist({ ...newCatechist, phone: e.target.value })}
+                          placeholder="0123456789"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Địa chỉ</Label>
+                        <Input
+                          value={newCatechist.address}
+                          onChange={(e) => setNewCatechist({ ...newCatechist, address: e.target.value })}
+                          placeholder="Địa chỉ"
+                        />
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+                        Hủy
+                      </Button>
+                      <Button onClick={handleCreateCatechist} disabled={createCatechist.isPending}>
+                        {createCatechist.isPending ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Đang tạo...
+                          </>
+                        ) : (
+                          'Tạo tài khoản'
+                        )}
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -307,24 +312,28 @@ export default function Catechists() {
                           >
                             <Eye className="h-4 w-4" />
                           </Button>
-                          <Button 
-                            variant="ghost" 
-                            size="icon"
-                            onClick={() => {
-                              setEditingCatechist(catechist);
-                              setIsEditDialogOpen(true);
-                            }}
-                          >
-                            <Pencil className="h-4 w-4" />
-                          </Button>
-                          <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            className="text-destructive hover:text-destructive"
-                            onClick={() => handleDelete(catechist.user_id)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
+                           {userRole === 'admin' && (
+                            <>
+                              <Button 
+                                variant="ghost" 
+                                size="icon"
+                                onClick={() => {
+                                  setEditingCatechist(catechist);
+                                  setIsEditDialogOpen(true);
+                                }}
+                              >
+                                <Pencil className="h-4 w-4" />
+                              </Button>
+                              <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                className="text-destructive hover:text-destructive"
+                                onClick={() => handleDelete(catechist.user_id)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </>
+                          )}
                         </div>
                       </TableCell>
                     </TableRow>

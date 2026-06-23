@@ -34,22 +34,62 @@ import {
 } from '@/components/ui/alert-dialog';
 import { useClasses } from '@/hooks/useClasses';
 import { useLearningMaterials, useUploadMaterial, useDeleteMaterial, LearningMaterial } from '@/hooks/useLearningMaterials';
-import { useBranches } from '@/hooks/useBranches';
+import { useBranches, useMyBranch } from '@/hooks/useBranches';
 import { useActiveAcademicYear } from '@/hooks/useAcademicYears';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCatechists } from '@/hooks/useCatechists';
 import { Upload, FileText, Download, Eye, Calendar, User, Plus, Loader2, Trash2, X, GitBranch } from 'lucide-react';
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import { toast } from 'sonner';
 
 export default function Materials() {
-  const { userRole } = useAuth();
+  const { userRole, user } = useAuth();
   const { data: activeYear } = useActiveAcademicYear();
   const { data: classes, isLoading: classesLoading } = useClasses();
   const { data: branches } = useBranches(activeYear?.id);
+  const { data: catechists } = useCatechists();
+  const { data: myBranch } = useMyBranch();
 
   // Upload scope: 'class', 'branch', or 'all' (Chung)
   const [uploadScope, setUploadScope] = useState<'class' | 'branch' | 'chung'>('branch');
+
+  useEffect(() => {
+    if (userRole === 'glv') {
+      setUploadScope('class');
+    } else if (userRole === 'admin') {
+      setUploadScope('branch');
+    }
+  }, [userRole]);
+
+  const currentCatechist = catechists?.find(c => c.user_id === user?.id);
+  const taughtClassIds = (classes || [])
+    .filter(cls => cls.class_catechists?.some(cc => cc.catechists?.id === currentCatechist?.id))
+    .map(cls => cls.id);
+
+  const viewableClasses = (classes || []).filter(cls => {
+    if (userRole === 'admin') return true;
+    if (userRole === 'truong_nganh') return cls.branch_id === myBranch?.id;
+    if (userRole === 'glv') return taughtClassIds.includes(cls.id);
+    return false;
+  });
+
+  const uploadableClasses = (classes || []).filter(cls => {
+    if (userRole === 'admin') return true;
+    if (userRole === 'glv') return taughtClassIds.includes(cls.id);
+    return false;
+  });
+
+  const canDeleteMaterial = (material: LearningMaterial) => {
+    if (userRole === 'admin') return true;
+    if (userRole === 'glv') {
+      const isOwner = material.uploaded_by === user?.id;
+      const isTaughtClass = material.class_id ? taughtClassIds.includes(material.class_id) : false;
+      return isOwner || isTaughtClass;
+    }
+    return false;
+  };
+
   const [selectedClass, setSelectedClass] = useState<string>('all');
   const [selectedBranchFilter, setSelectedBranchFilter] = useState<string>('all');
   const { data: materials, isLoading: materialsLoading } = useLearningMaterials(selectedClass, selectedBranchFilter);
@@ -218,7 +258,7 @@ export default function Materials() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Tất cả lớp</SelectItem>
-                {(classes || []).map(cls => (
+                {viewableClasses.map(cls => (
                   <SelectItem key={cls.id} value={cls.id}>
                     {cls.name}
                   </SelectItem>
@@ -229,159 +269,163 @@ export default function Materials() {
               {materials?.length || 0} tài liệu
             </p>
           </div>
-          <Dialog open={isDialogOpen} onOpenChange={(open) => {
-            setIsDialogOpen(open);
-            if (!open) resetForm();
-          }}>
-            <DialogTrigger asChild>
-              <Button variant="gold">
-                <Upload className="mr-2 h-4 w-4" />
-                Upload tài liệu
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[500px]">
-              <DialogHeader>
-                <DialogTitle>Upload tài liệu mới</DialogTitle>
-                <DialogDescription>
-                  Upload file PDF hoặc Word (DOCX) giáo án cho lớp học.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="space-y-4 py-4">
-                <div className="space-y-2">
-                  <Label htmlFor="title">Tiêu đề *</Label>
-                  <Input
-                    id="title"
-                    placeholder="VD: Bài 4: Mười Điều Răn"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                  />
-                </div>
-                {/* Upload scope */}
-                <div className="space-y-2">
-                  <Label>Phạm vi tài liệu *</Label>
-                  <Select value={uploadScope} onValueChange={(v: any) => { setUploadScope(v); setClassId(''); setBranchId(''); }}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="chung">Chung (toàn giáo xứ)</SelectItem>
-                      <SelectItem value="branch">Theo Ngành</SelectItem>
-                      <SelectItem value="class">Theo Chi đoàn</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                {uploadScope === 'branch' && (
+          {userRole !== 'truong_nganh' && (
+            <Dialog open={isDialogOpen} onOpenChange={(open) => {
+              setIsDialogOpen(open);
+              if (!open) resetForm();
+            }}>
+              <DialogTrigger asChild>
+                <Button variant="gold">
+                  <Upload className="mr-2 h-4 w-4" />
+                  Upload tài liệu
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[500px]">
+                <DialogHeader>
+                  <DialogTitle>Upload tài liệu mới</DialogTitle>
+                  <DialogDescription>
+                    Upload file PDF hoặc Word (DOCX) giáo án cho lớp học.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
                   <div className="space-y-2">
-                    <Label htmlFor="branchIdUpload">Ngành *</Label>
-                    <Select value={branchId} onValueChange={setBranchId}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Chọn ngành" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {(branches || []).map(branch => (
-                          <SelectItem key={branch.id} value={branch.id}>{branch.name}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Label htmlFor="title">Tiêu đề *</Label>
+                    <Input
+                      id="title"
+                      placeholder="VD: Bài 4: Mười Điều Răn"
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                    />
                   </div>
-                )}
-                {uploadScope === 'class' && (
-                  <div className="grid grid-cols-2 gap-4">
+                  {/* Upload scope */}
+                  {userRole === 'admin' && (
                     <div className="space-y-2">
-                      <Label htmlFor="classId">Chi đoàn *</Label>
-                      <Select value={classId} onValueChange={setClassId}>
+                      <Label>Phạm vi tài liệu *</Label>
+                      <Select value={uploadScope} onValueChange={(v: any) => { setUploadScope(v); setClassId(''); setBranchId(''); }}>
                         <SelectTrigger>
-                          <SelectValue placeholder="Chọn chi đoàn" />
+                          <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          {(classes || []).map(cls => (
-                            <SelectItem key={cls.id} value={cls.id}>
-                              {cls.name}
-                            </SelectItem>
+                          <SelectItem value="chung">Chung (toàn giáo xứ)</SelectItem>
+                          <SelectItem value="branch">Theo Ngành</SelectItem>
+                          <SelectItem value="class">Theo Chi đoàn</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+                  {uploadScope === 'branch' && (
+                    <div className="space-y-2">
+                      <Label htmlFor="branchIdUpload">Ngành *</Label>
+                      <Select value={branchId} onValueChange={setBranchId}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Chọn ngành" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {(branches || []).map(branch => (
+                            <SelectItem key={branch.id} value={branch.id}>{branch.name}</SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="week">Tuần</Label>
-                      <Input
-                        id="week"
-                        type="number"
-                        min="1"
-                        placeholder="VD: 4"
-                        value={week}
-                        onChange={(e) => setWeek(e.target.value)}
-                      />
+                  )}
+                  {uploadScope === 'class' && (
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="classId">Chi đoàn *</Label>
+                        <Select value={classId} onValueChange={setClassId}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Chọn chi đoàn" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {uploadableClasses.map(cls => (
+                              <SelectItem key={cls.id} value={cls.id}>
+                                {cls.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="week">Tuần</Label>
+                        <Input
+                          id="week"
+                          type="number"
+                          min="1"
+                          placeholder="VD: 4"
+                          value={week}
+                          onChange={(e) => setWeek(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                  )}
+                  <div className="space-y-2">
+                    <Label htmlFor="description">Mô tả</Label>
+                    <Textarea
+                      id="description"
+                      placeholder="Mô tả nội dung tài liệu..."
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>File tài liệu *</Label>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept=".pdf,.docx,.doc,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/msword"
+                      onChange={handleFileSelect}
+                      className="hidden"
+                    />
+                    <div 
+                      onClick={() => fileInputRef.current?.click()}
+                      className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary/50 transition-colors cursor-pointer"
+                    >
+                      {selectedFile ? (
+                        <div className="flex items-center justify-center gap-2">
+                          <FileText className="h-6 w-6 text-primary" />
+                          <span className="text-sm font-medium">{selectedFile.name}</span>
+                          <span className="text-xs text-muted-foreground">
+                            ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
+                          </span>
+                        </div>
+                      ) : (
+                        <>
+                          <Upload className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
+                          <p className="text-sm text-muted-foreground">
+                            Kéo thả file PDF hoặc Word vào đây hoặc click để chọn
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            Hỗ trợ file PDF và Word (DOCX), tối đa 10MB
+                          </p>
+                        </>
+                      )}
                     </div>
                   </div>
-                )}
-                <div className="space-y-2">
-                  <Label htmlFor="description">Mô tả</Label>
-                  <Textarea
-                    id="description"
-                    placeholder="Mô tả nội dung tài liệu..."
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                  />
                 </div>
-                <div className="space-y-2">
-                  <Label>File tài liệu *</Label>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept=".pdf,.docx,.doc,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/msword"
-                    onChange={handleFileSelect}
-                    className="hidden"
-                  />
-                  <div 
-                    onClick={() => fileInputRef.current?.click()}
-                    className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary/50 transition-colors cursor-pointer"
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+                    Hủy
+                  </Button>
+                  <Button 
+                    onClick={handleUpload} 
+                    disabled={uploadMutation.isPending || !title || !selectedFile}
                   >
-                    {selectedFile ? (
-                      <div className="flex items-center justify-center gap-2">
-                        <FileText className="h-6 w-6 text-primary" />
-                        <span className="text-sm font-medium">{selectedFile.name}</span>
-                        <span className="text-xs text-muted-foreground">
-                          ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
-                        </span>
-                      </div>
+                    {uploadMutation.isPending ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Đang upload...
+                      </>
                     ) : (
                       <>
-                        <Upload className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
-                        <p className="text-sm text-muted-foreground">
-                          Kéo thả file PDF hoặc Word vào đây hoặc click để chọn
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          Hỗ trợ file PDF và Word (DOCX), tối đa 10MB
-                        </p>
+                        <Upload className="mr-2 h-4 w-4" />
+                        Upload
                       </>
                     )}
-                  </div>
-                </div>
-              </div>
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
-                  Hủy
-                </Button>
-                <Button 
-                  onClick={handleUpload} 
-                  disabled={uploadMutation.isPending || !title || !selectedFile}
-                >
-                  {uploadMutation.isPending ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Đang upload...
-                    </>
-                  ) : (
-                    <>
-                      <Upload className="mr-2 h-4 w-4" />
-                      Upload
-                    </>
-                  )}
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          )}
         </div>
 
         {/* Content */}
@@ -457,14 +501,16 @@ export default function Materials() {
                       <Download className="mr-1 h-4 w-4" />
                       Tải
                     </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                      onClick={() => setDeleteTarget(material)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    {canDeleteMaterial(material) && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                        onClick={() => setDeleteTarget(material)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -478,10 +524,12 @@ export default function Materials() {
               <p className="text-muted-foreground text-center mb-4">
                 Upload tài liệu giáo án PDF hoặc Word để chia sẻ với GLV và học viên
               </p>
-              <Button variant="gold" onClick={() => setIsDialogOpen(true)}>
-                <Plus className="mr-2 h-4 w-4" />
-                Upload tài liệu
-              </Button>
+              {userRole !== 'truong_nganh' && (
+                <Button variant="gold" onClick={() => setIsDialogOpen(true)}>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Upload tài liệu
+                </Button>
+              )}
             </CardContent>
           </Card>
         )}
