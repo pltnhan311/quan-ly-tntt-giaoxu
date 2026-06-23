@@ -540,7 +540,7 @@ export default function Classes() {
             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
           </div>
         ) : filteredClasses.length > 0 ? (
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {filteredClasses.map((cls, index) => (
               <Card 
                 key={cls.id} 
@@ -550,19 +550,19 @@ export default function Classes() {
                 onClick={() => navigate(`/classes/${cls.id}`)}
               >
                 <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <CardTitle className="flex items-center gap-2 flex-wrap">
-                        {cls.name}
-                        <Badge variant="gold">{cls.academic_years?.name || 'N/A'}</Badge>
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="min-w-0 flex-1">
+                      <CardTitle className="flex items-center gap-2 flex-wrap min-w-0">
+                        <span className="truncate max-w-full" title={cls.name}>{cls.name}</span>
+                        <Badge variant="gold" className="shrink-0">{cls.academic_years?.name || 'N/A'}</Badge>
                         {cls.branches && (
-                          <Badge variant="secondary" className="text-xs">
+                          <Badge variant="secondary" className="text-xs shrink-0">
                             <GitBranch className="mr-1 h-3 w-3" />
                             {cls.branches.name}
                           </Badge>
                         )}
                       </CardTitle>
-                      <CardDescription className="mt-1">
+                      <CardDescription className="mt-1 truncate">
                         {cls.description || 'Không có mô tả'}
                       </CardDescription>
                     </div>
@@ -587,22 +587,22 @@ export default function Classes() {
                 <CardContent>
                   <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
                           <Users className="h-5 w-5 text-primary" />
                         </div>
-                        <div>
-                          <p className="text-lg font-bold text-foreground">{cls.students?.[0]?.count || 0}</p>
-                          <p className="text-xs text-muted-foreground">Đoàn viên</p>
+                        <div className="min-w-0">
+                          <p className="text-lg font-bold text-foreground truncate">{cls.students?.[0]?.count || 0}</p>
+                          <p className="text-xs text-muted-foreground truncate">Đoàn viên</p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent/10">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-accent/10">
                           <Clock className="h-5 w-5 text-accent" />
                         </div>
-                        <div>
-                          <p className="text-sm font-medium text-foreground">{cls.schedule || 'Chưa xếp'}</p>
-                          <p className="text-xs text-muted-foreground">Lịch học</p>
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium text-foreground truncate" title={cls.schedule || 'Chưa xếp'}>{cls.schedule || 'Chưa xếp'}</p>
+                          <p className="text-xs text-muted-foreground truncate">Lịch học</p>
                         </div>
                       </div>
                     </div>
