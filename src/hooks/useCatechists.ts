@@ -30,6 +30,7 @@ export interface Catechist {
     classes: {
       id: string;
       name: string;
+      academic_year_id: string;
     };
   }[];
 }
@@ -47,7 +48,8 @@ export function useCatechists() {
             is_primary,
             classes (
               id,
-              name
+              name,
+              academic_year_id
             )
           )
         `)
@@ -74,7 +76,8 @@ export function useCatechist(id: string) {
             is_primary,
             classes (
               id,
-              name
+              name,
+              academic_year_id
             )
           )
         `)

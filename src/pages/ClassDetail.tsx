@@ -50,9 +50,18 @@ export default function ClassDetail() {
 
   const classStudents = allStudents || [];
   const assignedCatechists = classInfo?.class_catechists?.map(cc => cc.catechists) || [];
-  const availableCatechists = allCatechists?.filter(
-    cat => !assignedCatechists.some(ac => ac.id === cat.id)
-  ) || [];
+  const availableCatechists = allCatechists?.filter(cat => {
+    // 1. Check if already assigned to this class
+    const isAssignedToThisClass = assignedCatechists.some(ac => ac.id === cat.id);
+    if (isAssignedToThisClass) return false;
+
+    // 2. Check if already assigned to ANY class in the current academic year
+    const isAssignedInCurrentYear = cat.class_catechists?.some(cc => 
+      cc.classes?.academic_year_id === classInfo?.academic_year_id
+    );
+
+    return !isAssignedInCurrentYear;
+  }) || [];
 
   if (classLoading || studentsLoading) {
     return (
