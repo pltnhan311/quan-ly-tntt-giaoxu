@@ -47,6 +47,13 @@ const roleBadgeVariants: Record<AppRole, "default" | "secondary" | "outline" | "
   student: "outline",
 };
 
+const roleOrder: Record<AppRole, number> = {
+  admin: 1,
+  truong_nganh: 2,
+  glv: 3,
+  student: 4,
+};
+
 export default function Users() {
   const { data: users, isLoading } = useUsers();
   const updateRole = useUpdateUserRole();
@@ -54,6 +61,7 @@ export default function Users() {
   
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState<string | null>(null);
+  const [selectedRoleFilter, setSelectedRoleFilter] = useState<string>("all");
 
   const handleRoleChange = (userId: string, newRole: AppRole) => {
     updateRole.mutate({ userId, newRole });
@@ -72,6 +80,17 @@ export default function Users() {
     }
   };
 
+  const filteredAndSortedUsers = (users || [])
+    .filter(user => selectedRoleFilter === "all" || user.role === selectedRoleFilter)
+    .sort((a, b) => {
+      const orderA = roleOrder[a.role] || 99;
+      const orderB = roleOrder[b.role] || 99;
+      if (orderA !== orderB) {
+        return orderA - orderB;
+      }
+      return (a.name || "").localeCompare(b.name || "", 'vi');
+    });
+
   return (
     <MainLayout title="Quản lý người dùng">
       <div className="container mx-auto py-6 space-y-6">
@@ -89,17 +108,35 @@ export default function Users() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Danh sách người dùng</CardTitle>
-            <CardDescription>
-              Xem và thay đổi vai trò của người dùng trong hệ thống
-            </CardDescription>
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <CardTitle>Danh sách người dùng</CardTitle>
+                <CardDescription>
+                  Xem và thay đổi vai trò của người dùng trong hệ thống
+                </CardDescription>
+              </div>
+              <div className="flex items-center gap-2">
+                <Select value={selectedRoleFilter} onValueChange={setSelectedRoleFilter}>
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Lọc theo vai trò" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Tất cả vai trò</SelectItem>
+                    <SelectItem value="admin">Quản trị viên</SelectItem>
+                    <SelectItem value="truong_nganh">Trưởng Ngành</SelectItem>
+                    <SelectItem value="glv">Giáo lý viên</SelectItem>
+                    <SelectItem value="student">Học viên</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
           </CardHeader>
           <CardContent>
             {isLoading ? (
               <div className="flex items-center justify-center py-8">
                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
               </div>
-            ) : users && users.length > 0 ? (
+            ) : filteredAndSortedUsers.length > 0 ? (
               <div className="rounded-md border">
                 <Table>
                   <TableHeader>
@@ -113,7 +150,7 @@ export default function Users() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {users.map((user) => (
+                    {filteredAndSortedUsers.map((user) => (
                       <TableRow key={user.id}>
                         <TableCell className="font-medium">{user.name}</TableCell>
                         <TableCell>{user.email || "—"}</TableCell>
@@ -178,7 +215,9 @@ export default function Users() {
               </div>
             ) : (
               <div className="text-center py-8 text-muted-foreground">
-                Chưa có người dùng nào trong hệ thống
+                {users && users.length > 0 
+                  ? "Không tìm thấy người dùng nào phù hợp với vai trò đã chọn"
+                  : "Chưa có người dùng nào trong hệ thống"}
               </div>
             )}
           </CardContent>
