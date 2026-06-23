@@ -89,7 +89,7 @@ export default function Classes() {
     academic_year_id: '',
     branch_id: '',
     description: '',
-    schedule: '9:00 - 10:30 Chúa Nhật'
+    schedule: 'CN | 9:00 - 10:30'
   });
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingClass, setEditingClass] = useState<ClassInfo | null>(null);
@@ -98,7 +98,7 @@ export default function Classes() {
     academic_year_id: '',
     branch_id: '',
     description: '',
-    schedule: '9:00 - 10:30 Chúa Nhật'
+    schedule: 'CN | 9:00 - 10:30'
   });
 
   // Branches for the selected academic year in dialog
@@ -166,7 +166,7 @@ export default function Classes() {
       schedule: newClass.schedule || undefined,
     }, {
       onSuccess: () => {
-        setNewClass({ name: '', academic_year_id: '', branch_id: '', description: '', schedule: '9:00 - 10:30 Chúa Nhật' });
+        setNewClass({ name: '', academic_year_id: '', branch_id: '', description: '', schedule: 'CN | 9:00 - 10:30' });
         setIsDialogOpen(false);
       }
     });
@@ -179,7 +179,7 @@ export default function Classes() {
       academic_year_id: cls.academic_year_id,
       branch_id: cls.branch_id || '',
       description: cls.description || '',
-      schedule: cls.schedule || '9:00 - 10:30 Chúa Nhật'
+      schedule: cls.schedule || 'CN | 9:00 - 10:30'
     });
     setIsEditDialogOpen(true);
   };
@@ -584,7 +584,7 @@ export default function Classes() {
                           <Clock className="h-5 w-5 text-accent" />
                         </div>
                         <div>
-                          <p className="text-sm font-medium text-foreground">{cls.schedule || '9:00 - 10:30 Chúa Nhật'}</p>
+                          <p className="text-sm font-medium text-foreground">{cls.schedule || 'CN | 9:00 - 10:30'}</p>
                           <p className="text-xs text-muted-foreground">Lịch học</p>
                         </div>
                       </div>

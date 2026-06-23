@@ -410,7 +410,7 @@ export default function Attendance() {
                         {selectedClassInfo?.name} - Điểm danh Giáo lý (Trực tiếp)
                       </CardTitle>
                       <CardDescription>
-                        {selectedClassInfo?.schedule || '9:00 - 10:30 Chúa Nhật'} • {classStudents.length} học viên
+                        {selectedClassInfo?.schedule || 'CN | 9:00 - 10:30'} • {classStudents.length} học viên
                         <br />
                         <span className="text-xs text-muted-foreground">
                           Admin/Giáo viên điểm danh trực tiếp bằng cách check/uncheck

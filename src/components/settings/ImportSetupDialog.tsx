@@ -106,7 +106,7 @@ export function ImportSetupDialog({ open, onOpenChange, onSuccess }: ImportSetup
       const classes: ClassImportData[] = rows.slice(1).map(row => ({
         name: row[0]?.trim() || '',
         description: row[1]?.trim() || '',
-        schedule: row[2]?.trim() || '9:00 - 10:30 Chúa Nhật'
+        schedule: row[2]?.trim() || 'CN | 9:00 - 10:30'
       })).filter(c => c.name);
 
       setClassesData(classes);

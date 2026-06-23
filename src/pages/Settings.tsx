@@ -54,7 +54,7 @@ export default function Settings() {
               </div>
               <div className="flex items-center sm:self-center">
                 <Badge variant="gold" className="text-sm px-3 py-1 font-semibold">
-                  9:00 - 10:30 Chúa Nhật hàng tuần
+                  CN | 9:00 - 10:30
                 </Badge>
               </div>
             </div>

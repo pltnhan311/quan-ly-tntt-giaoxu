@@ -285,7 +285,7 @@ export default function Dashboard() {
                         <div>
                           <p className="font-medium text-foreground">{cls.name}</p>
                           <div className="flex items-center gap-2 mt-1">
-                            <span className="text-xs text-muted-foreground">{cls.schedule || '9:00 - 10:30 Chúa Nhật'}</span>
+                            <span className="text-xs text-muted-foreground">{cls.schedule || 'CN | 9:00 - 10:30'}</span>
                             {cls.branches && (
                               <Badge variant="outline" className="text-[10px] py-0 px-1.5 h-4 bg-muted/30">
                                 {cls.branches.name}
@@ -456,7 +456,7 @@ export default function Dashboard() {
                     <div>
                       <p className="font-medium text-foreground">{cls.name}</p>
                       <div className="flex flex-col gap-0.5 mt-0.5">
-                        <p className="text-xs text-muted-foreground">{cls.schedule || '9:00 - 10:30 Chúa Nhật'}</p>
+                        <p className="text-xs text-muted-foreground">{cls.schedule || 'CN | 9:00 - 10:30'}</p>
                         {cls.branches && (
                           <p className="text-[10px] text-accent font-semibold">{cls.branches.name}</p>
                         )}
