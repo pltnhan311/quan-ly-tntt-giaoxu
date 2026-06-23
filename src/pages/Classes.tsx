@@ -29,6 +29,46 @@ import { useBranches } from '@/hooks/useBranches';
 import { Plus, Users, Clock, UserCheck, ChevronRight, Loader2, Database, Pencil, GitBranch } from 'lucide-react';
 import { toast } from 'sonner';
 
+const DEFAULT_CLASSES_BY_BRANCH: Record<string, string[]> = {
+  'Chiên Con': [
+    'CHI ĐOÀN ANRÊ – CHIÊN A',
+    'CHI ĐOÀN PHÊRÔ – CHIÊN B'
+  ],
+  'Ấu Nhi': [
+    'CHI ĐOÀN GIACÔBÊ TIỀN – ẤU 1A',
+    'CHI ĐOÀN GIOAN – ẤU 1B',
+    'CHI ĐOÀN BATÔLÔMÊÔ – ẤU 2A',
+    'CHI ĐOÀN MATHÊU (LÊVI) – ẤU 2B',
+    'CHI ĐOÀN GIACÔBÊ HẬU – ẤU 3A',
+    'CHI ĐOÀN GIUĐA (TAĐÊÔ) – ẤU 3B',
+    'CHI ĐOÀN SIMON – ẤU 3C'
+  ],
+  'Thiếu Nhi': [
+    'CHI ĐOÀN RUBEN – THIẾU 1A',
+    'CHI ĐOÀN SIMÊON – THIẾU 1B',
+    'CHI ĐOÀN GIUĐA – THIẾU 1C',
+    'CHI ĐOÀN ZABULUN – THIẾU 1D',
+    'CHI ĐOÀN ASHÊ – THIẾU 3A',
+    'CHI ĐOÀN GÁT – THIẾU 3B',
+    'CHI ĐOÀN ISAKHA – THIẾU 3C',
+    'CHI ĐOÀN LÊVI – THIẾU 3D'
+  ],
+  'Nghĩa Sĩ': [
+    'CHI ĐOÀN ANTIÔKIA – NGHĨA 1A',
+    'CHI ĐOÀN CILICIA – NGHĨA 1B',
+    'CHI ĐOÀN CORINTO – NGHĨA 3A',
+    'CHI ĐOÀN GALÁT – NGHĨA 3B'
+  ],
+  'Hiệp Sĩ': [
+    'CHI ĐOÀN ÊPHÊSÔ – HIỆP SĨ 1',
+    'CHI ĐOÀN CÊSARÊ – HIỆP SĨ 2',
+    'CHI ĐOÀN AKAIA – HIỆP SĨ 3'
+  ],
+  'Dự Trưởng': [
+    'CHI ĐOÀN DỰ TRƯỞNG'
+  ]
+};
+
 export default function Classes() {
   const navigate = useNavigate();
   const { data: classes, isLoading } = useClasses();
@@ -63,6 +103,45 @@ export default function Classes() {
   const { data: branches } = useBranches(newClass.academic_year_id || undefined);
   const { data: editBranches } = useBranches(editClass.academic_year_id || undefined);
   const { data: filterBranches } = useBranches(selectedYearFilter !== 'all' ? selectedYearFilter : undefined);
+
+  const [useCustomName, setUseCustomName] = useState(false);
+  const [useEditCustomName, setUseEditCustomName] = useState(false);
+
+  const selectedBranch = branches?.find(b => b.id === newClass.branch_id);
+  const branchName = selectedBranch?.name || '';
+  const classOptions = DEFAULT_CLASSES_BY_BRANCH[branchName] || [];
+
+  const selectedEditBranch = editBranches?.find(b => b.id === editClass.branch_id);
+  const editBranchName = selectedEditBranch?.name || '';
+  const editClassOptions = DEFAULT_CLASSES_BY_BRANCH[editBranchName] || [];
+
+  const handleBranchChange = (value: string) => {
+    const branchId = value === 'none' ? '' : value;
+    const selectedB = branches?.find(b => b.id === branchId);
+    const bName = selectedB?.name || '';
+    const options = DEFAULT_CLASSES_BY_BRANCH[bName] || [];
+    
+    setNewClass({ 
+      ...newClass, 
+      branch_id: branchId,
+      name: options[0] || '' 
+    });
+    setUseCustomName(false);
+  };
+
+  const handleEditBranchChange = (value: string) => {
+    const branchId = value === 'none' ? '' : value;
+    const selectedB = editBranches?.find(b => b.id === branchId);
+    const bName = selectedB?.name || '';
+    const options = DEFAULT_CLASSES_BY_BRANCH[bName] || [];
+    
+    setEditClass({ 
+      ...editClass, 
+      branch_id: branchId,
+      name: options[0] || '' 
+    });
+    setUseEditCustomName(false);
+  };
 
   // Filtered classes
   const filteredClasses = (classes || []).filter(cls => {
@@ -179,19 +258,13 @@ export default function Classes() {
               </DialogHeader>
               <div className="space-y-4 py-4">
                 <div className="space-y-2">
-                  <Label htmlFor="className">Tên chi đoàn *</Label>
-                  <Input
-                    id="className"
-                    placeholder="VD: CHI ĐOÀN ANRÊ – CHIÊN A"
-                    value={newClass.name}
-                    onChange={(e) => setNewClass({ ...newClass, name: e.target.value })}
-                  />
-                </div>
-                <div className="space-y-2">
                   <Label htmlFor="academicYear">Niên khóa *</Label>
                   <Select
                     value={newClass.academic_year_id}
-                    onValueChange={(value) => setNewClass({ ...newClass, academic_year_id: value, branch_id: '' })}
+                    onValueChange={(value) => {
+                      setNewClass({ ...newClass, academic_year_id: value, branch_id: '', name: '' });
+                      setUseCustomName(false);
+                    }}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Chọn niên khóa" />
@@ -209,8 +282,8 @@ export default function Classes() {
                   <div className="space-y-2">
                     <Label htmlFor="branchId">Ngành</Label>
                     <Select
-                      value={newClass.branch_id}
-                      onValueChange={(value) => setNewClass({ ...newClass, branch_id: value })}
+                      value={newClass.branch_id || 'none'}
+                      onValueChange={handleBranchChange}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Chọn ngành (tuỳ chọn)" />
@@ -224,6 +297,50 @@ export default function Classes() {
                     </Select>
                   </div>
                 )}
+                <div className="space-y-2">
+                  <Label htmlFor="className">Tên chi đoàn *</Label>
+                  {classOptions.length > 0 ? (
+                    <div className="space-y-2">
+                      <Select
+                        value={useCustomName ? 'custom' : newClass.name}
+                        onValueChange={(val) => {
+                          if (val === 'custom') {
+                            setUseCustomName(true);
+                            setNewClass({ ...newClass, name: '' });
+                          } else {
+                            setUseCustomName(false);
+                            setNewClass({ ...newClass, name: val });
+                          }
+                        }}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Chọn tên chi đoàn từ danh sách" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {classOptions.map(opt => (
+                            <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                          ))}
+                          <SelectItem value="custom">— Tên khác (tự nhập) —</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      {useCustomName && (
+                        <Input
+                          id="className"
+                          placeholder="Nhập tên chi đoàn tự chọn"
+                          value={newClass.name}
+                          onChange={(e) => setNewClass({ ...newClass, name: e.target.value })}
+                        />
+                      )}
+                    </div>
+                  ) : (
+                    <Input
+                      id="className"
+                      placeholder="VD: CHI ĐOÀN ANRÊ – CHIÊN A"
+                      value={newClass.name}
+                      onChange={(e) => setNewClass({ ...newClass, name: e.target.value })}
+                    />
+                  )}
+                </div>
                 <div className="space-y-2">
                   <Label htmlFor="schedule">Lịch học</Label>
                   <Input
@@ -281,20 +398,13 @@ export default function Classes() {
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="space-y-2">
-                <Label htmlFor="editClassName">Tên chi đoàn *</Label>
-                <Input
-                  id="editClassName"
-                  placeholder="VD: CHI ĐOÀN ANRÊ – CHIÊN A"
-                  value={editClass.name}
-                  onChange={(e) => setEditClass({ ...editClass, name: e.target.value })}
-                  disabled={!editingClass}
-                />
-              </div>
-              <div className="space-y-2">
                 <Label htmlFor="editAcademicYear">Niên khóa *</Label>
                 <Select
                   value={editClass.academic_year_id}
-                  onValueChange={(value) => setEditClass({ ...editClass, academic_year_id: value })}
+                  onValueChange={(value) => {
+                    setEditClass({ ...editClass, academic_year_id: value, branch_id: '', name: '' });
+                    setUseEditCustomName(false);
+                  }}
                   disabled={!editingClass}
                 >
                   <SelectTrigger>
@@ -313,8 +423,8 @@ export default function Classes() {
                 <div className="space-y-2">
                   <Label htmlFor="editBranchId">Ngành</Label>
                   <Select
-                    value={editClass.branch_id}
-                    onValueChange={(value) => setEditClass({ ...editClass, branch_id: value })}
+                    value={editClass.branch_id || 'none'}
+                    onValueChange={handleEditBranchChange}
                     disabled={!editingClass}
                   >
                     <SelectTrigger>
@@ -329,6 +439,52 @@ export default function Classes() {
                   </Select>
                 </div>
               )}
+              <div className="space-y-2">
+                <Label htmlFor="editClassName">Tên chi đoàn *</Label>
+                {editClassOptions.length > 0 ? (
+                  <div className="space-y-2">
+                    <Select
+                      value={useEditCustomName || !editClassOptions.includes(editClass.name) ? 'custom' : editClass.name}
+                      onValueChange={(val) => {
+                        if (val === 'custom') {
+                          setUseEditCustomName(true);
+                        } else {
+                          setUseEditCustomName(false);
+                          setEditClass({ ...editClass, name: val });
+                        }
+                      }}
+                      disabled={!editingClass}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Chọn tên chi đoàn từ danh sách" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {editClassOptions.map(opt => (
+                          <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                        ))}
+                        <SelectItem value="custom">— Tên khác (tự nhập) —</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {(useEditCustomName || !editClassOptions.includes(editClass.name)) && (
+                      <Input
+                        id="editClassName"
+                        placeholder="Nhập tên chi đoàn tự chọn"
+                        value={editClass.name}
+                        onChange={(e) => setEditClass({ ...editClass, name: e.target.value })}
+                        disabled={!editingClass}
+                      />
+                    )}
+                  </div>
+                ) : (
+                  <Input
+                    id="editClassName"
+                    placeholder="VD: CHI ĐOÀN ANRÊ – CHIÊN A"
+                    value={editClass.name}
+                    onChange={(e) => setEditClass({ ...editClass, name: e.target.value })}
+                    disabled={!editingClass}
+                  />
+                )}
+              </div>
               <div className="space-y-2">
                 <Label htmlFor="editSchedule">Lịch học</Label>
                 <Input
