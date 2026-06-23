@@ -192,9 +192,6 @@ export default function StudentDashboard() {
                 {student.baptism_name && (
                   <p className="text-muted-foreground">Tên Thánh: {student.baptism_name}</p>
                 )}
-                <p className="text-sm text-muted-foreground mt-1">
-                  Mã HV: {student.student_id}
-                </p>
                 {classInfo && (
                   <div className="mt-2 flex flex-wrap gap-2">
                     <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">

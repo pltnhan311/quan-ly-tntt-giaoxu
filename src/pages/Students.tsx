@@ -44,13 +44,13 @@ import { ImportStudentsDialog } from '@/components/students/ImportStudentsDialog
 import { generateStudentCSV, downloadCSV, StudentImportData } from '@/utils/csvUtils';
 
 export default function Students() {
-  const { data: students, isLoading } = useStudents();
+  const { data: students, isLoading } = useStudents(selectedClass || undefined);
   const { data: classes } = useClasses();
   const createStudent = useCreateStudent();
   const updateStudent = useUpdateStudent();
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedClass, setSelectedClass] = useState<string>('all');
+  const [selectedClass, setSelectedClass] = useState<string>('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
@@ -72,9 +72,8 @@ export default function Students() {
 
   const filteredStudents = (students || []).filter(student => {
     const matchesSearch = student.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         student.student_id.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesClass = selectedClass === 'all' || student.class_id === selectedClass;
-    return matchesSearch && matchesClass;
+                         (student.baptism_name || '').toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesSearch;
   });
 
   const handleCreateStudent = async () => {
@@ -83,10 +82,7 @@ export default function Students() {
       return;
     }
 
-    const studentId = `HS${new Date().getFullYear()}${String((students?.length || 0) + 1).padStart(3, '0')}`;
-
     createStudent.mutate({
-      student_id: studentId,
       name: newStudent.name,
       birth_date: newStudent.birth_date,
       gender: newStudent.gender,
@@ -99,26 +95,8 @@ export default function Students() {
       is_active: true,
       avatar_url: null,
     }, {
-      onSuccess: async (data) => {
-        // Auto-create auth account for student
-        try {
-          const { error } = await supabase.functions.invoke('create-student-account', {
-            body: { 
-              student_id: studentId,
-              student_db_id: data.id 
-            }
-          });
-          
-          if (error) {
-            console.error('Error creating student account:', error);
-            toast.warning(`Học viên đã được thêm nhưng không tạo được tài khoản đăng nhập`);
-          } else {
-            toast.success(`Tài khoản: ${studentId} | Mật khẩu: 123456`);
-          }
-        } catch (err) {
-          console.error('Error calling edge function:', err);
-        }
-
+      onSuccess: () => {
+        toast.success('Đã thêm đoàn viên thành công');
         setNewStudent({
           name: '',
           birth_date: '',
@@ -282,10 +260,9 @@ export default function Students() {
                 </div>
                 <Select value={selectedClass} onValueChange={setSelectedClass}>
                   <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Chọn lớp" />
+                    <SelectValue placeholder="Chọn chi đoàn" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">Tất cả lớp</SelectItem>
                     {(classes || []).map(cls => (
                       <SelectItem key={cls.id} value={cls.id}>
                         {cls.name}
@@ -318,14 +295,14 @@ export default function Students() {
                   <DialogTrigger asChild>
                     <Button variant="gold" disabled={!classes || classes.length === 0}>
                       <Plus className="mr-2 h-4 w-4" />
-                      Thêm học viên
+                      Thêm đoàn viên
                     </Button>
                   </DialogTrigger>
                   <DialogContent className="sm:max-w-[600px]">
                   <DialogHeader>
-                    <DialogTitle>Thêm học viên mới</DialogTitle>
+                    <DialogTitle>Thêm đoàn viên mới</DialogTitle>
                     <DialogDescription>
-                      Điền thông tin để thêm học viên vào lớp.
+                      Điền thông tin để thêm đoàn viên vào chi đoàn.
                     </DialogDescription>
                   </DialogHeader>
                   <div className="grid gap-4 py-4">
@@ -454,38 +431,48 @@ export default function Students() {
         />
 
         {/* Results count */}
-        <p className="text-sm text-muted-foreground">
-          Tìm thấy {filteredStudents.length} học viên
-        </p>
+        {selectedClass && (
+          <p className="text-sm text-muted-foreground">
+            Tìm thấy {filteredStudents.length} đoàn viên
+          </p>
+        )}
 
         {/* Students Table */}
-        <Card variant="elevated">
-          <CardContent className="p-0">
-            {isLoading ? (
-              <div className="flex items-center justify-center py-12">
-                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-              </div>
-            ) : filteredStudents.length > 0 ? (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Mã HV</TableHead>
-                    <TableHead>Họ và tên</TableHead>
-                    <TableHead>Tên Thánh</TableHead>
-                    <TableHead>Lớp</TableHead>
-                    <TableHead>Ngày sinh</TableHead>
-                    <TableHead>Giới tính</TableHead>
-                    <TableHead className="text-right">Thao tác</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredStudents.map((student, index) => (
-                    <TableRow 
-                      key={student.id}
-                      className="animate-fade-in"
-                      style={{ animationDelay: `${index * 50}ms` }}
-                    >
-                      <TableCell className="font-mono text-sm">{student.student_id}</TableCell>
+        {!selectedClass ? (
+          <Card className="p-8 text-center bg-card">
+            <div className="flex flex-col items-center justify-center space-y-3">
+              <Database className="h-12 w-12 text-muted-foreground" />
+              <p className="text-muted-foreground font-medium">Vui lòng chọn chi đoàn ở bộ lọc phía trên để xem danh sách đoàn viên.</p>
+            </div>
+          </Card>
+        ) : (
+          <Card variant="elevated">
+            <CardContent className="p-0">
+              {isLoading ? (
+                <div className="flex items-center justify-center py-12">
+                  <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                </div>
+              ) : filteredStudents.length > 0 ? (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-16">STT</TableHead>
+                      <TableHead>Họ và tên</TableHead>
+                      <TableHead>Tên Thánh</TableHead>
+                      <TableHead>Chi đoàn</TableHead>
+                      <TableHead>Ngày sinh</TableHead>
+                      <TableHead>Giới tính</TableHead>
+                      <TableHead className="text-right">Thao tác</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredStudents.map((student, index) => (
+                      <TableRow 
+                        key={student.id}
+                        className="animate-fade-in"
+                        style={{ animationDelay: `${index * 50}ms` }}
+                      >
+                        <TableCell className="font-medium">{index + 1}</TableCell>
                       <TableCell className="font-medium">{student.name}</TableCell>
                       <TableCell>{student.baptism_name || '-'}</TableCell>
                       <TableCell>
@@ -538,6 +525,7 @@ export default function Students() {
             )}
           </CardContent>
         </Card>
+        )}
 
         {/* Edit Student Dialog */}
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
@@ -668,7 +656,6 @@ export default function Students() {
                       <h3 className="text-xl font-semibold">
                         {selectedStudent.baptism_name} {selectedStudent.name}
                       </h3>
-                      <p className="text-sm text-muted-foreground">{selectedStudent.student_id}</p>
                     </div>
                   </div>
 

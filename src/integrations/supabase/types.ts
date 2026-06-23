@@ -415,7 +415,6 @@ export type Database = {
           name: string
           parent_phone: string | null
           phone: string | null
-          student_id: string
           updated_at: string
           user_id: string | null
         }
@@ -433,7 +432,6 @@ export type Database = {
           name: string
           parent_phone?: string | null
           phone?: string | null
-          student_id: string
           updated_at?: string
           user_id?: string | null
         }
@@ -451,7 +449,6 @@ export type Database = {
           name?: string
           parent_phone?: string | null
           phone?: string | null
-          student_id?: string
           updated_at?: string
           user_id?: string | null
         }

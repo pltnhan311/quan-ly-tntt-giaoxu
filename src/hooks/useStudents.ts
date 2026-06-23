@@ -4,7 +4,6 @@ import { toast } from 'sonner';
 
 export interface Student {
   id: string;
-  student_id: string;
   name: string;
   birth_date: string;
   gender: 'male' | 'female';

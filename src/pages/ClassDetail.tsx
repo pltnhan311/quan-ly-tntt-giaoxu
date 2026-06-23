@@ -182,7 +182,6 @@ export default function ClassDetail() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>STT</TableHead>
-                      <TableHead>Mã HV</TableHead>
                       <TableHead>Họ và tên</TableHead>
                       <TableHead>Tên Thánh</TableHead>
                       <TableHead>Ngày sinh</TableHead>
@@ -192,7 +191,6 @@ export default function ClassDetail() {
                     {classStudents.slice(0, 5).map((student, index) => (
                       <TableRow key={student.id}>
                         <TableCell>{index + 1}</TableCell>
-                        <TableCell className="font-mono text-sm">{student.student_id}</TableCell>
                         <TableCell className="font-medium">{student.name}</TableCell>
                         <TableCell>{student.baptism_name || '-'}</TableCell>
                         <TableCell>{formatDate(student.birth_date)}</TableCell>

@@ -446,7 +446,6 @@ export default function Attendance() {
                     <TableHeader>
                       <TableRow>
                         <TableHead className="w-[50px]">STT</TableHead>
-                        <TableHead>Mã HV</TableHead>
                         <TableHead>Họ và tên</TableHead>
                         <TableHead className="text-center">Trạng thái</TableHead>
                         {isAttending && <TableHead>Ghi chú</TableHead>}
@@ -482,7 +481,6 @@ export default function Attendance() {
                         return (
                           <TableRow key={student.id}>
                             <TableCell>{index + 1}</TableCell>
-                            <TableCell className="font-mono text-sm">{student.student_id}</TableCell>
                             <TableCell className="font-medium">{currentRecord.studentName}</TableCell>
                             <TableCell>
                               {isAttending ? (
@@ -566,7 +564,6 @@ export default function Attendance() {
                       <TableHeader>
                         <TableRow>
                           <TableHead>STT</TableHead>
-                          <TableHead>Mã HV</TableHead>
                           <TableHead>Họ và tên</TableHead>
                           <TableHead>Trạng thái</TableHead>
                           <TableHead>Ghi chú</TableHead>
@@ -580,9 +577,6 @@ export default function Attendance() {
                           return (
                             <TableRow key={record.id}>
                               <TableCell>{index + 1}</TableCell>
-                              <TableCell className="font-mono text-sm">
-                                {student?.student_id || '-'}
-                              </TableCell>
                               <TableCell className="font-medium">
                                 {student?.name || '-'}
                               </TableCell>
@@ -683,7 +677,6 @@ export default function Attendance() {
                     <TableHeader>
                       <TableRow>
                         <TableHead className="w-[50px]">STT</TableHead>
-                        <TableHead>Mã HV</TableHead>
                         <TableHead>Họ và tên</TableHead>
                         <TableHead className="text-center">Tham dự</TableHead>
                       </TableRow>
@@ -694,7 +687,6 @@ export default function Attendance() {
                         return (
                           <TableRow key={record.studentId}>
                             <TableCell>{index + 1}</TableCell>
-                            <TableCell className="font-mono text-sm">{student?.student_id}</TableCell>
                             <TableCell className="font-medium">{record.studentName}</TableCell>
                             <TableCell>
                               <div className="flex justify-center">

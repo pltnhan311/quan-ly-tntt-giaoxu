@@ -97,7 +97,7 @@ export default function Reports() {
     const absentCount = studentRecords.filter(r => r.status === 'absent').length;
     
     return {
-      studentId: student.student_id,
+      studentId: student.id,
       name: student.name,
       totalSessions,
       presentCount: presentCount + lateCount,
@@ -113,7 +113,7 @@ export default function Reports() {
     const attendedCount = studentMass.filter(r => r.attended).length;
     
     return {
-      studentId: student.student_id,
+      studentId: student.id,
       name: student.name,
       totalMasses,
       attendedCount,
@@ -135,7 +135,7 @@ export default function Reports() {
       : 0;
     
     return {
-      studentId: student.student_id,
+      studentId: student.id,
       name: student.name,
       presentation: presentationScore?.score ?? null,
       semester1: semester1Score?.score ?? null,
@@ -287,7 +287,7 @@ export default function Reports() {
                       <Table>
                         <TableHeader>
                           <TableRow>
-                            <TableHead>Mã HV</TableHead>
+                            <TableHead className="w-[60px]">STT</TableHead>
                             <TableHead>Họ và tên</TableHead>
                             <TableHead className="text-center">Tổng buổi</TableHead>
                             <TableHead className="text-center">Có mặt</TableHead>
@@ -296,9 +296,9 @@ export default function Reports() {
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {attendanceReport.map(row => (
+                          {attendanceReport.map((row, index) => (
                             <TableRow key={row.studentId}>
-                              <TableCell className="font-mono text-sm">{row.studentId}</TableCell>
+                              <TableCell>{index + 1}</TableCell>
                               <TableCell className="font-medium">{row.name}</TableCell>
                               <TableCell className="text-center">{row.totalSessions}</TableCell>
                               <TableCell className="text-center text-success">{row.presentCount}</TableCell>
@@ -334,7 +334,7 @@ export default function Reports() {
                       <Table>
                         <TableHeader>
                           <TableRow>
-                            <TableHead>Mã HV</TableHead>
+                            <TableHead className="w-[60px]">STT</TableHead>
                             <TableHead>Họ và tên</TableHead>
                             <TableHead className="text-center">Tổng lễ</TableHead>
                             <TableHead className="text-center">Tham dự</TableHead>
@@ -343,9 +343,9 @@ export default function Reports() {
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {massAttendanceReport.map(row => (
+                          {massAttendanceReport.map((row, index) => (
                             <TableRow key={row.studentId}>
-                              <TableCell className="font-mono text-sm">{row.studentId}</TableCell>
+                              <TableCell>{index + 1}</TableCell>
                               <TableCell className="font-medium">{row.name}</TableCell>
                               <TableCell className="text-center">{row.totalMasses}</TableCell>
                               <TableCell className="text-center text-success">{row.attendedCount}</TableCell>
@@ -381,7 +381,7 @@ export default function Reports() {
                       <Table>
                         <TableHeader>
                           <TableRow>
-                            <TableHead>Mã HV</TableHead>
+                            <TableHead className="w-[60px]">STT</TableHead>
                             <TableHead>Họ và tên</TableHead>
                             <TableHead className="text-center">Thuyết trình</TableHead>
                             <TableHead className="text-center">Học kỳ 1</TableHead>
@@ -391,9 +391,9 @@ export default function Reports() {
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {scoreReport.map(row => (
+                          {scoreReport.map((row, index) => (
                             <TableRow key={row.studentId}>
-                              <TableCell className="font-mono text-sm">{row.studentId}</TableCell>
+                              <TableCell>{index + 1}</TableCell>
                               <TableCell className="font-medium">{row.name}</TableCell>
                               <TableCell className="text-center">{getScoreBadge(row.presentation)}</TableCell>
                               <TableCell className="text-center">{getScoreBadge(row.semester1)}</TableCell>
