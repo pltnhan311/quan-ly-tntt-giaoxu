@@ -182,7 +182,7 @@ export default function Classes() {
                   <Label htmlFor="className">Tên chi đoàn *</Label>
                   <Input
                     id="className"
-                    placeholder="VD: Hiệp Sĩ 5"
+                    placeholder="VD: CHI ĐOÀN ANRÊ – CHIÊN A"
                     value={newClass.name}
                     onChange={(e) => setNewClass({ ...newClass, name: e.target.value })}
                   />
@@ -284,7 +284,7 @@ export default function Classes() {
                 <Label htmlFor="editClassName">Tên chi đoàn *</Label>
                 <Input
                   id="editClassName"
-                  placeholder="VD: Hiệp Sĩ 5"
+                  placeholder="VD: CHI ĐOÀN ANRÊ – CHIÊN A"
                   value={editClass.name}
                   onChange={(e) => setEditClass({ ...editClass, name: e.target.value })}
                   disabled={!editingClass}

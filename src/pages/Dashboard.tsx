@@ -25,6 +25,32 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
+function getClassInitials(name: string): string {
+  // Bỏ tiền tố "Chi đoàn" không phân biệt hoa thường
+  let cleanName = name.replace(/^(chi\s+đoàn\s+)/i, '').trim();
+  if (!cleanName) return 'CD';
+
+  // Tách theo các ký tự phân cách như gạch ngang - hoặc –
+  const parts = cleanName.split(/[-–]/);
+  if (parts.length >= 2) {
+    const part1 = parts[0].trim().split(/\s+/).filter(Boolean);
+    const part2 = parts[1].trim().split(/\s+/).filter(Boolean);
+    
+    // Lấy chữ cái đầu của từ đầu tiên ở phần 1 và phần 2
+    const char1 = part1[0]?.charAt(0) || '';
+    const char2 = part2[0]?.charAt(0) || '';
+    return (char1 + char2).toUpperCase();
+  }
+
+  // Nếu không có dấu phân cách, lấy chữ cái đầu của 2 từ đầu tiên
+  const words = cleanName.split(/\s+/).filter(Boolean);
+  if (words.length >= 2) {
+    return (words[0].charAt(0) + words[1].charAt(0)).toUpperCase();
+  }
+  
+  return cleanName.substring(0, 2).toUpperCase();
+}
+
 export default function Dashboard() {
   const { user, userRole } = useAuth();
 
@@ -254,7 +280,7 @@ export default function Dashboard() {
                     >
                       <div className="flex items-center gap-4">
                         <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-lg font-bold text-primary">
-                          {cls.name.substring(0, 2)}
+                          {getClassInitials(cls.name)}
                         </div>
                         <div>
                           <p className="font-medium text-foreground">{cls.name}</p>
