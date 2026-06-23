@@ -107,8 +107,8 @@ export function useUpdateUserRole() {
       if (roleError) throw roleError;
 
       // Sync with catechists table
-      if (newRole === 'glv' || newRole === 'admin') {
-        // If new role is glv/admin, ensure catechist record exists
+      if (newRole === 'glv' || newRole === 'admin' || newRole === 'truong_nganh') {
+        // If new role is glv/admin/truong_nganh, ensure catechist record exists
         const { data: catechist } = await supabase
           .from('catechists')
           .select('*')
@@ -136,8 +136,8 @@ export function useUpdateUserRole() {
 
           if (reactivateError) console.error('Error reactivating catechist:', reactivateError);
         }
-      } else if (currentRole?.role === 'glv' || currentRole?.role === 'admin') {
-        // If changing from glv/admin to student, deactivate catechist
+      } else if (newRole === 'student') {
+        // If changing to student, deactivate catechist
         const { error: deactivateError } = await supabase
           .from('catechists')
           .update({ is_active: false })
