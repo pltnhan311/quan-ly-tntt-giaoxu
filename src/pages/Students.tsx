@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -44,13 +45,11 @@ import { ImportStudentsDialog } from '@/components/students/ImportStudentsDialog
 import { generateStudentCSV, downloadCSV, StudentImportData } from '@/utils/csvUtils';
 
 export default function Students() {
-  const { data: students, isLoading } = useStudents(selectedClass || undefined);
-  const { data: classes } = useClasses();
-  const createStudent = useCreateStudent();
-  const updateStudent = useUpdateStudent();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const classParam = searchParams.get('classId') || '';
 
+  const [selectedClass, setSelectedClass] = useState<string>(classParam);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedClass, setSelectedClass] = useState<string>('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
@@ -58,6 +57,11 @@ export default function Students() {
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
+
+  const { data: students, isLoading } = useStudents(selectedClass || undefined);
+  const { data: classes } = useClasses();
+  const createStudent = useCreateStudent();
+  const updateStudent = useUpdateStudent();
 
   const [newStudent, setNewStudent] = useState({
     name: '',
@@ -149,12 +153,9 @@ export default function Students() {
 
     for (const studentData of importData) {
       try {
-        const studentId = `HS${new Date().getFullYear()}${String((students?.length || 0) + successCount + 1).padStart(3, '0')}`;
-        
-        const { data, error } = await supabase
+        const { error } = await supabase
           .from('students')
           .insert({
-            student_id: studentId,
             name: studentData.name,
             birth_date: studentData.birth_date,
             gender: studentData.gender,
@@ -163,26 +164,9 @@ export default function Students() {
             address: studentData.address || null,
             enrollment_date: new Date().toISOString().split('T')[0],
             is_active: true,
-          })
-          .select()
-          .single();
+          });
 
         if (error) throw error;
-
-        // Create auth account and wait for result
-        const { data: accountResult, error: accountError } = await supabase.functions.invoke('create-student-account', {
-          body: { student_id: studentId, student_db_id: data.id }
-        });
-
-        if (accountError) {
-          console.error('Edge function error:', accountError);
-          errors.push(`${studentData.name}: Không tạo được tài khoản`);
-        } else if (accountResult?.error) {
-          console.error('Account creation error:', accountResult.error);
-          errors.push(`${studentData.name}: ${accountResult.error}`);
-        } else {
-          console.log('Account created successfully for', studentId, accountResult);
-        }
 
         successCount++;
       } catch (error) {
@@ -258,7 +242,10 @@ export default function Students() {
                     className="pl-10"
                   />
                 </div>
-                <Select value={selectedClass} onValueChange={setSelectedClass}>
+                <Select value={selectedClass} onValueChange={(val) => {
+                  setSelectedClass(val);
+                  setSearchParams(val ? { classId: val } : {});
+                }}>
                   <SelectTrigger className="w-[180px]">
                     <SelectValue placeholder="Chọn chi đoàn" />
                   </SelectTrigger>
