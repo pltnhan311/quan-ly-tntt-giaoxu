@@ -90,8 +90,12 @@ const menuItems = [
   },
 ];
 
-export function Sidebar() {
-  const [collapsed, setCollapsed] = useState(false);
+export interface SidebarProps {
+  collapsed: boolean;
+  onCollapseChange: (collapsed: boolean) => void;
+}
+
+export function Sidebar({ collapsed, onCollapseChange }: SidebarProps) {
   const location = useLocation();
   const { user, signOut, hasRole, userRole } = useAuth();
 
@@ -185,7 +189,7 @@ export function Sidebar() {
 
       {/* Collapse toggle */}
       <button
-        onClick={() => setCollapsed(!collapsed)}
+        onClick={() => onCollapseChange(!collapsed)}
         className="absolute -right-3 top-20 flex h-6 w-6 items-center justify-center rounded-full border border-sidebar-border bg-sidebar text-sidebar-foreground shadow-md transition-colors hover:bg-sidebar-accent"
       >
         {collapsed ? (

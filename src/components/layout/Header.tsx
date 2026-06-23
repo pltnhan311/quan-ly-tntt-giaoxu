@@ -1,4 +1,4 @@
-import { Bell, Search, Menu } from 'lucide-react';
+import { Search, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
@@ -33,13 +33,6 @@ export function Header({ title, subtitle, onMenuClick }: HeaderProps) {
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input placeholder="Tìm kiếm..." className="w-64 pl-9" />
         </div>
-        
-        <Button variant="ghost" size="icon" className="relative">
-          <Bell className="h-5 w-5" />
-          <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-accent-foreground">
-            3
-          </span>
-        </Button>
       </div>
     </header>
   );
