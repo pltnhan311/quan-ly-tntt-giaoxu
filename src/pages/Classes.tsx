@@ -31,41 +31,41 @@ import { toast } from 'sonner';
 
 const DEFAULT_CLASSES_BY_BRANCH: Record<string, string[]> = {
   'Chiên Con': [
-    'CHI ĐOÀN ANRÊ – CHIÊN A',
-    'CHI ĐOÀN PHÊRÔ – CHIÊN B'
+    'ANRÊ – CHIÊN A',
+    'PHÊRÔ – CHIÊN B'
   ],
   'Ấu Nhi': [
-    'CHI ĐOÀN GIACÔBÊ TIỀN – ẤU 1A',
-    'CHI ĐOÀN GIOAN – ẤU 1B',
-    'CHI ĐOÀN BATÔLÔMÊÔ – ẤU 2A',
-    'CHI ĐOÀN MATHÊU (LÊVI) – ẤU 2B',
-    'CHI ĐOÀN GIACÔBÊ HẬU – ẤU 3A',
-    'CHI ĐOÀN GIUĐA (TAĐÊÔ) – ẤU 3B',
-    'CHI ĐOÀN SIMON – ẤU 3C'
+    'GIACÔBÊ TIỀN – ẤU 1A',
+    'GIOAN – ẤU 1B',
+    'BATÔLÔMÊÔ – ẤU 2A',
+    'MATHÊU (LÊVI) – ẤU 2B',
+    'GIACÔBÊ HẬU – ẤU 3A',
+    'GIUĐA (TAĐÊÔ) – ẤU 3B',
+    'SIMON – ẤU 3C'
   ],
   'Thiếu Nhi': [
-    'CHI ĐOÀN RUBEN – THIẾU 1A',
-    'CHI ĐOÀN SIMÊON – THIẾU 1B',
-    'CHI ĐOÀN GIUĐA – THIẾU 1C',
-    'CHI ĐOÀN ZABULUN – THIẾU 1D',
-    'CHI ĐOÀN ASHÊ – THIẾU 3A',
-    'CHI ĐOÀN GÁT – THIẾU 3B',
-    'CHI ĐOÀN ISAKHA – THIẾU 3C',
-    'CHI ĐOÀN LÊVI – THIẾU 3D'
+    'RUBEN – THIẾU 1A',
+    'SIMÊON – THIẾU 1B',
+    'GIUĐA – THIẾU 1C',
+    'ZABULUN – THIẾU 1D',
+    'ASHÊ – THIẾU 3A',
+    'GÁT – THIẾU 3B',
+    'ISAKHA – THIẾU 3C',
+    'LÊVI – THIẾU 3D'
   ],
   'Nghĩa Sĩ': [
-    'CHI ĐOÀN ANTIÔKIA – NGHĨA 1A',
-    'CHI ĐOÀN CILICIA – NGHĨA 1B',
-    'CHI ĐOÀN CORINTO – NGHĨA 3A',
-    'CHI ĐOÀN GALÁT – NGHĨA 3B'
+    'ANTIÔKIA – NGHĨA 1A',
+    'CILICIA – NGHĨA 1B',
+    'CORINTO – NGHĨA 3A',
+    'GALÁT – NGHĨA 3B'
   ],
   'Hiệp Sĩ': [
-    'CHI ĐOÀN ÊPHÊSÔ – HIỆP SĨ 1',
-    'CHI ĐOÀN CÊSARÊ – HIỆP SĨ 2',
-    'CHI ĐOÀN AKAIA – HIỆP SĨ 3'
+    'ÊPHÊSÔ – HIỆP SĨ 1',
+    'CÊSARÊ – HIỆP SĨ 2',
+    'AKAIA – HIỆP SĨ 3'
   ],
   'Dự Trưởng': [
-    'CHI ĐOÀN DỰ TRƯỞNG'
+    'DỰ TRƯỞNG'
   ]
 };
 
