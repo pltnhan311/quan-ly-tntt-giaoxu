@@ -345,15 +345,7 @@ export default function Classes() {
                     )}
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="description">Mô tả</Label>
-                    <Textarea
-                      id="description"
-                      placeholder="Mô tả về lớp học..."
-                      value={newClass.description}
-                      onChange={(e) => setNewClass({ ...newClass, description: e.target.value })}
-                    />
-                  </div>
+
                 </div>
                 <DialogFooter>
                   <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
@@ -482,16 +474,7 @@ export default function Classes() {
                 )}
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="editDescription">Mô tả</Label>
-                <Textarea
-                  id="editDescription"
-                  placeholder="Mô tả về lớp học..."
-                  value={editClass.description}
-                  onChange={(e) => setEditClass({ ...editClass, description: e.target.value })}
-                  disabled={!editingClass}
-                />
-              </div>
+
             </div>
             <DialogFooter>
               <Button
@@ -523,90 +506,88 @@ export default function Classes() {
             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
           </div>
         ) : filteredClasses.length > 0 ? (
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {filteredClasses.map((cls, index) => (
               <Card 
                 key={cls.id} 
                 variant="interactive"
-                className="animate-fade-in cursor-pointer"
+                className="animate-fade-in cursor-pointer overflow-hidden flex flex-col justify-between"
                 style={{ animationDelay: `${index * 100}ms` }}
                 onClick={() => navigate(`/classes/${cls.id}`)}
               >
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <CardTitle className="flex items-center gap-2 flex-wrap">
+                <CardContent className="p-4 md:p-5 space-y-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="space-y-1">
+                      <h3 className="font-bold text-base text-foreground leading-tight">
                         {cls.name}
-                        <Badge variant="gold">{cls.academic_years?.name || 'N/A'}</Badge>
+                      </h3>
+                      <div className="flex flex-wrap gap-1">
+                        <Badge variant="gold" className="text-[10px] py-0 px-1.5 h-4">
+                          {cls.academic_years?.name || 'N/A'}
+                        </Badge>
                         {cls.branches && (
-                          <Badge variant="secondary" className="text-xs">
-                            <GitBranch className="mr-1 h-3 w-3" />
+                          <Badge variant="secondary" className="text-[10px] py-0 px-1.5 h-4">
+                            <GitBranch className="mr-0.5 h-2.5 w-2.5" />
                             {cls.branches.name}
                           </Badge>
                         )}
-                      </CardTitle>
-                      <CardDescription className="mt-1">
-                        {cls.description || 'Không có mô tả'}
-                      </CardDescription>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5 shrink-0">
                       {userRole === 'admin' && (
                         <Button
                           variant="outline"
                           size="icon"
-                          className="h-8 w-8"
+                          className="h-7 w-7 text-muted-foreground hover:text-foreground"
                           onClick={(e) => {
                             e.stopPropagation();
                             handleOpenEditClass(cls);
                           }}
                         >
-                          <Pencil className="h-4 w-4" />
+                          <Pencil className="h-3.5 w-3.5" />
                         </Button>
                       )}
-                      <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                      <ChevronRight className="h-4 w-4 text-muted-foreground" />
                     </div>
                   </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                          <Users className="h-5 w-5 text-primary" />
-                        </div>
-                        <div>
-                          <p className="text-lg font-bold text-foreground">{cls.students?.[0]?.count || 0}</p>
-                          <p className="text-xs text-muted-foreground">Đoàn viên</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent/10">
-                          <Clock className="h-5 w-5 text-accent" />
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-foreground">{cls.schedule || 'CN | 9:00 - 10:30'}</p>
-                          <p className="text-xs text-muted-foreground">Lịch học</p>
-                        </div>
-                      </div>
-                    </div>
 
-                    <div className="border-t pt-4">
-                      <div className="flex items-center gap-2 mb-2">
-                        <UserCheck className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-sm text-muted-foreground">Giáo lý viên phụ trách</span>
+                  <div className="grid grid-cols-2 gap-2 border-t pt-3">
+                    <div className="flex items-center gap-2">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                        <Users className="h-4 w-4" />
                       </div>
-                      {cls.class_catechists && cls.class_catechists.length > 0 ? (
-                        <div className="flex flex-wrap gap-2">
-                          {cls.class_catechists.map(cc => (
-                            <Badge key={cc.id} variant="secondary">
-                              {cc.catechists?.name}
-                            </Badge>
-                          ))}
-                        </div>
-                      ) : (
-                        <p className="text-sm text-muted-foreground italic">Chưa gán GLV</p>
-                      )}
+                      <div>
+                        <p className="text-sm font-bold text-foreground">{cls.students?.[0]?.count || 0}</p>
+                        <p className="text-[10px] text-muted-foreground leading-none">Đoàn viên</p>
+                      </div>
                     </div>
+                    <div className="flex items-center gap-2">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-accent/10 text-accent">
+                        <Clock className="h-4 w-4" />
+                      </div>
+                      <div>
+                        <p className="text-xs font-semibold text-foreground truncate max-w-[100px]">{cls.schedule || 'CN | 9:00 - 10:30'}</p>
+                        <p className="text-[10px] text-muted-foreground leading-none">Lịch học</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="border-t pt-3">
+                    <div className="flex items-center gap-1.5 mb-1.5">
+                      <UserCheck className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                      <span className="text-xs text-muted-foreground font-medium">Giáo lý viên phụ trách</span>
+                    </div>
+                    {cls.class_catechists && cls.class_catechists.length > 0 ? (
+                      <div className="flex flex-wrap gap-1">
+                        {cls.class_catechists.map(cc => (
+                          <Badge key={cc.id} variant="secondary" className="text-[10px] py-0.5 px-1.5 font-normal">
+                            {cc.catechists?.name}
+                          </Badge>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-xs text-muted-foreground italic">Chưa gán GLV</p>
+                    )}
                   </div>
                 </CardContent>
               </Card>
