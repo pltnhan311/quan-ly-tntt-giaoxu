@@ -154,7 +154,7 @@ export default function ClassDetail() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Lịch học</p>
-                <p className="text-sm font-medium">{classInfo.schedule || 'Chưa xếp'}</p>
+                <p className="text-sm font-medium">{classInfo.schedule || '9:00 - 10:30 Chúa Nhật'}</p>
               </div>
             </CardContent>
           </Card>

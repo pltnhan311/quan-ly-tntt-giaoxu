@@ -584,7 +584,7 @@ export default function Classes() {
                           <Clock className="h-5 w-5 text-accent" />
                         </div>
                         <div>
-                          <p className="text-sm font-medium text-foreground">{cls.schedule || 'Chưa xếp'}</p>
+                          <p className="text-sm font-medium text-foreground">{cls.schedule || '9:00 - 10:30 Chúa Nhật'}</p>
                           <p className="text-xs text-muted-foreground">Lịch học</p>
                         </div>
                       </div>
