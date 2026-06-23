@@ -3,246 +3,155 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import { useUsers, useUpdateUserRole, AppRole } from '@/hooks/useUsers';
-import { Users, Shield, Pencil, Loader2, UserPlus, GraduationCap, Upload } from 'lucide-react';
-import { format } from 'date-fns';
-import { vi } from 'date-fns/locale';
 import { ImportSetupDialog } from '@/components/settings/ImportSetupDialog';
 import { useQueryClient } from '@tanstack/react-query';
+import { 
+  Upload, 
+  Clock, 
+  Settings as SettingsIcon, 
+  CalendarDays, 
+  KeyRound, 
+  Globe, 
+  ShieldCheck
+} from 'lucide-react';
 
 export default function Settings() {
   const queryClient = useQueryClient();
   const [importDialogOpen, setImportDialogOpen] = useState(false);
-  const { data: users, isLoading } = useUsers();
-  const updateRoleMutation = useUpdateUserRole();
-  const [editingUser, setEditingUser] = useState<{ userId: string; currentRole: AppRole } | null>(null);
-  const [newRole, setNewRole] = useState<AppRole>('glv');
-
-  const handleEditRole = (userId: string, currentRole: AppRole) => {
-    setEditingUser({ userId, currentRole });
-    setNewRole(currentRole);
-  };
-
-  const handleSaveRole = () => {
-    if (editingUser) {
-      updateRoleMutation.mutate({ userId: editingUser.userId, newRole });
-      setEditingUser(null);
-    }
-  };
-
-  const getRoleBadge = (role: AppRole) => {
-    switch (role) {
-      case 'admin':
-        return <Badge variant="destructive">Quản trị viên</Badge>;
-      case 'glv':
-        return <Badge variant="gold">Giáo lý viên</Badge>;
-      case 'student':
-        return <Badge variant="secondary">Học viên</Badge>;
-    }
-  };
-
-  const adminCount = users?.filter(u => u.role === 'admin').length || 0;
-  const glvCount = users?.filter(u => u.role === 'glv').length || 0;
-  const studentCount = users?.filter(u => u.role === 'student').length || 0;
 
   return (
     <MainLayout 
-      title="Quản lý hệ thống" 
-      subtitle="Quản lý người dùng và phân quyền"
+      title="Cài đặt hệ thống" 
+      subtitle="Quản lý cấu hình và thiết lập hệ thống"
     >
-      <div className="space-y-6">
-        {/* Stats */}
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-          <Card variant="elevated">
-            <CardContent className="flex items-center gap-4 p-4 md:p-6">
-              <div className="flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-xl bg-destructive/10">
-                <Shield className="h-5 w-5 md:h-6 md:w-6 text-destructive" />
+      <div className="space-y-6 max-w-5xl">
+        {/* System Configuration Display */}
+        <Card variant="elevated" className="overflow-hidden">
+          <CardHeader className="border-b bg-muted/30">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                <SettingsIcon className="h-5 w-5" />
               </div>
               <div>
-                <p className="text-xs md:text-sm text-muted-foreground">Quản trị viên</p>
-                <p className="text-xl md:text-2xl font-bold">{adminCount}</p>
-              </div>
-            </CardContent>
-          </Card>
-          <Card variant="gold">
-            <CardContent className="flex items-center gap-4 p-4 md:p-6">
-              <div className="flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-xl bg-accent/10">
-                <Users className="h-5 w-5 md:h-6 md:w-6 text-accent" />
-              </div>
-              <div>
-                <p className="text-xs md:text-sm text-muted-foreground">Giáo lý viên</p>
-                <p className="text-xl md:text-2xl font-bold">{glvCount}</p>
-              </div>
-            </CardContent>
-          </Card>
-          <Card variant="elevated">
-            <CardContent className="flex items-center gap-4 p-4 md:p-6">
-              <div className="flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-xl bg-primary/10">
-                <GraduationCap className="h-5 w-5 md:h-6 md:w-6 text-primary" />
-              </div>
-              <div>
-                <p className="text-xs md:text-sm text-muted-foreground">Học viên</p>
-                <p className="text-xl md:text-2xl font-bold">{studentCount}</p>
-              </div>
-            </CardContent>
-          </Card>
-          <Card variant="elevated">
-            <CardContent className="flex items-center gap-4 p-4 md:p-6">
-              <div className="flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-xl bg-muted">
-                <UserPlus className="h-5 w-5 md:h-6 md:w-6 text-muted-foreground" />
-              </div>
-              <div>
-                <p className="text-xs md:text-sm text-muted-foreground">Tổng cộng</p>
-                <p className="text-xl md:text-2xl font-bold">{users?.length || 0}</p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Quick Setup Button */}
-        <Card variant="elevated">
-          <CardContent className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 md:p-6">
-            <div>
-              <h3 className="font-semibold">Setup nhanh niên khóa mới</h3>
-              <p className="text-sm text-muted-foreground">
-                Import niên khóa, lớp học và giáo lý viên từ file CSV
-              </p>
-            </div>
-            <Button onClick={() => setImportDialogOpen(true)}>
-              <Upload className="mr-2 h-4 w-4" />
-              Import Setup
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* Users Table */}
-        <Card variant="elevated">
-          <CardHeader>
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div>
-                <CardTitle>Danh sách người dùng</CardTitle>
-                <CardDescription>Quản lý tài khoản và phân quyền</CardDescription>
+                <CardTitle>Cấu hình hệ thống</CardTitle>
+                <CardDescription>Các thiết lập mặc định được áp dụng tự động trên toàn hệ thống</CardDescription>
               </div>
             </div>
           </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <div className="flex items-center justify-center h-32">
-                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+          <CardContent className="divide-y p-0">
+            {/* Study Schedule Config */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 hover:bg-muted/10 transition-colors">
+              <div className="flex items-start gap-4">
+                <div className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-accent/15 text-accent">
+                  <Clock className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="font-medium text-foreground">Lịch học cố định</p>
+                  <p className="text-sm text-muted-foreground">
+                    Áp dụng cố định cho tất cả các Chi đoàn sinh hoạt vào ngày Chúa Nhật.
+                  </p>
+                </div>
               </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Họ và tên</TableHead>
-                      <TableHead className="hidden md:table-cell">Email</TableHead>
-                      <TableHead className="hidden md:table-cell">Ngày tạo</TableHead>
-                      <TableHead>Vai trò</TableHead>
-                      <TableHead className="text-right">Thao tác</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {users?.map((user, index) => (
-                      <TableRow 
-                        key={user.id}
-                        className="animate-fade-in"
-                        style={{ animationDelay: `${index * 50}ms` }}
-                      >
-                        <TableCell>
-                          <div>
-                            <p className="font-medium">{user.name}</p>
-                            <p className="text-xs text-muted-foreground md:hidden">{user.email}</p>
-                          </div>
-                        </TableCell>
-                        <TableCell className="hidden md:table-cell">{user.email}</TableCell>
-                        <TableCell className="hidden md:table-cell">
-                          {format(new Date(user.created_at), 'dd/MM/yyyy', { locale: vi })}
-                        </TableCell>
-                        <TableCell>{getRoleBadge(user.role)}</TableCell>
-                        <TableCell className="text-right">
-                          <Button 
-                            variant="ghost" 
-                            size="icon"
-                            onClick={() => handleEditRole(user.user_id, user.role)}
-                          >
-                            <Pencil className="h-4 w-4" />
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+              <div className="flex items-center sm:self-center">
+                <Badge variant="gold" className="text-sm px-3 py-1 font-semibold">
+                  9:00 - 10:30 Chúa Nhật hàng tuần
+                </Badge>
               </div>
-            )}
+            </div>
+
+            {/* Default Password Config */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 hover:bg-muted/10 transition-colors">
+              <div className="flex items-start gap-4">
+                <div className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                  <KeyRound className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="font-medium text-foreground">Mật khẩu tài khoản mới</p>
+                  <p className="text-sm text-muted-foreground">
+                    Mật khẩu mặc định được tạo tự động cho Giáo lý viên khi thực hiện import dữ liệu.
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center sm:self-center">
+                <Badge variant="secondary" className="text-sm px-3 py-1 font-mono">
+                  123456
+                </Badge>
+              </div>
+            </div>
+
+            {/* Timezone Config */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 hover:bg-muted/10 transition-colors">
+              <div className="flex items-start gap-4">
+                <div className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
+                  <Globe className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="font-medium text-foreground">Múi giờ hệ thống</p>
+                  <p className="text-sm text-muted-foreground">
+                    Sử dụng để ghi nhận thời gian điểm danh và cập nhật dữ liệu.
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center sm:self-center">
+                <span className="text-sm font-semibold text-foreground bg-muted px-3 py-1 rounded">
+                  Asia/Ho_Chi_Minh (GMT+7)
+                </span>
+              </div>
+            </div>
+
+            {/* Verification & Access Config */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 hover:bg-muted/10 transition-colors">
+              <div className="flex items-start gap-4">
+                <div className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-success/10 text-success">
+                  <ShieldCheck className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="font-medium text-foreground">Xác thực người dùng</p>
+                  <p className="text-sm text-muted-foreground">
+                    Phân quyền truy cập dựa trên 3 vai trò: Quản trị viên, Trưởng Ngành, Giáo lý viên.
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center sm:self-center">
+                <Badge variant="outline" className="text-sm px-3 py-1 text-success border-success/30 bg-success/5 font-semibold">
+                  Đang hoạt động (Supabase Auth)
+                </Badge>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Quick Setup / Import Section */}
+        <Card variant="elevated">
+          <CardHeader>
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent/10 text-accent">
+                <CalendarDays className="h-5 w-5" />
+              </div>
+              <div>
+                <CardTitle>Khởi tạo dữ liệu niên khóa</CardTitle>
+                <CardDescription>
+                  Thiết lập nhanh niên khóa mới bằng cách import dữ liệu chi đoàn và giáo lý viên từ file CSV.
+                </CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="pt-2">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 bg-muted/30 p-4 rounded-lg border border-dashed">
+              <div className="max-w-xl">
+                <p className="text-sm font-medium text-foreground">Import Setup Niên khóa mới</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Hệ thống sẽ tự động liên kết các Chi đoàn với các Giáo lý viên tương ứng dựa trên tên lớp được cấu hình trong file CSV.
+                </p>
+              </div>
+              <Button onClick={() => setImportDialogOpen(true)} variant="gold" className="shrink-0">
+                <Upload className="mr-2 h-4 w-4" />
+                Import dữ liệu niên khóa
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>
-
-      {/* Edit Role Dialog */}
-      <Dialog open={!!editingUser} onOpenChange={() => setEditingUser(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Thay đổi vai trò</DialogTitle>
-            <DialogDescription>
-              Chọn vai trò mới cho người dùng này
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-4">
-            <Select value={newRole} onValueChange={(value: AppRole) => setNewRole(value)}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="admin">Quản trị viên</SelectItem>
-                <SelectItem value="glv">Giáo lý viên</SelectItem>
-                <SelectItem value="student">Học viên</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setEditingUser(null)}>
-              Hủy
-            </Button>
-            <Button 
-              onClick={handleSaveRole}
-              disabled={updateRoleMutation.isPending}
-            >
-              {updateRoleMutation.isPending ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Đang lưu...
-                </>
-              ) : (
-                'Lưu thay đổi'
-              )}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
       {/* Import Setup Dialog */}
       <ImportSetupDialog

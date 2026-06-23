@@ -89,7 +89,7 @@ export default function Classes() {
     academic_year_id: '',
     branch_id: '',
     description: '',
-    schedule: ''
+    schedule: '9:00 - 10:30 Chúa Nhật'
   });
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingClass, setEditingClass] = useState<ClassInfo | null>(null);
@@ -98,7 +98,7 @@ export default function Classes() {
     academic_year_id: '',
     branch_id: '',
     description: '',
-    schedule: ''
+    schedule: '9:00 - 10:30 Chúa Nhật'
   });
 
   // Branches for the selected academic year in dialog
@@ -166,7 +166,7 @@ export default function Classes() {
       schedule: newClass.schedule || undefined,
     }, {
       onSuccess: () => {
-        setNewClass({ name: '', academic_year_id: '', branch_id: '', description: '', schedule: '' });
+        setNewClass({ name: '', academic_year_id: '', branch_id: '', description: '', schedule: '9:00 - 10:30 Chúa Nhật' });
         setIsDialogOpen(false);
       }
     });
@@ -179,7 +179,7 @@ export default function Classes() {
       academic_year_id: cls.academic_year_id,
       branch_id: cls.branch_id || '',
       description: cls.description || '',
-      schedule: cls.schedule || ''
+      schedule: cls.schedule || '9:00 - 10:30 Chúa Nhật'
     });
     setIsEditDialogOpen(true);
   };
@@ -344,15 +344,7 @@ export default function Classes() {
                       />
                     )}
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="schedule">Lịch học</Label>
-                    <Input
-                      id="schedule"
-                      placeholder="VD: Chủ nhật, 8:00 - 9:30"
-                      value={newClass.schedule}
-                      onChange={(e) => setNewClass({ ...newClass, schedule: e.target.value })}
-                    />
-                  </div>
+
                   <div className="space-y-2">
                     <Label htmlFor="description">Mô tả</Label>
                     <Textarea
@@ -489,16 +481,7 @@ export default function Classes() {
                   />
                 )}
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="editSchedule">Lịch học</Label>
-                <Input
-                  id="editSchedule"
-                  placeholder="VD: Chủ nhật, 8:00 - 9:30"
-                  value={editClass.schedule}
-                  onChange={(e) => setEditClass({ ...editClass, schedule: e.target.value })}
-                  disabled={!editingClass}
-                />
-              </div>
+
               <div className="space-y-2">
                 <Label htmlFor="editDescription">Mô tả</Label>
                 <Textarea
