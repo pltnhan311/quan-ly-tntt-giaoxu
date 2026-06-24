@@ -57,7 +57,7 @@ export default function Materials() {
   useEffect(() => {
     if (userRole === 'glv') {
       setUploadScope('class');
-    } else if (userRole === 'admin') {
+    } else if (userRole === 'admin' || userRole === 'truong_nganh') {
       setUploadScope('branch');
     }
   }, [userRole]);
@@ -69,24 +69,32 @@ export default function Materials() {
 
   const viewableClasses = (classes || []).filter(cls => {
     if (userRole === 'admin') return true;
-    if (userRole === 'truong_nganh') return cls.branch_id === myBranch?.id;
+    if (userRole === 'truong_nganh') return cls.branch_id === myBranch?.id || taughtClassIds.includes(cls.id);
     if (userRole === 'glv') return taughtClassIds.includes(cls.id);
     return false;
   });
 
   const uploadableClasses = (classes || []).filter(cls => {
     if (userRole === 'admin') return true;
-    if (userRole === 'glv') return taughtClassIds.includes(cls.id);
+    if (userRole === 'glv' || userRole === 'truong_nganh') return taughtClassIds.includes(cls.id);
     return false;
   });
 
   const canDeleteMaterial = (material: LearningMaterial) => {
     if (userRole === 'admin') return true;
+    const isOwner = material.uploaded_by === user?.id;
+    const isTaughtClass = material.class_id ? taughtClassIds.includes(material.class_id) : false;
+    
+    if (userRole === 'truong_nganh') {
+      const isInLedBranch = material.branch_id && myBranch ? material.branch_id === myBranch.id : false;
+      const isClassInLedBranch = material.classes?.branch_id && myBranch ? material.classes.branch_id === myBranch.id : false;
+      return isOwner || isTaughtClass || isInLedBranch || isClassInLedBranch;
+    }
+    
     if (userRole === 'glv') {
-      const isOwner = material.uploaded_by === user?.id;
-      const isTaughtClass = material.class_id ? taughtClassIds.includes(material.class_id) : false;
       return isOwner || isTaughtClass;
     }
+    
     return false;
   };
 
@@ -179,12 +187,20 @@ export default function Materials() {
       toast.error('Vui lòng điền tiêu đề và chọn file');
       return;
     }
+
+    let targetBranchId = branchId;
+    if (uploadScope === 'branch') {
+      if (userRole === 'truong_nganh' && myBranch) {
+        targetBranchId = myBranch.id;
+      }
+      if (!targetBranchId) {
+        toast.error('Vui lòng chọn ngành');
+        return;
+      }
+    }
+
     if (uploadScope === 'class' && !classId) {
       toast.error('Vui lòng chọn chi đoàn');
-      return;
-    }
-    if (uploadScope === 'branch' && !branchId) {
-      toast.error('Vui lòng chọn ngành');
       return;
     }
 
@@ -193,7 +209,7 @@ export default function Materials() {
       title: title.trim(),
       description: description.trim() || undefined,
       classId: uploadScope === 'class' ? classId : null,
-      branchId: uploadScope === 'branch' ? branchId : null,
+      branchId: uploadScope === 'branch' ? targetBranchId : null,
       week: week ? parseInt(week) : undefined,
     });
 
@@ -269,7 +285,7 @@ export default function Materials() {
               {materials?.length || 0} tài liệu
             </p>
           </div>
-          {userRole !== 'truong_nganh' && (
+          {(userRole === 'admin' || userRole === 'glv' || userRole === 'truong_nganh') && (
             <Dialog open={isDialogOpen} onOpenChange={(open) => {
               setIsDialogOpen(open);
               if (!open) resetForm();
@@ -298,7 +314,7 @@ export default function Materials() {
                     />
                   </div>
                   {/* Upload scope */}
-                  {userRole === 'admin' && (
+                  {(userRole === 'admin' || userRole === 'truong_nganh') && (
                     <div className="space-y-2">
                       <Label>Phạm vi tài liệu *</Label>
                       <Select value={uploadScope} onValueChange={(v: any) => { setUploadScope(v); setClassId(''); setBranchId(''); }}>
@@ -306,9 +322,9 @@ export default function Materials() {
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="chung">Chung (toàn giáo xứ)</SelectItem>
+                          {userRole === 'admin' && <SelectItem value="chung">Chung (toàn giáo xứ)</SelectItem>}
                           <SelectItem value="branch">Theo Ngành</SelectItem>
-                          <SelectItem value="class">Theo Chi đoàn</SelectItem>
+                          {uploadableClasses.length > 0 && <SelectItem value="class">Theo Chi đoàn</SelectItem>}
                         </SelectContent>
                       </Select>
                     </div>
@@ -316,16 +332,20 @@ export default function Materials() {
                   {uploadScope === 'branch' && (
                     <div className="space-y-2">
                       <Label htmlFor="branchIdUpload">Ngành *</Label>
-                      <Select value={branchId} onValueChange={setBranchId}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Chọn ngành" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {(branches || []).map(branch => (
-                            <SelectItem key={branch.id} value={branch.id}>{branch.name}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      {userRole === 'admin' ? (
+                        <Select value={branchId} onValueChange={setBranchId}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Chọn ngành" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {(branches || []).map(branch => (
+                              <SelectItem key={branch.id} value={branch.id}>{branch.name}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <Input value={myBranch?.name || ''} disabled className="bg-muted" />
+                      )}
                     </div>
                   )}
                   {uploadScope === 'class' && (

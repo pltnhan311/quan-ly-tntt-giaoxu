@@ -40,6 +40,7 @@ import { useStudents, useCreateStudent, useUpdateStudent, Student } from '@/hook
 import { supabase } from '@/integrations/supabase/client';
 import { useClasses } from '@/hooks/useClasses';
 import { useCatechists } from '@/hooks/useCatechists';
+import { useMyBranch } from '@/hooks/useBranches';
 import { useAuth } from '@/contexts/AuthContext';
 import { Plus, Search, Eye, Pencil, User, Phone, MapPin, Calendar, Loader2, Database, Upload, Download, MoreHorizontal } from 'lucide-react';
 import { toast } from 'sonner';
@@ -64,19 +65,30 @@ export default function Students() {
   const { data: students, isLoading } = useStudents(selectedClass || undefined);
   const { data: classes } = useClasses();
   const { data: catechists } = useCatechists();
+  const { data: myBranch } = useMyBranch();
   const createStudent = useCreateStudent();
   const updateStudent = useUpdateStudent();
 
   const canManageClass = (() => {
     if (userRole === 'admin') return true;
-    if (userRole === 'truong_nganh') return false;
-    if (userRole === 'glv' && selectedClass && classes && catechists && user) {
-      const currentCatechist = catechists.find(c => c.user_id === user.id);
-      if (!currentCatechist) return false;
-      const targetClass = classes.find(c => c.id === selectedClass);
-      if (!targetClass) return false;
-      return targetClass.class_catechists?.some(cc => cc.catechists?.id === currentCatechist.id) || false;
+
+    // Check if user is a teacher of this class (both GLV and Trưởng Ngành can teach)
+    const currentCatechist = catechists?.find(c => c.user_id === user?.id);
+    const targetClass = classes?.find(c => c.id === selectedClass);
+
+    const isAssignedTeacher = !!(
+      currentCatechist &&
+      targetClass &&
+      targetClass.class_catechists?.some(cc => cc.catechists?.id === currentCatechist.id)
+    );
+
+    if (isAssignedTeacher) return true;
+
+    // Trưởng Ngành can manage classes in their led branch
+    if (userRole === 'truong_nganh' && targetClass && myBranch) {
+      return targetClass.branch_id === myBranch.id;
     }
+
     return false;
   })();
 

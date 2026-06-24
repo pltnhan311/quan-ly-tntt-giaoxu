@@ -84,7 +84,10 @@ export default function Dashboard() {
     if (isLoading || !classes) return [];
     if (userRole === 'admin') return classes;
     if (userRole === 'truong_nganh') {
-      return classes.filter(c => c.branch_id === myBranch?.id);
+      return classes.filter(c => 
+        c.branch_id === myBranch?.id || 
+        c.class_catechists?.some(cc => cc.catechists?.id === currentCatechist?.id)
+      );
     }
     if (userRole === 'glv') {
       return classes.filter(cls => 
@@ -146,8 +149,16 @@ export default function Dashboard() {
     if (isLoading || !materials) return 0;
     if (userRole === 'admin') return materials.length;
     if (userRole === 'truong_nganh') {
-      // Materials belonging to their branch or general
-      return materials.filter(m => m.branch_id === myBranch?.id || !m.branch_id).length;
+      // Materials belonging to their branch, general, or classes they teach
+      const glvClassIds = new Set(
+        classes?.filter(c => c.class_catechists?.some(cc => cc.catechists?.id === currentCatechist?.id))
+          .map(c => c.id) || []
+      );
+      return materials.filter(m => 
+        m.branch_id === myBranch?.id || 
+        !m.branch_id || 
+        (m.class_id && glvClassIds.has(m.class_id))
+      ).length;
     }
     if (userRole === 'glv') {
       // Materials belonging to their classes, branch, or general

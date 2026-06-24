@@ -15,7 +15,9 @@ export interface LearningMaterial {
   created_at: string;
   updated_at: string;
   classes?: {
+    id: string;
     name: string;
+    branch_id: string | null;
   } | null;
   branches?: {
     id: string;
@@ -35,7 +37,7 @@ export function useLearningMaterials(classId?: string, branchId?: string) {
         .select(
           `
           *,
-          classes(name),
+          classes(id, name, branch_id),
           branches(id, name)
         `
         )
