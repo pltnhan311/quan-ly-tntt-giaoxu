@@ -177,8 +177,8 @@ export default function ClassDetail() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
-                  <CardTitle>Danh sách học viên</CardTitle>
-                  <CardDescription>{classStudents.length} học viên</CardDescription>
+                  <CardTitle>Danh sách đoàn viên</CardTitle>
+                  <CardDescription>{classStudents.length} đoàn viên</CardDescription>
                 </div>
                 <Button variant="outline" asChild>
                   <Link to={`/students?classId=${id}`}>

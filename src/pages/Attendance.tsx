@@ -396,17 +396,22 @@ export default function Attendance() {
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <div>
-                      <CardTitle className="flex items-center gap-2">
-                        <Users className="h-5 w-5" />
+                      <CardTitle className="flex items-center gap-2 text-xl font-bold">
+                        <Users className="h-5 w-5 text-primary" />
                         {selectedClassInfo?.name} - Điểm danh Giáo lý (Trực tiếp)
                       </CardTitle>
-                      <CardDescription>
-                        {selectedClassInfo?.schedule || 'CN | 9:00 - 10:30'} • {classStudents.length} học viên
-                        <br />
-                        <span className="text-xs text-muted-foreground">
-                          Admin/Giáo viên điểm danh trực tiếp bằng cách check/uncheck
-                        </span>
-                      </CardDescription>
+                      <div className="mt-2 flex flex-col gap-1.5">
+                        <div className="flex items-center flex-wrap gap-2 text-sm text-muted-foreground">
+                          <span className="font-semibold text-foreground bg-primary/10 px-2 py-0.5 rounded text-xs">
+                            {selectedClassInfo?.schedule || 'CN | 9:00 - 10:30'}
+                          </span>
+                          <span>•</span>
+                          <span className="font-medium">{classStudents.length} đoàn viên</span>
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          Giáo lý viên hoặc Admin tích chọn trạng thái chuyên cần cho đoàn viên.
+                        </p>
+                      </div>
                     </div>
                     <div className="flex gap-2">
                       {isAttending ? (
@@ -627,13 +632,22 @@ export default function Attendance() {
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <div>
-                      <CardTitle className="flex items-center gap-2">
-                        <Church className="h-5 w-5" />
+                      <CardTitle className="flex items-center gap-2 text-xl font-bold">
+                        <Church className="h-5 w-5 text-primary" />
                         {selectedClassInfo?.name} - Tham dự Thánh lễ
                       </CardTitle>
-                      <CardDescription>
-                        Chủ nhật • {classStudents.length} học viên
-                      </CardDescription>
+                      <div className="mt-2 flex flex-col gap-1.5">
+                        <div className="flex items-center flex-wrap gap-2 text-sm text-muted-foreground">
+                          <span className="font-semibold text-foreground bg-primary/10 px-2 py-0.5 rounded text-xs">
+                            Chủ nhật
+                          </span>
+                          <span>•</span>
+                          <span className="font-medium">{classStudents.length} đoàn viên</span>
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          Ghi nhận việc tham dự Thánh lễ Chúa nhật của đoàn viên.
+                        </p>
+                      </div>
                     </div>
                     <div className="flex gap-2">
                       {isMassRecording ? (
