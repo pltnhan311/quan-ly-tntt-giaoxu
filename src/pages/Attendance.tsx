@@ -577,7 +577,7 @@ export default function Attendance() {
                         <TableHead className="w-[50px]">STT</TableHead>
                         <TableHead>Họ và tên</TableHead>
                         <TableHead className="text-center">Trạng thái</TableHead>
-                        {isAttending && <TableHead>Ghi chú</TableHead>}
+                        <TableHead>Ghi chú</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -654,16 +654,18 @@ export default function Attendance() {
                                 </div>
                               )}
                             </TableCell>
-                            {isAttending && (
-                              <TableCell>
+                            <TableCell>
+                              {isAttending ? (
                                 <Textarea
                                   placeholder="Ghi chú..."
                                   className="min-h-[36px] resize-none"
                                   value={currentRecord.note}
                                   onChange={(e) => handleNoteChange(student.id, e.target.value)}
                                 />
-                              </TableCell>
-                            )}
+                              ) : (
+                                <span className="text-sm text-muted-foreground">{currentRecord.note || '-'}</span>
+                              )}
+                            </TableCell>
                           </TableRow>
                         );
                       })}
@@ -672,68 +674,7 @@ export default function Attendance() {
                 </CardContent>
               </Card>
 
-              {/* Attendance History */}
-              {savedAttendanceRecords && savedAttendanceRecords.length > 0 && (
-                <Card variant="elevated">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <History className="h-5 w-5" />
-                      Lịch sử điểm danh đã lưu
-                    </CardTitle>
-                    <CardDescription>
-                      Tất cả các bản ghi điểm danh đã được lưu cho ngày {format(new Date(selectedDate), 'dd/MM/yyyy', { locale: vi })}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>STT</TableHead>
-                          <TableHead>Họ và tên</TableHead>
-                          <TableHead>Trạng thái</TableHead>
-                          <TableHead>Ghi chú</TableHead>
-                          <TableHead>Thời gian</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {savedAttendanceRecords.map((record, index) => {
-                          const student = classStudents.find(s => s.id === record.student_id);
-                          const isSelfCheckIn = student?.user_id === record.recorded_by;
-                          return (
-                            <TableRow key={record.id}>
-                              <TableCell>{index + 1}</TableCell>
-                              <TableCell className="font-medium">
-                                {student?.name || '-'}
-                              </TableCell>
-                              <TableCell>
-                                <div className="flex items-center gap-2">
-                                  {getStatusBadge(record.status as AttendanceStatus)}
-                                  {record.note === 'GLV' && (
-                                    <Badge className="bg-yellow-500/20 text-yellow-700 dark:text-yellow-400 border-yellow-500/50">
-                                      GLV
-                                    </Badge>
-                                  )}
-                                </div>
-                              </TableCell>
-                              <TableCell className="text-sm text-muted-foreground">
-                                {record.note || '-'}
-                              </TableCell>
-                              <TableCell className="text-sm text-muted-foreground">
-                                {format(new Date(record.created_at), 'HH:mm:ss', { locale: vi })}
-                                {isSelfCheckIn && (
-                                  <Badge variant="secondary" className="ml-2 text-xs">
-                                    Tự điểm danh
-                                  </Badge>
-                                )}
-                              </TableCell>
-                            </TableRow>
-                          );
-                        })}
-                      </TableBody>
-                    </Table>
-                  </CardContent>
-                </Card>
-              )}
+              
             </TabsContent>
 
             {/* Mass Attendance Tab */}
@@ -821,8 +762,18 @@ export default function Attendance() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {(isMassRecording ? massRecords : classStudents.map(s => ({ studentId: s.id, studentName: s.name, attended: true }))).map((record, index) => {
-                        const student = classStudents.find(s => s.id === record.studentId);
+                      {(isMassRecording 
+                        ? massRecords 
+                        : classStudents.map(s => {
+                            const saved = savedMassRecords?.find(r => r.student_id === s.id);
+                            return {
+                              studentId: s.id,
+                              studentName: s.name,
+                              attended: saved ? saved.attended : false,
+                              hasRecord: !!saved
+                            };
+                          })
+                      ).map((record, index) => {
                         return (
                           <TableRow key={record.studentId}>
                             <TableCell>{index + 1}</TableCell>
@@ -834,6 +785,12 @@ export default function Attendance() {
                                     checked={record.attended}
                                     onCheckedChange={() => handleMassToggle(record.studentId)}
                                   />
+                                ) : (record as any).hasRecord ? (
+                                  record.attended ? (
+                                    <Badge className="bg-green-500 text-white">Có tham dự</Badge>
+                                  ) : (
+                                    <Badge variant="destructive">Không tham dự</Badge>
+                                  )
                                 ) : (
                                   <Badge variant="outline">Chưa ghi nhận</Badge>
                                 )}
