@@ -11,6 +11,16 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import {
   Table,
   TableBody,
   TableCell,
@@ -24,7 +34,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { useClasses } from '@/hooks/useClasses';
 import { useStudents } from '@/hooks/useStudents';
 import { supabase } from '@/integrations/supabase/client';
-import { Calendar, CheckCircle2, XCircle, Clock, AlertCircle, Save, Users, Church, Loader2, Database, Download, History, QrCode } from 'lucide-react';
+import { Calendar, CheckCircle2, XCircle, Clock, AlertCircle, Save, Users, Church, Loader2, Database, Download, History, QrCode, Pencil } from 'lucide-react';
 import { toast } from 'sonner';
 import { ExportAttendanceDialog } from '@/components/attendance/ExportAttendanceDialog';
 import { AttendanceSessionManager } from '@/components/attendance/AttendanceSessionManager';
@@ -48,19 +58,92 @@ interface MassRecord {
   attended: boolean;
 }
 
+function getClosestSunday(date: Date): Date {
+  const result = new Date(date);
+  const day = result.getDay();
+  if (day !== 0) {
+    result.setDate(result.getDate() - day);
+  }
+  return result;
+}
+
+function getSundaysInMonth(year: number, month: number): Date[] {
+  const sundays: Date[] = [];
+  const date = new Date(year, month, 1);
+  while (date.getDay() !== 0) {
+    date.setDate(date.getDate() + 1);
+  }
+  while (date.getMonth() === month) {
+    sundays.push(new Date(date));
+    date.setDate(date.getDate() + 7);
+  }
+  return sundays;
+}
+
+function formatDateToYYYYMMDD(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 export default function Attendance() {
   const { user } = useAuth();
   const { data: classes, isLoading: classesLoading } = useClasses();
   const [selectedClass, setSelectedClass] = useState<string>('');
-  const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
+  
+  const defaultSunday = getClosestSunday(new Date());
+  const currentYear = defaultSunday.getFullYear();
+  const [selectedMonth, setSelectedMonth] = useState<number>(defaultSunday.getMonth());
+  const [selectedYear, setSelectedYear] = useState<number>(defaultSunday.getFullYear());
+  const [selectedDate, setSelectedDate] = useState<string>(formatDateToYYYYMMDD(defaultSunday));
+  
   const [isAttending, setIsAttending] = useState(false);
   const [isMassRecording, setIsMassRecording] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [showEditConfirm, setShowEditConfirm] = useState(false);
+  const [showMassEditConfirm, setShowMassEditConfirm] = useState(false);
 
   const { data: students, isLoading: studentsLoading } = useStudents(selectedClass || undefined);
 
   const classStudents = students || [];
   const selectedClassInfo = classes?.find(c => c.id === selectedClass);
+
+  const years = [currentYear - 1, currentYear, currentYear + 1];
+  const months = [
+    { value: 0, label: 'Tháng 1' },
+    { value: 1, label: 'Tháng 2' },
+    { value: 2, label: 'Tháng 3' },
+    { value: 3, label: 'Tháng 4' },
+    { value: 4, label: 'Tháng 5' },
+    { value: 5, label: 'Tháng 6' },
+    { value: 6, label: 'Tháng 7' },
+    { value: 7, label: 'Tháng 8' },
+    { value: 8, label: 'Tháng 9' },
+    { value: 9, label: 'Tháng 10' },
+    { value: 10, label: 'Tháng 11' },
+    { value: 11, label: 'Tháng 12' },
+  ];
+
+  const handleMonthChange = (monthVal: string) => {
+    const month = parseInt(monthVal);
+    setSelectedMonth(month);
+    const newSundays = getSundaysInMonth(selectedYear, month);
+    if (newSundays.length > 0) {
+      setSelectedDate(formatDateToYYYYMMDD(newSundays[0]));
+    }
+  };
+
+  const handleYearChange = (yearVal: string) => {
+    const year = parseInt(yearVal);
+    setSelectedYear(year);
+    const newSundays = getSundaysInMonth(year, selectedMonth);
+    if (newSundays.length > 0) {
+      setSelectedDate(formatDateToYYYYMMDD(newSundays[0]));
+    }
+  };
+
+  const sundays = getSundaysInMonth(selectedYear, selectedMonth);
 
   const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>([]);
   const [massRecords, setMassRecords] = useState<MassRecord[]>([]);
@@ -112,12 +195,15 @@ export default function Attendance() {
   const startAttendance = () => {
     if (!classStudents.length) return;
     setAttendanceRecords(
-      classStudents.map(s => ({
-        studentId: s.id,
-        studentName: s.name,
-        status: 'present' as AttendanceStatus,
-        note: ''
-      }))
+      classStudents.map(s => {
+        const saved = savedAttendanceRecords?.find(r => r.student_id === s.id);
+        return {
+          studentId: s.id,
+          studentName: s.name,
+          status: (saved?.status as AttendanceStatus) || 'present',
+          note: saved?.note || ''
+        };
+      })
     );
     setIsAttending(true);
   };
@@ -125,11 +211,14 @@ export default function Attendance() {
   const startMassRecording = () => {
     if (!classStudents.length) return;
     setMassRecords(
-      classStudents.map(s => ({
-        studentId: s.id,
-        studentName: s.name,
-        attended: true
-      }))
+      classStudents.map(s => {
+        const saved = savedMassRecords?.find(r => r.student_id === s.id);
+        return {
+          studentId: s.id,
+          studentName: s.name,
+          attended: saved ? saved.attended : true
+        };
+      })
     );
     setIsMassRecording(true);
   };
@@ -303,14 +392,53 @@ export default function Attendance() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="space-y-2 flex-1 max-w-xs">
-                  <label className="text-sm font-medium">Ngày</label>
-                  <input
-                    type="date"
-                    value={selectedDate}
-                    onChange={(e) => setSelectedDate(e.target.value)}
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                  />
+                <div className="space-y-2 flex-1 max-w-[100px]">
+                  <label className="text-sm font-medium">Năm</label>
+                  <Select value={String(selectedYear)} onValueChange={handleYearChange}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Năm" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {years.map(y => (
+                        <SelectItem key={y} value={String(y)}>
+                          {y}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2 flex-1 max-w-[130px]">
+                  <label className="text-sm font-medium">Tháng</label>
+                  <Select value={String(selectedMonth)} onValueChange={handleMonthChange}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Tháng" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {months.map(m => (
+                        <SelectItem key={m.value} value={String(m.value)}>
+                          {m.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2 flex-1 max-w-[150px]">
+                  <label className="text-sm font-medium">Ngày (Chủ nhật)</label>
+                  <Select value={selectedDate} onValueChange={setSelectedDate}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Chọn ngày" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {sundays.map(sunday => {
+                        const dateStr = formatDateToYYYYMMDD(sunday);
+                        return (
+                          <SelectItem key={dateStr} value={dateStr}>
+                            {format(sunday, 'dd/MM/yyyy')}
+                          </SelectItem>
+                        );
+                      })}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
               <Button variant="outline" onClick={() => setIsExportDialogOpen(true)}>
@@ -428,6 +556,11 @@ export default function Attendance() {
                             Lưu
                           </Button>
                         </>
+                      ) : savedAttendanceRecords && savedAttendanceRecords.length > 0 ? (
+                        <Button variant="outline" className="border-primary text-primary hover:bg-primary/5" onClick={() => setShowEditConfirm(true)}>
+                          <Pencil className="mr-2 h-4 w-4" />
+                          Chỉnh sửa điểm danh
+                        </Button>
                       ) : (
                         <Button variant="gold" onClick={startAttendance}>
                           <Calendar className="mr-2 h-4 w-4" />
@@ -664,6 +797,11 @@ export default function Attendance() {
                             Lưu
                           </Button>
                         </>
+                      ) : savedMassRecords && savedMassRecords.length > 0 ? (
+                        <Button variant="outline" className="border-primary text-primary hover:bg-primary/5" onClick={() => setShowMassEditConfirm(true)}>
+                          <Pencil className="mr-2 h-4 w-4" />
+                          Chỉnh sửa ghi nhận
+                        </Button>
                       ) : (
                         <Button variant="gold" onClick={startMassRecording}>
                           <Church className="mr-2 h-4 w-4" />
@@ -711,6 +849,53 @@ export default function Attendance() {
             </TabsContent>
           </Tabs>
         )}
+        {/* Catechism Edit Confirmation Dialog */}
+        <AlertDialog open={showEditConfirm} onOpenChange={setShowEditConfirm}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Xác nhận chỉnh sửa điểm danh</AlertDialogTitle>
+              <AlertDialogDescription>
+                Dữ liệu điểm danh Giáo lý cho ngày {format(new Date(selectedDate), 'dd/MM/yyyy')} đã được lưu. Bạn có chắc chắn muốn chỉnh sửa kết quả này không?
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Hủy</AlertDialogCancel>
+              <AlertDialogAction
+                className="bg-primary text-primary-foreground hover:bg-primary/90"
+                onClick={() => {
+                  setShowEditConfirm(false);
+                  startAttendance();
+                }}
+              >
+                Chỉnh sửa
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        {/* Mass Edit Confirmation Dialog */}
+        <AlertDialog open={showMassEditConfirm} onOpenChange={setShowMassEditConfirm}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Xác nhận chỉnh sửa tham dự Thánh lễ</AlertDialogTitle>
+              <AlertDialogDescription>
+                Dữ liệu tham dự Thánh lễ cho ngày {format(new Date(selectedDate), 'dd/MM/yyyy')} đã được lưu. Bạn có chắc chắn muốn chỉnh sửa kết quả này không?
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Hủy</AlertDialogCancel>
+              <AlertDialogAction
+                className="bg-primary text-primary-foreground hover:bg-primary/90"
+                onClick={() => {
+                  setShowMassEditConfirm(false);
+                  startMassRecording();
+                }}
+              >
+                Chỉnh sửa
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </MainLayout>
   );
