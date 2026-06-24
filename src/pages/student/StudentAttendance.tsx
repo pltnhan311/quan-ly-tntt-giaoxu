@@ -142,8 +142,8 @@ export default function StudentAttendance() {
   // Calculate stats
   const stats = {
     total: attendanceRecords?.length || 0,
-    present: attendanceRecords?.filter(r => r.status === 'present').length || 0,
-    late: attendanceRecords?.filter(r => r.status === 'late').length || 0,
+    present: attendanceRecords?.filter(r => r.status === 'present' || r.status === 'late').length || 0,
+    excused: attendanceRecords?.filter(r => r.status === 'excused').length || 0,
     absent: attendanceRecords?.filter(r => r.status === 'absent').length || 0,
   };
 
@@ -200,14 +200,14 @@ export default function StudentAttendance() {
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
-              <p className="text-2xl font-bold text-yellow-500">{stats.late}</p>
-              <p className="text-xs text-muted-foreground">Đi trễ</p>
+              <p className="text-2xl font-bold text-destructive">{stats.absent}</p>
+              <p className="text-xs text-muted-foreground">Vắng</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
-              <p className="text-2xl font-bold text-destructive">{stats.absent}</p>
-              <p className="text-xs text-muted-foreground">Vắng</p>
+              <p className="text-2xl font-bold text-muted-foreground">{stats.excused}</p>
+              <p className="text-xs text-muted-foreground">Có phép</p>
             </CardContent>
           </Card>
         </div>

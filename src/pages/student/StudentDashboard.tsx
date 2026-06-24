@@ -86,15 +86,16 @@ export default function StudentDashboard() {
       if (error) throw error;
 
       const total = data?.length || 0;
-      const present = data?.filter(r => r.status === 'present').length || 0;
-      const late = data?.filter(r => r.status === 'late').length || 0;
+      const present = data?.filter(r => r.status === 'present' || r.status === 'late').length || 0;
+      const excused = data?.filter(r => r.status === 'excused').length || 0;
+      const absent = data?.filter(r => r.status === 'absent').length || 0;
       
       return {
         total,
         present,
-        late,
-        absent: total - present - late,
-        rate: total > 0 ? Math.round(((present + late) / total) * 100) : 0,
+        excused,
+        absent,
+        rate: total > 0 ? Math.round((present / total) * 100) : 0,
       };
     },
     enabled: !!student?.id,
@@ -232,16 +233,16 @@ export default function StudentDashboard() {
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
-              <ClipboardCheck className="h-8 w-8 mx-auto text-yellow-500 mb-2" />
-              <p className="text-2xl font-bold">{attendanceStats?.late || 0}</p>
-              <p className="text-xs text-muted-foreground">Đi trễ</p>
+              <ClipboardCheck className="h-8 w-8 mx-auto text-destructive mb-2" />
+              <p className="text-2xl font-bold">{attendanceStats?.absent || 0}</p>
+              <p className="text-xs text-muted-foreground">Vắng</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
-              <ClipboardCheck className="h-8 w-8 mx-auto text-destructive mb-2" />
-              <p className="text-2xl font-bold">{attendanceStats?.absent || 0}</p>
-              <p className="text-xs text-muted-foreground">Vắng</p>
+              <ClipboardCheck className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
+              <p className="text-2xl font-bold">{attendanceStats?.excused || 0}</p>
+              <p className="text-xs text-muted-foreground">Có phép</p>
             </CardContent>
           </Card>
         </div>

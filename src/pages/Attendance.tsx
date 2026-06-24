@@ -361,7 +361,7 @@ export default function Attendance() {
             {/* Catechism Attendance Tab */}
             <TabsContent value="catechism" className="space-y-6">
               {isAttending && (
-                <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <Card className="border-success/20 bg-success/5">
                     <CardContent className="flex items-center gap-3 p-4">
                       <CheckCircle2 className="h-8 w-8 text-success" />
@@ -377,15 +377,6 @@ export default function Attendance() {
                       <div>
                         <p className="text-2xl font-bold text-foreground">{stats.absent}</p>
                         <p className="text-sm text-muted-foreground">Vắng</p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                  <Card className="border-warning/20 bg-warning/5">
-                    <CardContent className="flex items-center gap-3 p-4">
-                      <Clock className="h-8 w-8 text-warning" />
-                      <div>
-                        <p className="text-2xl font-bold text-foreground">{stats.late}</p>
-                        <p className="text-sm text-muted-foreground">Trễ</p>
                       </div>
                     </CardContent>
                   </Card>
@@ -489,6 +480,7 @@ export default function Attendance() {
                                     size="sm"
                                     variant={currentRecord.status === 'present' ? 'success' : 'outline'}
                                     onClick={() => handleStatusChange(student.id, 'present')}
+                                    title="Có mặt"
                                   >
                                     <CheckCircle2 className="h-4 w-4" />
                                   </Button>
@@ -496,20 +488,15 @@ export default function Attendance() {
                                     size="sm"
                                     variant={currentRecord.status === 'absent' ? 'destructive' : 'outline'}
                                     onClick={() => handleStatusChange(student.id, 'absent')}
+                                    title="Vắng"
                                   >
                                     <XCircle className="h-4 w-4" />
                                   </Button>
                                   <Button
                                     size="sm"
-                                    variant={currentRecord.status === 'late' ? 'gold' : 'outline'}
-                                    onClick={() => handleStatusChange(student.id, 'late')}
-                                  >
-                                    <Clock className="h-4 w-4" />
-                                  </Button>
-                                  <Button
-                                    size="sm"
                                     variant={currentRecord.status === 'excused' ? 'secondary' : 'outline'}
                                     onClick={() => handleStatusChange(student.id, 'excused')}
+                                    title="Có phép"
                                   >
                                     <AlertCircle className="h-4 w-4" />
                                   </Button>

@@ -92,17 +92,18 @@ export default function Reports() {
   const attendanceReport = classStudents.map(student => {
     const studentRecords = (attendanceRecords || []).filter(r => r.student_id === student.id);
     const totalSessions = studentRecords.length;
-    const presentCount = studentRecords.filter(r => r.status === 'present').length;
-    const lateCount = studentRecords.filter(r => r.status === 'late').length;
+    const presentCount = studentRecords.filter(r => r.status === 'present' || r.status === 'late').length;
     const absentCount = studentRecords.filter(r => r.status === 'absent').length;
+    const excusedCount = studentRecords.filter(r => r.status === 'excused').length;
     
     return {
       studentId: student.id,
       name: student.name,
       totalSessions,
-      presentCount: presentCount + lateCount,
+      presentCount,
       absentCount,
-      attendanceRate: totalSessions > 0 ? Math.round(((presentCount + lateCount) / totalSessions) * 100) : 0
+      excusedCount,
+      attendanceRate: totalSessions > 0 ? Math.round((presentCount / totalSessions) * 100) : 0
     };
   });
 
@@ -292,6 +293,7 @@ export default function Reports() {
                             <TableHead className="text-center">Tổng buổi</TableHead>
                             <TableHead className="text-center">Có mặt</TableHead>
                             <TableHead className="text-center">Vắng</TableHead>
+                            <TableHead className="text-center">Có phép</TableHead>
                             <TableHead className="text-center">Tỷ lệ</TableHead>
                           </TableRow>
                         </TableHeader>
@@ -303,6 +305,7 @@ export default function Reports() {
                               <TableCell className="text-center">{row.totalSessions}</TableCell>
                               <TableCell className="text-center text-success">{row.presentCount}</TableCell>
                               <TableCell className="text-center text-destructive">{row.absentCount}</TableCell>
+                              <TableCell className="text-center text-muted-foreground">{row.excusedCount}</TableCell>
                               <TableCell className="text-center">
                                 {row.totalSessions > 0 ? getAttendanceBadge(row.attendanceRate) : '-'}
                               </TableCell>

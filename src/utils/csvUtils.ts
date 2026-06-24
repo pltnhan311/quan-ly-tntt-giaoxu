@@ -186,7 +186,7 @@ export function generateAttendanceReportCSV(
       const attendRecord = attendanceRecords.find(
         r => r.student_id === student.id && r.date === sundayStr
       );
-      row.push(attendRecord ? (attendRecord.status === 'present' || attendRecord.status === 'late' ? 'x' : '') : '');
+      row.push(attendRecord ? (attendRecord.status === 'present' || attendRecord.status === 'late' ? 'x' : attendRecord.status === 'excused' ? 'p' : '') : '');
     });
     
     return row;

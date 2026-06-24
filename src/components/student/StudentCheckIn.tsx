@@ -234,7 +234,7 @@ export function StudentCheckIn({ studentId, classId }: StudentCheckInProps) {
             </div>
             {glvRecord && (
               <div className="ml-6 text-xs text-muted-foreground">
-                GLV đã ghi nhận: {glvRecord.status === 'present' ? 'Có mặt' : glvRecord.status === 'late' ? 'Đi trễ' : 'Vắng'}
+                GLV đã ghi nhận: {glvRecord.status === 'present' || glvRecord.status === 'late' ? 'Có mặt' : glvRecord.status === 'excused' ? 'Có phép' : 'Vắng'}
               </div>
             )}
           </div>
@@ -284,7 +284,7 @@ export function StudentCheckIn({ studentId, classId }: StudentCheckInProps) {
               {attendanceRecords?.map((record) => (
                 <div key={record.id} className="text-xs">
                   <span className="font-medium">Giáo lý:</span>{' '}
-                  {record.status === 'present' ? 'Có mặt' : record.status === 'late' ? 'Đi trễ' : 'Vắng'}
+                  {record.status === 'present' || record.status === 'late' ? 'Có mặt' : record.status === 'excused' ? 'Có phép' : 'Vắng'}
                   {record.note === 'GLV' && (
                     <span className="ml-2 inline-flex items-center rounded-full bg-yellow-500/20 px-2 py-0.5 text-xs font-medium text-yellow-700 dark:text-yellow-400">
                       GLV
