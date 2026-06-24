@@ -26,7 +26,7 @@ import {
 import { useClasses, useCreateClass, useUpdateClass, type ClassInfo } from '@/hooks/useClasses';
 import { useAcademicYears, useActiveAcademicYear } from '@/hooks/useAcademicYears';
 import { useBranches } from '@/hooks/useBranches';
-import { Plus, Users, Clock, UserCheck, ChevronRight, Loader2, Database, Pencil, GitBranch } from 'lucide-react';
+import { Plus, Users, UserCheck, ChevronRight, Loader2, Database, Pencil, GitBranch } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -553,7 +553,7 @@ export default function Classes() {
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-2 border-t pt-3">
+                      <div className="border-t pt-3">
                         <div className="flex items-center gap-2">
                           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
                             <Users className="h-4 w-4" />
@@ -561,15 +561,6 @@ export default function Classes() {
                           <div>
                             <p className="text-sm font-bold text-foreground">{cls.students?.[0]?.count || 0}</p>
                             <p className="text-[10px] text-muted-foreground leading-none">Đoàn viên</p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-accent/10 text-accent">
-                            <Clock className="h-4 w-4" />
-                          </div>
-                          <div>
-                            <p className="text-xs font-semibold text-foreground truncate max-w-[100px]">{cls.schedule || 'CN | 9:00 - 10:30'}</p>
-                            <p className="text-[10px] text-muted-foreground leading-none">Lịch học</p>
                           </div>
                         </div>
                       </div>
@@ -624,7 +615,7 @@ export default function Classes() {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      <div className="grid grid-cols-2 gap-4">
+                      <div>
                         <div className="flex items-center gap-3">
                           <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
                             <Users className="h-5 w-5 text-primary" />
@@ -632,15 +623,6 @@ export default function Classes() {
                           <div>
                             <p className="text-lg font-bold text-foreground">{cls.students?.[0]?.count || 0}</p>
                             <p className="text-xs text-muted-foreground">Đoàn viên</p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent/10">
-                            <Clock className="h-5 w-5 text-accent" />
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium text-foreground">{cls.schedule || 'CN | 9:00 - 10:30'}</p>
-                            <p className="text-xs text-muted-foreground">Lịch học</p>
                           </div>
                         </div>
                       </div>
