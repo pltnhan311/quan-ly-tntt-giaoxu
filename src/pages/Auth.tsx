@@ -247,7 +247,7 @@ export default function Auth() {
           </Card>
           
           <p className="mt-6 text-center text-sm text-muted-foreground">
-            © 2024 Giáo xứ Xóm Chiếu. Đoàn Thiếu Nhi Thánh Thể.
+            © 2026 Giáo xứ Xóm Chiếu. Đoàn Thiếu Nhi Thánh Thể.
           </p>
         </div>
       </div>

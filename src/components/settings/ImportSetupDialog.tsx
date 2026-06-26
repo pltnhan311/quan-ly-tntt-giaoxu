@@ -335,7 +335,7 @@ export function ImportSetupDialog({ open, onOpenChange, onSuccess }: ImportSetup
                 <Label htmlFor="year-name">Tên niên khóa *</Label>
                 <Input
                   id="year-name"
-                  placeholder="VD: Niên khóa 2024-2025"
+                  placeholder="VD: Niên khóa 2026-2027"
                   value={academicYearName}
                   onChange={(e) => setAcademicYearName(e.target.value)}
                 />
