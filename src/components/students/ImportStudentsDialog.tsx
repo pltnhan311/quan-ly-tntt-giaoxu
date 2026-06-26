@@ -24,7 +24,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Upload, FileText, AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
+import { Upload, FileText, AlertCircle, CheckCircle2, Loader2, Download } from 'lucide-react';
 import { parseCSV, parseStudentCSV, StudentImportData } from '@/utils/csvUtils';
 import { toast } from 'sonner';
 
@@ -46,6 +46,17 @@ export function ImportStudentsDialog({
   const [isImporting, setIsImporting] = useState(false);
   const [fileName, setFileName] = useState<string>('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const downloadStudentTemplate = () => {
+    const template = 'STT,Tên Thánh,Họ và Tên,Giới Tính,Ngày Sinh,Địa Chỉ,Lớp\n1,Giuse,Nguyễn Văn A,Nam,15/05/2012,123 Đường ABC,Khai Tâm 1\n2,Maria,Trần Thị B,Nữ,20/10/2012,456 Đường XYZ,Khai Tâm 1';
+    const blob = new Blob(['\ufeff' + template], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'mau_danh_sach_hoc_vien.csv';
+    link.click();
+    URL.revokeObjectURL(url);
+  };
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -138,7 +149,7 @@ export function ImportStudentsDialog({
 
         <div className="space-y-4 flex-1 overflow-hidden flex flex-col">
           {/* File upload */}
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center gap-2">
             <input
               ref={fileInputRef}
               type="file"
@@ -155,8 +166,16 @@ export function ImportStudentsDialog({
               <Upload className="mr-2 h-4 w-4" />
               Chọn file CSV
             </Button>
+            <Button
+              variant="ghost"
+              onClick={downloadStudentTemplate}
+              type="button"
+            >
+              <Download className="mr-2 h-4 w-4" />
+              Tải template mẫu
+            </Button>
             {fileName && (
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground flex-shrink-0">
                 <FileText className="h-4 w-4" />
                 {fileName}
               </div>
