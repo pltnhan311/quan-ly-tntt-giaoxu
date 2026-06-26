@@ -17,9 +17,9 @@ export default defineConfig(({ mode }) => ({
       registerType: "autoUpdate",
       includeAssets: ["favicon.ico", "apple-touch-icon.png", "mask-icon.svg"],
       manifest: {
-        name: "Quản Lý Giáo Lý - Ngành Hiệp Sĩ",
+        name: "Quản Lý Giáo Lý - TNTT Giáo xứ Xóm Chiếu",
         short_name: "Giáo Lý",
-        description: "Phần mềm quản lý lớp học Giáo lý cho Ngành Hiệp Sĩ - Giáo xứ Xóm Chiếu",
+        description: "Phần mềm quản lý lớp học Giáo lý cho Đoàn Thiếu Nhi Thánh Thể - Giáo xứ Xóm Chiếu",
         theme_color: "#1e3a5f",
         background_color: "#0f172a",
         display: "standalone",

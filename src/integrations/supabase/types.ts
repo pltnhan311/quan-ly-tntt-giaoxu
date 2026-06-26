@@ -501,7 +501,7 @@ export type Database = {
       app_role: "admin" | "truong_nganh" | "glv" | "student"
       attendance_status: "present" | "absent" | "late" | "excused"
       gender: "male" | "female"
-      score_type: "presentation" | "semester1" | "semester2"
+      score_type: "presentation" | "presentation2" | "semester1" | "semester2"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -632,7 +632,7 @@ export const Constants = {
       app_role: ["admin", "truong_nganh", "glv", "student"],
       attendance_status: ["present", "absent", "late", "excused"],
       gender: ["male", "female"],
-      score_type: ["presentation", "semester1", "semester2"],
+      score_type: ["presentation", "presentation2", "semester1", "semester2"],
     },
   },
 } as const

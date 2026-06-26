@@ -126,22 +126,31 @@ export default function Reports() {
   // Calculate score report
   const scoreReport = classStudents.map(student => {
     const studentScores = (scores || []).filter(s => s.student_id === student.id);
-    const presentationScore = studentScores.find(s => s.type === 'presentation');
-    const semester1Score = studentScores.find(s => s.type === 'semester1');
-    const semester2Score = studentScores.find(s => s.type === 'semester2');
+    const pres1 = studentScores.find(s => s.type === 'presentation')?.score ?? null;
+    const pres2 = studentScores.find(s => s.type === 'presentation2')?.score ?? null;
+    const sem1 = studentScores.find(s => s.type === 'semester1')?.score ?? null;
+    const sem2 = studentScores.find(s => s.type === 'semester2')?.score ?? null;
     
-    const scoreValues = [presentationScore?.score, semester1Score?.score, semester2Score?.score].filter(Boolean) as number[];
-    const average = scoreValues.length > 0 
-      ? scoreValues.reduce((a, b) => a + b, 0) / scoreValues.length 
-      : 0;
+    // HK1 Average
+    const valuesHK1 = [pres1, sem1].filter((v): v is number => v !== null);
+    const avgHK1 = valuesHK1.length > 0 ? valuesHK1.reduce((sum, v) => sum + v, 0) / valuesHK1.length : null;
+    
+    // HK2 Average
+    const valuesHK2 = [pres2, sem2].filter((v): v is number => v !== null);
+    const avgHK2 = valuesHK2.length > 0 ? valuesHK2.reduce((sum, v) => sum + v, 0) / valuesHK2.length : null;
+    
+    // Overall Average
+    const semesterAverages = [avgHK1, avgHK2].filter((v): v is number => v !== null);
+    const overallAvg = semesterAverages.length > 0 ? semesterAverages.reduce((sum, v) => sum + v, 0) / semesterAverages.length : null;
     
     return {
       studentId: student.id,
       name: student.name,
-      presentation: presentationScore?.score ?? null,
-      semester1: semester1Score?.score ?? null,
-      semester2: semester2Score?.score ?? null,
-      average: Number(average.toFixed(1))
+      presentation: pres1,
+      presentation2: pres2,
+      semester1: sem1,
+      semester2: sem2,
+      average: overallAvg !== null ? Number(overallAvg.toFixed(1)) : null
     };
   });
 
@@ -171,8 +180,9 @@ export default function Reports() {
   const avgMassAttendance = massAttendanceReport.length > 0
     ? Math.round(massAttendanceReport.reduce((sum, r) => sum + r.attendanceRate, 0) / massAttendanceReport.length)
     : 0;
-  const avgScore = scoreReport.length > 0
-    ? (scoreReport.reduce((sum, r) => sum + r.average, 0) / scoreReport.length).toFixed(1)
+  const validReportScores = scoreReport.filter((r): r is typeof r & { average: number } => r.average !== null);
+  const avgScore = validReportScores.length > 0
+    ? (validReportScores.reduce((sum, r) => sum + r.average, 0) / validReportScores.length).toFixed(1)
     : '0';
 
   const isLoading = classesLoading || studentsLoading;
@@ -386,9 +396,10 @@ export default function Reports() {
                           <TableRow>
                             <TableHead className="w-[60px]">STT</TableHead>
                             <TableHead>Họ và tên</TableHead>
-                            <TableHead className="text-center">Thuyết trình</TableHead>
-                            <TableHead className="text-center">Học kỳ 1</TableHead>
-                            <TableHead className="text-center">Học kỳ 2</TableHead>
+                            <TableHead className="text-center">Thuyết trình HK1</TableHead>
+                            <TableHead className="text-center">Thi HK1</TableHead>
+                            <TableHead className="text-center">Thuyết trình HK2</TableHead>
+                            <TableHead className="text-center">Thi HK2</TableHead>
                             <TableHead className="text-center">ĐTB</TableHead>
                             <TableHead className="text-center">Xếp loại</TableHead>
                           </TableRow>
@@ -400,10 +411,11 @@ export default function Reports() {
                               <TableCell className="font-medium">{row.name}</TableCell>
                               <TableCell className="text-center">{getScoreBadge(row.presentation)}</TableCell>
                               <TableCell className="text-center">{getScoreBadge(row.semester1)}</TableCell>
+                              <TableCell className="text-center">{getScoreBadge(row.presentation2)}</TableCell>
                               <TableCell className="text-center">{getScoreBadge(row.semester2)}</TableCell>
-                              <TableCell className="text-center">{row.average > 0 ? getScoreBadge(row.average) : '-'}</TableCell>
+                              <TableCell className="text-center">{row.average !== null ? getScoreBadge(row.average) : '-'}</TableCell>
                               <TableCell className="text-center">
-                                {row.average > 0 ? (
+                                {row.average !== null ? (
                                   <Badge variant={row.average >= 8 ? 'success' : row.average >= 6.5 ? 'gold' : 'secondary'}>
                                     {row.average >= 8 ? 'Giỏi' : row.average >= 6.5 ? 'Khá' : 'TB'}
                                   </Badge>

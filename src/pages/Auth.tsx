@@ -102,7 +102,7 @@ export default function Auth() {
             Quản Lý Giáo Lý
           </h1>
           <p className="text-xl text-primary-foreground/80 mb-2">
-            Ngành Hiệp Sĩ
+            Đoàn Thiếu Nhi Thánh Thể
           </p>
           <p className="text-primary-foreground/60">
             Giáo xứ Xóm Chiếu
@@ -247,7 +247,7 @@ export default function Auth() {
           </Card>
           
           <p className="mt-6 text-center text-sm text-muted-foreground">
-            © 2024 Giáo xứ Xóm Chiếu. Ngành Hiệp Sĩ.
+            © 2024 Giáo xứ Xóm Chiếu. Đoàn Thiếu Nhi Thánh Thể.
           </p>
         </div>
       </div>

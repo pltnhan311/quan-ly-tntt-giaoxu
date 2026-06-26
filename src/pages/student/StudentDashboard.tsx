@@ -262,8 +262,9 @@ export default function StudentDashboard() {
                   <div key={score.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
                     <div>
                       <p className="font-medium">
-                        {score.type === 'presentation' ? 'Trình bày' : 
-                         score.type === 'semester1' ? 'Học kỳ 1' : 'Học kỳ 2'}
+                        {score.type === 'presentation' ? 'Thuyết trình HK1' : 
+                         score.type === 'presentation2' ? 'Thuyết trình HK2' : 
+                         score.type === 'semester1' ? 'Thi HK1' : 'Thi HK2'}
                       </p>
                       <p className="text-xs text-muted-foreground">
                         {format(new Date(score.date), 'dd/MM/yyyy', { locale: vi })}

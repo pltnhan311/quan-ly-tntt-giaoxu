@@ -116,7 +116,7 @@ export interface Score {
   studentId: string;
   studentName: string;
   classId: string;
-  type: 'presentation' | 'semester1' | 'semester2';
+  type: 'presentation' | 'presentation2' | 'semester1' | 'semester2';
   score: number;
   maxScore: number;
   date: string;

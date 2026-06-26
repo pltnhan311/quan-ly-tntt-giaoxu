@@ -70,7 +70,7 @@ export default function Install() {
           </div>
           <div>
             <h1 className="text-2xl font-bold text-foreground">Quản Lý Giáo Lý</h1>
-            <p className="text-muted-foreground">Ngành Hiệp Sĩ - Giáo xứ Xóm Chiếu</p>
+            <p className="text-muted-foreground">Đoàn Thiếu Nhi Thánh Thể - Giáo xứ Xóm Chiếu</p>
           </div>
         </div>
 

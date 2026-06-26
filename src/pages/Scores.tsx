@@ -21,6 +21,9 @@ import {
 } from '@/components/ui/table';
 import { useClasses } from '@/hooks/useClasses';
 import { useStudents } from '@/hooks/useStudents';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 import { Star, Save, TrendingUp, Award, BookOpen, Loader2, Database, Users } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -28,20 +31,43 @@ interface ScoreEntry {
   studentId: string;
   studentName: string;
   presentation: number | null;
+  presentation2: number | null;
   semester1: number | null;
   semester2: number | null;
 }
 
 export default function Scores() {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
   const { data: classes, isLoading: classesLoading } = useClasses();
   const [selectedClass, setSelectedClass] = useState<string>('');
-  const [scoreType, setScoreType] = useState<'presentation' | 'semester1' | 'semester2'>('presentation');
+  const [scoreType, setScoreType] = useState<'presentation' | 'presentation2' | 'semester1' | 'semester2'>('presentation');
   const [isEditing, setIsEditing] = useState(false);
 
   const { data: students, isLoading: studentsLoading } = useStudents(selectedClass || undefined);
 
   const classStudents = students || [];
   const selectedClassInfo = classes?.find(c => c.id === selectedClass);
+
+  // Fetch scores for selected class
+  const { data: scoresData, isLoading: scoresLoading } = useQuery({
+    queryKey: ['scores', selectedClass],
+    queryFn: async () => {
+      if (!selectedClass) return [];
+      const { data, error } = await supabase
+        .from('scores')
+        .select('*')
+        .eq('class_id', selectedClass);
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!selectedClass,
+  });
+
+  const getStudentScore = (studentId: string, type: 'presentation' | 'presentation2' | 'semester1' | 'semester2') => {
+    const record = (scoresData || []).find(s => s.student_id === studentId && s.type === type);
+    return record?.score ?? null;
+  };
 
   const [scores, setScores] = useState<ScoreEntry[]>([]);
 
@@ -56,9 +82,10 @@ export default function Scores() {
       classStudents.map(s => ({
         studentId: s.id,
         studentName: s.name,
-        presentation: null,
-        semester1: null,
-        semester2: null,
+        presentation: getStudentScore(s.id, 'presentation'),
+        presentation2: getStudentScore(s.id, 'presentation2'),
+        semester1: getStudentScore(s.id, 'semester1'),
+        semester2: getStudentScore(s.id, 'semester2'),
       }))
     );
     setIsEditing(true);
@@ -80,19 +107,77 @@ export default function Scores() {
     );
   };
 
+  const saveMutation = useMutation({
+    mutationFn: async (updatedScores: ScoreEntry[]) => {
+      const payload = updatedScores.map(s => {
+        let val: number | null = null;
+        if (scoreType === 'presentation') val = s.presentation;
+        else if (scoreType === 'presentation2') val = s.presentation2;
+        else if (scoreType === 'semester1') val = s.semester1;
+        else if (scoreType === 'semester2') val = s.semester2;
+
+        return {
+          student_id: s.studentId,
+          class_id: selectedClass,
+          type: scoreType,
+          score: val,
+          graded_by: user?.id || null,
+        };
+      });
+
+      const toUpsert = payload.filter(p => p.score !== null) as {
+        student_id: string;
+        class_id: string;
+        type: 'presentation' | 'presentation2' | 'semester1' | 'semester2';
+        score: number;
+        graded_by: string | null;
+      }[];
+      const toDeleteStudentIds = payload.filter(p => p.score === null).map(p => p.student_id);
+
+      if (toDeleteStudentIds.length > 0) {
+        const { error: deleteError } = await supabase
+          .from('scores')
+          .delete()
+          .eq('class_id', selectedClass)
+          .eq('type', scoreType)
+          .in('student_id', toDeleteStudentIds);
+
+        if (deleteError) throw deleteError;
+      }
+
+      if (toUpsert.length > 0) {
+        const { error: upsertError } = await supabase
+          .from('scores')
+          .upsert(toUpsert, { onConflict: 'student_id,class_id,type' });
+
+        if (upsertError) throw upsertError;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['scores', selectedClass] });
+      toast.success('Lưu điểm thành công!');
+      setIsEditing(false);
+    },
+    onError: (error: any) => {
+      console.error('Error saving scores:', error);
+      toast.error('Không thể lưu điểm: ' + error.message);
+    }
+  });
+
   const handleSaveScores = () => {
-    toast.success('Lưu điểm thành công!');
-    setIsEditing(false);
+    saveMutation.mutate(scores);
   };
 
   const getScoreLabel = (type: typeof scoreType) => {
     switch (type) {
       case 'presentation':
-        return 'Thuyết trình';
+        return 'Thuyết trình HK1';
+      case 'presentation2':
+        return 'Thuyết trình HK2';
       case 'semester1':
-        return 'Học kỳ 1';
+        return 'Thi HK1';
       case 'semester2':
-        return 'Học kỳ 2';
+        return 'Thi HK2';
     }
   };
 
@@ -104,7 +189,71 @@ export default function Scores() {
     return <Badge variant="destructive">{score}</Badge>;
   };
 
-  const isLoading = classesLoading || studentsLoading;
+  const isLoading = classesLoading || (!!selectedClass && (studentsLoading || scoresLoading));
+
+  // Calculate summary stats
+  const allScores = scoresData || [];
+  const pres1Scores = allScores.filter(s => s.type === 'presentation').map(s => s.score);
+  const pres2Scores = allScores.filter(s => s.type === 'presentation2').map(s => s.score);
+  const allPresScores = [...pres1Scores, ...pres2Scores];
+  const avgPres = allPresScores.length > 0 ? (allPresScores.reduce((sum, s) => sum + s, 0) / allPresScores.length).toFixed(1) : '-';
+
+  const sem1Scores = allScores.filter(s => s.type === 'semester1').map(s => s.score);
+  const avgSem1 = sem1Scores.length > 0 ? (sem1Scores.reduce((sum, s) => sum + s, 0) / sem1Scores.length).toFixed(1) : '-';
+
+  const sem2Scores = allScores.filter(s => s.type === 'semester2').map(s => s.score);
+  const avgSem2 = sem2Scores.length > 0 ? (sem2Scores.reduce((sum, s) => sum + s, 0) / sem2Scores.length).toFixed(1) : '-';
+
+  // Format student scores for display
+  const displayScores = classStudents.map((s) => {
+    const pres = getStudentScore(s.id, 'presentation');
+    const pres2 = getStudentScore(s.id, 'presentation2');
+    const sem1 = getStudentScore(s.id, 'semester1');
+    const sem2 = getStudentScore(s.id, 'semester2');
+    
+    // HK1 Average
+    const valuesHK1 = [pres, sem1].filter((v): v is number => v !== null);
+    const avgHK1 = valuesHK1.length > 0 ? valuesHK1.reduce((sum, v) => sum + v, 0) / valuesHK1.length : null;
+    
+    // HK2 Average
+    const valuesHK2 = [pres2, sem2].filter((v): v is number => v !== null);
+    const avgHK2 = valuesHK2.length > 0 ? valuesHK2.reduce((sum, v) => sum + v, 0) / valuesHK2.length : null;
+    
+    // Overall Average
+    const semesterAverages = [avgHK1, avgHK2].filter((v): v is number => v !== null);
+    const overallAvg = semesterAverages.length > 0 ? semesterAverages.reduce((sum, v) => sum + v, 0) / semesterAverages.length : null;
+
+    return {
+      studentId: s.id,
+      studentName: s.name,
+      presentation: pres,
+      presentation2: pres2,
+      semester1: sem1,
+      semester2: sem2,
+      average: overallAvg !== null ? Number(overallAvg.toFixed(1)) : null,
+    };
+  });
+
+  const calculateStudentAvg = (studentId: string, entry: ScoreEntry) => {
+    const pres = entry.presentation;
+    const pres2 = entry.presentation2;
+    const sem1 = entry.semester1;
+    const sem2 = entry.semester2;
+    
+    // HK1 Average
+    const valuesHK1 = [pres, sem1].filter((v): v is number => v !== null);
+    const avgHK1 = valuesHK1.length > 0 ? valuesHK1.reduce((sum, v) => sum + v, 0) / valuesHK1.length : null;
+    
+    // HK2 Average
+    const valuesHK2 = [pres2, sem2].filter((v): v is number => v !== null);
+    const avgHK2 = valuesHK2.length > 0 ? valuesHK2.reduce((sum, v) => sum + v, 0) / valuesHK2.length : null;
+    
+    // Overall Average
+    const semesterAverages = [avgHK1, avgHK2].filter((v): v is number => v !== null);
+    const overallAvg = semesterAverages.length > 0 ? semesterAverages.reduce((sum, v) => sum + v, 0) / semesterAverages.length : null;
+
+    return overallAvg !== null ? Number(overallAvg.toFixed(1)) : null;
+  };
 
   return (
     <MainLayout 
@@ -121,7 +270,7 @@ export default function Scores() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">ĐTB Thuyết trình</p>
-                <p className="text-2xl font-bold">-</p>
+                <p className="text-2xl font-bold">{avgPres}</p>
               </div>
             </CardContent>
           </Card>
@@ -131,19 +280,19 @@ export default function Scores() {
                 <BookOpen className="h-6 w-6 text-primary" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">ĐTB Học kỳ 1</p>
-                <p className="text-2xl font-bold">-</p>
+                <p className="text-sm text-muted-foreground">ĐTB Thi HK1</p>
+                <p className="text-2xl font-bold">{avgSem1}</p>
               </div>
             </CardContent>
           </Card>
-          <Card variant="gold">
+          <Card variant="elevated">
             <CardContent className="flex items-center gap-4 p-6">
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-success/10">
                 <Award className="h-6 w-6 text-success" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Học viên giỏi</p>
-                <p className="text-2xl font-bold">-</p>
+                <p className="text-sm text-muted-foreground">ĐTB Thi HK2</p>
+                <p className="text-2xl font-bold">{avgSem2}</p>
               </div>
             </CardContent>
           </Card>
@@ -175,9 +324,10 @@ export default function Scores() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="presentation">Điểm thuyết trình</SelectItem>
-                    <SelectItem value="semester1">Điểm học kỳ 1</SelectItem>
-                    <SelectItem value="semester2">Điểm học kỳ 2</SelectItem>
+                    <SelectItem value="presentation">Thuyết trình HK1</SelectItem>
+                    <SelectItem value="semester1">Thi học kỳ 1</SelectItem>
+                    <SelectItem value="presentation2">Thuyết trình HK2</SelectItem>
+                    <SelectItem value="semester2">Thi học kỳ 2</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -186,12 +336,21 @@ export default function Scores() {
                   <Button 
                     variant={isEditing ? 'outline' : 'gold'}
                     onClick={() => isEditing ? setIsEditing(false) : startEditing()}
+                    disabled={saveMutation.isPending}
                   >
                     {isEditing ? 'Hủy' : 'Nhập điểm'}
                   </Button>
                   {isEditing && (
-                    <Button variant="success" onClick={handleSaveScores}>
-                      <Save className="mr-2 h-4 w-4" />
+                    <Button 
+                      variant="success" 
+                      onClick={handleSaveScores}
+                      disabled={saveMutation.isPending}
+                    >
+                      {saveMutation.isPending ? (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      ) : (
+                        <Save className="mr-2 h-4 w-4" />
+                      )}
                       Lưu điểm
                     </Button>
                   )}
@@ -243,67 +402,89 @@ export default function Scores() {
                   <TableRow>
                     <TableHead className="w-[50px]">STT</TableHead>
                     <TableHead>Họ và tên</TableHead>
-                    <TableHead className="text-center">Thuyết trình</TableHead>
-                    <TableHead className="text-center">HK1</TableHead>
-                    <TableHead className="text-center">HK2</TableHead>
+                    <TableHead className="text-center">Thuyết trình HK1</TableHead>
+                    <TableHead className="text-center">Thi HK1</TableHead>
+                    <TableHead className="text-center">Thuyết trình HK2</TableHead>
+                    <TableHead className="text-center">Thi HK2</TableHead>
                     <TableHead className="text-center">ĐTB</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {(isEditing ? scores : classStudents.map(s => ({ studentId: s.id, studentName: s.name, presentation: null, semester1: null, semester2: null }))).map((entry, index) => (
-                    <TableRow key={entry.studentId}>
-                      <TableCell>{index + 1}</TableCell>
-                      <TableCell className="font-medium">{entry.studentName}</TableCell>
-                      <TableCell className="text-center">
-                        {isEditing && scoreType === 'presentation' ? (
-                          <Input
-                            type="number"
-                            min="0"
-                            max="10"
-                            step="0.1"
-                            className="w-20 mx-auto text-center"
-                            value={entry.presentation ?? ''}
-                            onChange={(e) => handleScoreChange(entry.studentId, e.target.value)}
-                          />
-                        ) : (
-                          getScoreBadge(entry.presentation)
-                        )}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        {isEditing && scoreType === 'semester1' ? (
-                          <Input
-                            type="number"
-                            min="0"
-                            max="10"
-                            step="0.1"
-                            className="w-20 mx-auto text-center"
-                            value={entry.semester1 ?? ''}
-                            onChange={(e) => handleScoreChange(entry.studentId, e.target.value)}
-                          />
-                        ) : (
-                          getScoreBadge(entry.semester1)
-                        )}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        {isEditing && scoreType === 'semester2' ? (
-                          <Input
-                            type="number"
-                            min="0"
-                            max="10"
-                            step="0.1"
-                            className="w-20 mx-auto text-center"
-                            value={entry.semester2 ?? ''}
-                            onChange={(e) => handleScoreChange(entry.studentId, e.target.value)}
-                          />
-                        ) : (
-                          getScoreBadge(entry.semester2)
-                        )}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        {getScoreBadge(null)}
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                  {(isEditing ? scores : displayScores).map((entry, index) => {
+                    const rowAvg = isEditing 
+                      ? calculateStudentAvg(entry.studentId, entry)
+                      : entry.average;
+
+                    return (
+                      <TableRow key={entry.studentId}>
+                        <TableCell>{index + 1}</TableCell>
+                        <TableCell className="font-medium">{entry.studentName}</TableCell>
+                        <TableCell className="text-center">
+                          {isEditing && scoreType === 'presentation' ? (
+                            <Input
+                              type="number"
+                              min="0"
+                              max="10"
+                              step="0.1"
+                              className="w-20 mx-auto text-center"
+                              value={entry.presentation ?? ''}
+                              onChange={(e) => handleScoreChange(entry.studentId, e.target.value)}
+                            />
+                          ) : (
+                            getScoreBadge(entry.presentation)
+                          )}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {isEditing && scoreType === 'semester1' ? (
+                            <Input
+                              type="number"
+                              min="0"
+                              max="10"
+                              step="0.1"
+                              className="w-20 mx-auto text-center"
+                              value={entry.semester1 ?? ''}
+                              onChange={(e) => handleScoreChange(entry.studentId, e.target.value)}
+                            />
+                          ) : (
+                            getScoreBadge(entry.semester1)
+                          )}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {isEditing && scoreType === 'presentation2' ? (
+                            <Input
+                              type="number"
+                              min="0"
+                              max="10"
+                              step="0.1"
+                              className="w-20 mx-auto text-center"
+                              value={entry.presentation2 ?? ''}
+                              onChange={(e) => handleScoreChange(entry.studentId, e.target.value)}
+                            />
+                          ) : (
+                            getScoreBadge(entry.presentation2)
+                          )}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {isEditing && scoreType === 'semester2' ? (
+                            <Input
+                              type="number"
+                              min="0"
+                              max="10"
+                              step="0.1"
+                              className="w-20 mx-auto text-center"
+                              value={entry.semester2 ?? ''}
+                              onChange={(e) => handleScoreChange(entry.studentId, e.target.value)}
+                            />
+                          ) : (
+                            getScoreBadge(entry.semester2)
+                          )}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {getScoreBadge(rowAvg)}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
             </CardContent>

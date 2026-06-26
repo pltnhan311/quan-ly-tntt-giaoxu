@@ -46,11 +46,13 @@ export default function StudentScores() {
   const getScoreType = (type: string) => {
     switch (type) {
       case 'presentation':
-        return { label: 'Trình bày', color: 'bg-blue-500' };
+        return { label: 'Thuyết trình HK1', color: 'bg-blue-500' };
+      case 'presentation2':
+        return { label: 'Thuyết trình HK2', color: 'bg-indigo-500' };
       case 'semester1':
-        return { label: 'Học kỳ 1', color: 'bg-green-500' };
+        return { label: 'Thi HK1', color: 'bg-green-500' };
       case 'semester2':
-        return { label: 'Học kỳ 2', color: 'bg-purple-500' };
+        return { label: 'Thi HK2', color: 'bg-purple-500' };
       default:
         return { label: type, color: 'bg-gray-500' };
     }
@@ -64,19 +66,18 @@ export default function StudentScores() {
   };
 
   // Calculate averages
-  const presentationScores = scores?.filter(s => s.type === 'presentation') || [];
-  const semester1Scores = scores?.filter(s => s.type === 'semester1') || [];
-  const semester2Scores = scores?.filter(s => s.type === 'semester2') || [];
-
-  const calculateAverage = (scoreList: typeof scores) => {
-    if (!scoreList || scoreList.length === 0) return null;
-    const total = scoreList.reduce((sum, s) => sum + (s.score / s.max_score) * 10, 0);
-    return (total / scoreList.length).toFixed(1);
+  const getAverageForTypes = (types: string[]) => {
+    const filtered = scores?.filter(s => types.includes(s.type)) || [];
+    if (filtered.length === 0) return null;
+    const total = filtered.reduce((sum, s) => sum + (s.score / s.max_score) * 10, 0);
+    return (total / filtered.length).toFixed(1);
   };
 
-  const presentationAvg = calculateAverage(presentationScores);
-  const semester1Avg = calculateAverage(semester1Scores);
-  const semester2Avg = calculateAverage(semester2Scores);
+  const avgHK1 = getAverageForTypes(['presentation', 'semester1']);
+  const avgHK2 = getAverageForTypes(['presentation2', 'semester2']);
+  
+  const overallAverages = [avgHK1, avgHK2].map(Number).filter(Boolean);
+  const avgYear = overallAverages.length > 0 ? (overallAverages.reduce((sum, v) => sum + v, 0) / overallAverages.length).toFixed(1) : null;
 
   if (!student?.class_id) {
     return (
@@ -102,14 +103,14 @@ export default function StudentScores() {
           <Card>
             <CardContent className="p-6 text-center">
               <div className="flex items-center justify-center gap-2 mb-2">
-                <TrendingUp className="h-5 w-5 text-blue-500" />
-                <span className="text-sm font-medium">Trình bày</span>
+                <Star className="h-5 w-5 text-blue-500" />
+                <span className="text-sm font-medium">Điểm HK1 (ĐTB)</span>
               </div>
               <p className="text-3xl font-bold text-blue-500">
-                {presentationAvg || '-'}
+                {avgHK1 || '-'}
               </p>
               <p className="text-xs text-muted-foreground mt-1">
-                {presentationScores.length} điểm
+                Thuyết trình HK1 & Thi HK1
               </p>
             </CardContent>
           </Card>
@@ -117,27 +118,27 @@ export default function StudentScores() {
             <CardContent className="p-6 text-center">
               <div className="flex items-center justify-center gap-2 mb-2">
                 <Star className="h-5 w-5 text-green-500" />
-                <span className="text-sm font-medium">Học kỳ 1</span>
+                <span className="text-sm font-medium">Điểm HK2 (ĐTB)</span>
               </div>
               <p className="text-3xl font-bold text-green-500">
-                {semester1Avg || '-'}
+                {avgHK2 || '-'}
               </p>
               <p className="text-xs text-muted-foreground mt-1">
-                {semester1Scores.length} điểm
+                Thuyết trình HK2 & Thi HK2
               </p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-6 text-center">
               <div className="flex items-center justify-center gap-2 mb-2">
-                <Star className="h-5 w-5 text-purple-500" />
-                <span className="text-sm font-medium">Học kỳ 2</span>
+                <TrendingUp className="h-5 w-5 text-purple-500" />
+                <span className="text-sm font-medium">Điểm cả năm (ĐTB)</span>
               </div>
               <p className="text-3xl font-bold text-purple-500">
-                {semester2Avg || '-'}
+                {avgYear || '-'}
               </p>
               <p className="text-xs text-muted-foreground mt-1">
-                {semester2Scores.length} điểm
+                Trung bình của 2 học kỳ
               </p>
             </CardContent>
           </Card>
