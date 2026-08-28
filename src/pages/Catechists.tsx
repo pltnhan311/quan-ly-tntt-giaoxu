@@ -26,9 +26,10 @@ import {
 import { useCatechists, useCreateCatechist, useUpdateCatechist, useDeleteCatechist, Catechist } from '@/hooks/useCatechists';
 import { supabase } from '@/integrations/supabase/client';
 import { ImportCatechistsDialog, CatechistImportData } from '@/components/catechists/ImportCatechistsDialog';
-import { Plus, Search, Eye, Pencil, Trash2, Phone, Mail, GraduationCap, Loader2, Database, Upload } from 'lucide-react';
+import { Plus, Search, Eye, Pencil, Trash2, Phone, Mail, GraduationCap, Loader2, Database, Upload, Download } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
+import { downloadCSV, generateCatechistCSV } from '@/utils/csvUtils';
 
 export default function Catechists() {
   const { userRole } = useAuth();
@@ -59,6 +60,27 @@ export default function Catechists() {
     cat.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     cat.email?.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const handleExportCatechists = () => {
+    if (filteredCatechists.length === 0) {
+      toast.error('Không có giáo lý viên để xuất');
+      return;
+    }
+
+    const csvContent = generateCatechistCSV(filteredCatechists.map(catechist => ({
+      name: catechist.name,
+      baptism_name: catechist.baptism_name,
+      email: catechist.email,
+      phone: catechist.phone,
+      class_names: (catechist.class_catechists || [])
+        .map(classCatechist => classCatechist.classes?.name)
+        .filter(Boolean)
+        .join('; '),
+    })));
+
+    downloadCSV(csvContent, 'danh_sach_giao_ly_vien.csv');
+    toast.success(`Đã xuất ${filteredCatechists.length} giáo lý viên`);
+  };
 
   const handleCreateCatechist = async () => {
     if (!newCatechist.name || !newCatechist.email || !newCatechist.password) {
@@ -210,6 +232,10 @@ export default function Catechists() {
               
               {userRole === 'admin' && (
                 <div className="flex gap-2">
+                  <Button variant="outline" onClick={handleExportCatechists} disabled={filteredCatechists.length === 0}>
+                    <Download className="mr-2 h-4 w-4" />
+                    Xuất CSV
+                  </Button>
                   <Button variant="outline" onClick={() => setIsImportDialogOpen(true)}>
                     <Upload className="mr-2 h-4 w-4" />
                     Import từ CSV
@@ -319,6 +345,7 @@ export default function Catechists() {
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead className="w-[60px]">STT</TableHead>
                     <TableHead>Họ và tên</TableHead>
                     <TableHead>Tên Thánh</TableHead>
                     <TableHead>Email</TableHead>
@@ -334,6 +361,7 @@ export default function Catechists() {
                       className="animate-fade-in"
                       style={{ animationDelay: `${index * 50}ms` }}
                     >
+                      <TableCell>{index + 1}</TableCell>
                       <TableCell className="font-medium">{catechist.name}</TableCell>
                       <TableCell>{catechist.baptism_name || '-'}</TableCell>
                       <TableCell>{catechist.email || '-'}</TableCell>

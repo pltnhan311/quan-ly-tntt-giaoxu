@@ -110,6 +110,33 @@ export function generateStudentCSV(students: Array<{
   return [header, ...rows].join('\n');
 }
 
+// Generate CSV content for catechist export
+export function generateCatechistCSV(catechists: Array<{
+  name: string;
+  baptism_name: string | null;
+  email: string | null;
+  phone: string | null;
+  class_names: string;
+}>): string {
+  const header = 'STT,Họ và Tên,Tên Thánh,Email,Số điện thoại,Lớp phụ trách';
+  const rows = catechists.map((catechist, index) => [
+    index + 1,
+    catechist.name,
+    catechist.baptism_name || '',
+    catechist.email || '',
+    catechist.phone || '',
+    catechist.class_names,
+  ].map(cell => {
+    const str = String(cell);
+    if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+      return `"${str.replace(/"/g, '""')}"`;
+    }
+    return str;
+  }).join(','));
+
+  return [header, ...rows].join('\n');
+}
+
 // Get weeks in a month with their Sunday dates
 export function getWeeksInMonth(year: number, month: number): Date[] {
   const start = startOfMonth(new Date(year, month));

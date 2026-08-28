@@ -179,6 +179,7 @@ export function ImportCatechistsDialog({ open, onOpenChange, onImport, existingE
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead className="w-[60px]">STT</TableHead>
                     <TableHead>Họ và Tên</TableHead>
                     <TableHead>Email</TableHead>
                     <TableHead>Tên Thánh</TableHead>
@@ -189,6 +190,7 @@ export function ImportCatechistsDialog({ open, onOpenChange, onImport, existingE
                 <TableBody>
                   {previewData.slice(0, 50).map((catechist, index) => (
                     <TableRow key={`${catechist.email}-${index}`}>
+                      <TableCell>{index + 1}</TableCell>
                       <TableCell className="font-medium">{catechist.name}</TableCell>
                       <TableCell>{catechist.email}</TableCell>
                       <TableCell>{catechist.baptism_name || '-'}</TableCell>

@@ -141,6 +141,7 @@ export default function Users() {
                 <Table>
                   <TableHeader>
                     <TableRow>
+                      <TableHead className="w-[60px]">STT</TableHead>
                       <TableHead>Tên</TableHead>
                       <TableHead>Email</TableHead>
                       <TableHead>Số điện thoại</TableHead>
@@ -150,8 +151,9 @@ export default function Users() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredAndSortedUsers.map((user) => (
+                    {filteredAndSortedUsers.map((user, index) => (
                       <TableRow key={user.id}>
+                        <TableCell>{index + 1}</TableCell>
                         <TableCell className="font-medium">{user.name}</TableCell>
                         <TableCell>{user.email || "—"}</TableCell>
                         <TableCell>{user.phone || "—"}</TableCell>
