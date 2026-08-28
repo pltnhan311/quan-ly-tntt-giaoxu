@@ -36,12 +36,23 @@ import {
 import { toast } from 'sonner';
 
 const BRANCH_COLORS: Record<string, string> = {
-  'Chiên Con': 'bg-yellow-100 text-yellow-800 border-yellow-200',
-  'Ấu Nhi': 'bg-pink-100 text-pink-800 border-pink-200',
-  'Thiếu Nhi': 'bg-blue-100 text-blue-800 border-blue-200',
-  'Nghĩa Sĩ': 'bg-green-100 text-green-800 border-green-200',
-  'Hiệp Sĩ': 'bg-purple-100 text-purple-800 border-purple-200',
-  'Dự Trưởng': 'bg-orange-100 text-orange-800 border-orange-200',
+  'Chiên Con': 'bg-pink-100 text-pink-800 border-pink-200',
+  'Ấu Nhi': 'bg-green-100 text-green-800 border-green-200',
+  'Thiếu Nhi': 'bg-blue-200 text-blue-900 border-blue-300',
+  'Nghĩa Sĩ': 'bg-yellow-100 text-yellow-800 border-yellow-200',
+  'Hiệp Sĩ': 'bg-[#f3e5d8] text-[#8b5e3c] border-[#dfc2a5]',
+  'Dự Trưởng': 'bg-red-100 text-red-800 border-red-200',
+  'Huynh Trưởng': 'bg-red-100 text-red-800 border-yellow-400',
+};
+
+const BRANCH_ORDER: Record<string, number> = {
+  'Chiên Con': 1,
+  'Ấu Nhi': 2,
+  'Thiếu Nhi': 3,
+  'Nghĩa Sĩ': 4,
+  'Hiệp Sĩ': 5,
+  'Dự Trưởng': 6,
+  'Huynh Trưởng': 7,
 };
 
 export default function AcademicYears() {
@@ -296,7 +307,9 @@ export default function AcademicYears() {
                         </h4>
                         {expandedBranches ? (
                           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                            {expandedBranches.map((branch) => {
+                            {[...expandedBranches]
+                              .sort((a, b) => (BRANCH_ORDER[a.name] ?? Number.MAX_SAFE_INTEGER) - (BRANCH_ORDER[b.name] ?? Number.MAX_SAFE_INTEGER))
+                              .map((branch) => {
                               const colorClass = BRANCH_COLORS[branch.name] || 'bg-gray-100 text-gray-800 border-gray-200';
                               const branchClasses = (classes || []).filter(c => c.branch_id === branch.id);
                               return (
