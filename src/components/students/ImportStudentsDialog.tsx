@@ -9,13 +9,6 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
   Table,
   TableBody,
   TableCell,
@@ -31,24 +24,25 @@ import { toast } from 'sonner';
 interface ImportStudentsDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  classes: Array<{ id: string; name: string }>;
+  selectedClassId: string;
+  selectedClassName: string;
   onImport: (students: Array<StudentImportData & { class_id: string }>) => Promise<void>;
 }
 
 export function ImportStudentsDialog({ 
   open, 
   onOpenChange, 
-  classes,
+  selectedClassId,
+  selectedClassName,
   onImport 
 }: ImportStudentsDialogProps) {
   const [previewData, setPreviewData] = useState<StudentImportData[]>([]);
-  const [selectedClassId, setSelectedClassId] = useState<string>('');
   const [isImporting, setIsImporting] = useState(false);
   const [fileName, setFileName] = useState<string>('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const downloadStudentTemplate = () => {
-    const template = 'STT,Tên Thánh,Họ và Tên,Giới Tính,Ngày Sinh,Địa Chỉ,Lớp\n1,Giuse,Nguyễn Văn A,Nam,15/05/2012,123 Đường ABC,Khai Tâm 1\n2,Maria,Trần Thị B,Nữ,20/10/2012,456 Đường XYZ,Khai Tâm 1';
+    const template = 'STT,Tên Thánh,Họ và Tên,Giới Tính,Ngày Sinh,Địa Chỉ\n1,Giuse,Nguyễn Văn A,Nam,15/05/2012,123 Đường ABC\n2,Maria,Trần Thị B,Nữ,20/10/2012,456 Đường XYZ';
     const blob = new Blob(['\ufeff' + template], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -76,17 +70,6 @@ export function ImportStudentsDialog({
 
       setPreviewData(students);
       
-      // Auto-select class from CSV if matches
-      if (students[0]?.class_name && classes.length > 0) {
-        const matchedClass = classes.find(c => 
-          c.name.toLowerCase().includes(students[0].class_name.toLowerCase()) ||
-          students[0].class_name.toLowerCase().includes(c.name.toLowerCase())
-        );
-        if (matchedClass) {
-          setSelectedClassId(matchedClass.id);
-        }
-      }
-      
       toast.success(`Đã đọc ${students.length} học viên từ file`);
     } catch (error) {
       console.error('Error reading file:', error);
@@ -96,7 +79,7 @@ export function ImportStudentsDialog({
 
   const handleImport = async () => {
     if (!selectedClassId) {
-      toast.error('Vui lòng chọn lớp');
+      toast.error('Vui lòng chọn chi đoàn trước khi import');
       return;
     }
 
@@ -114,7 +97,6 @@ export function ImportStudentsDialog({
       
       // Reset state
       setPreviewData([]);
-      setSelectedClassId('');
       setFileName('');
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
@@ -129,7 +111,6 @@ export function ImportStudentsDialog({
 
   const handleClose = () => {
     setPreviewData([]);
-    setSelectedClassId('');
     setFileName('');
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -143,7 +124,7 @@ export function ImportStudentsDialog({
         <DialogHeader>
           <DialogTitle>Import danh sách học viên</DialogTitle>
           <DialogDescription>
-            Tải lên file CSV theo định dạng: STT, Tên Thánh, Họ và Tên, Giới Tính, Ngày Sinh, Địa Chỉ, Lớp
+            Tải lên file CSV theo định dạng: STT, Tên Thánh, Họ và Tên, Giới Tính, Ngày Sinh, Địa Chỉ. Tất cả đoàn viên sẽ được gán vào Chi đoàn đang chọn.
           </DialogDescription>
         </DialogHeader>
 
@@ -182,22 +163,13 @@ export function ImportStudentsDialog({
             )}
           </div>
 
-          {/* Class selection */}
+          {/* Selected class context */}
           {previewData.length > 0 && (
             <div className="space-y-2">
-              <label className="text-sm font-medium">Chọn lớp để import *</label>
-              <Select value={selectedClassId} onValueChange={setSelectedClassId}>
-                <SelectTrigger className="w-[300px]">
-                  <SelectValue placeholder="Chọn lớp" />
-                </SelectTrigger>
-                <SelectContent>
-                  {classes.map(cls => (
-                    <SelectItem key={cls.id} value={cls.id}>
-                      {cls.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <label className="text-sm font-medium">Chi đoàn nhận dữ liệu</label>
+              <div className="flex h-10 w-full items-center rounded-md border bg-muted/50 px-3 text-sm">
+                {selectedClassName || 'Chưa chọn chi đoàn'}
+              </div>
             </div>
           )}
 

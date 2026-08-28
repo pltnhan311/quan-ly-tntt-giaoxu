@@ -110,7 +110,12 @@ export default function Students() {
   });
 
   const handleCreateStudent = async () => {
-    if (!newStudent.name || !newStudent.birth_date || !newStudent.class_id) {
+    if (!selectedClass) {
+      toast.error('Vui lòng chọn chi đoàn trước khi thêm đoàn viên');
+      return;
+    }
+
+    if (!newStudent.name || !newStudent.birth_date) {
       toast.error('Vui lòng điền đầy đủ thông tin bắt buộc');
       return;
     }
@@ -119,7 +124,7 @@ export default function Students() {
       name: newStudent.name,
       birth_date: newStudent.birth_date,
       gender: newStudent.gender,
-      class_id: newStudent.class_id,
+      class_id: selectedClass,
       baptism_name: newStudent.baptism_name || null,
       phone: newStudent.phone || null,
       parent_phone: newStudent.parent_phone || null,
@@ -273,6 +278,7 @@ export default function Students() {
                 </div>
                 <Select value={selectedClass} onValueChange={(val) => {
                   setSelectedClass(val);
+                  setNewStudent(current => ({ ...current, class_id: val }));
                   setSearchParams(val ? { classId: val } : {});
                 }}>
                   <SelectTrigger className="w-[180px]">
@@ -288,7 +294,7 @@ export default function Students() {
                 </Select>
               </div>
               <div className="flex gap-2">
-                <DropdownMenu>
+                  <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline">
                       <MoreHorizontal className="mr-2 h-4 w-4" />
@@ -297,7 +303,7 @@ export default function Students() {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     {canManageClass && (
-                      <DropdownMenuItem onClick={() => setIsImportDialogOpen(true)} disabled={!classes || classes.length === 0}>
+                      <DropdownMenuItem onClick={() => setIsImportDialogOpen(true)} disabled={!selectedClass || !classes || classes.length === 0}>
                         <Upload className="mr-2 h-4 w-4" />
                         Import từ CSV
                       </DropdownMenuItem>
@@ -312,7 +318,11 @@ export default function Students() {
                 {canManageClass && (
                   <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                     <DialogTrigger asChild>
-                      <Button variant="gold" disabled={!classes || classes.length === 0}>
+                      <Button
+                        variant="gold"
+                        disabled={!selectedClass || !classes || classes.length === 0}
+                        onClick={() => setNewStudent(current => ({ ...current, class_id: selectedClass }))}
+                      >
                         <Plus className="mr-2 h-4 w-4" />
                         Thêm đoàn viên
                       </Button>
@@ -321,7 +331,7 @@ export default function Students() {
                     <DialogHeader>
                       <DialogTitle>Thêm đoàn viên mới</DialogTitle>
                       <DialogDescription>
-                        Điền thông tin để thêm đoàn viên vào chi đoàn.
+                        Điền thông tin để thêm đoàn viên vào chi đoàn đang chọn.
                       </DialogDescription>
                     </DialogHeader>
                     <div className="grid gap-4 py-4">
@@ -372,22 +382,10 @@ export default function Students() {
                         </div>
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="classId">Lớp học *</Label>
-                        <Select
-                          value={newStudent.class_id}
-                          onValueChange={(value) => setNewStudent({ ...newStudent, class_id: value })}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Chọn lớp" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {(classes || []).map(cls => (
-                              <SelectItem key={cls.id} value={cls.id}>
-                                {cls.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <Label>Chi đoàn</Label>
+                        <div className="flex h-10 items-center rounded-md border bg-muted/50 px-3 text-sm">
+                          {classes?.find(cls => cls.id === selectedClass)?.name || 'Chưa chọn chi đoàn'}
+                        </div>
                       </div>
                       <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
@@ -446,7 +444,8 @@ export default function Students() {
         <ImportStudentsDialog
           open={isImportDialogOpen}
           onOpenChange={setIsImportDialogOpen}
-          classes={classes || []}
+          selectedClassId={selectedClass}
+          selectedClassName={classes?.find(cls => cls.id === selectedClass)?.name || ''}
           onImport={handleImportStudents}
         />
 

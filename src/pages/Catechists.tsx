@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -23,13 +24,16 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { useCatechists, useCreateCatechist, useUpdateCatechist, useDeleteCatechist, Catechist } from '@/hooks/useCatechists';
-import { Plus, Search, Eye, Pencil, Trash2, Phone, Mail, GraduationCap, Loader2, Database } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { ImportCatechistsDialog, CatechistImportData } from '@/components/catechists/ImportCatechistsDialog';
+import { Plus, Search, Eye, Pencil, Trash2, Phone, Mail, GraduationCap, Loader2, Database, Upload } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function Catechists() {
   const { userRole } = useAuth();
   const { data: catechists, isLoading } = useCatechists();
+  const queryClient = useQueryClient();
   const createCatechist = useCreateCatechist();
   const updateCatechist = useUpdateCatechist();
   const deleteCatechist = useDeleteCatechist();
@@ -40,6 +44,7 @@ export default function Catechists() {
   const [selectedCatechist, setSelectedCatechist] = useState<Catechist | null>(null);
   const [editingCatechist, setEditingCatechist] = useState<Catechist | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
 
   const [newCatechist, setNewCatechist] = useState({
     name: '',
@@ -58,6 +63,15 @@ export default function Catechists() {
   const handleCreateCatechist = async () => {
     if (!newCatechist.name || !newCatechist.email || !newCatechist.password) {
       toast.error('Vui lòng nhập đầy đủ thông tin bắt buộc');
+      return;
+    }
+
+    const normalizedEmail = newCatechist.email.trim().toLowerCase();
+    const existingCatechist = (catechists || []).find(
+      catechist => catechist.email?.trim().toLowerCase() === normalizedEmail,
+    );
+    if (existingCatechist) {
+      toast.error(`Email ${newCatechist.email.trim()} đã tồn tại trong hệ thống`);
       return;
     }
 
@@ -96,6 +110,37 @@ export default function Catechists() {
 
   const handleDelete = (user_id: string) => {
     deleteCatechist.mutate(user_id);
+  };
+
+  const handleImportCatechists = async (importData: CatechistImportData[]) => {
+    let successCount = 0;
+    let errorCount = 0;
+
+    for (const catechist of importData) {
+      try {
+        const { error } = await supabase.functions.invoke('create-glv-account', {
+          body: {
+            name: catechist.name,
+            email: catechist.email,
+            password: '123456',
+            phone: catechist.phone || undefined,
+            baptism_name: catechist.baptism_name || undefined,
+            address: catechist.address || undefined,
+          },
+        });
+
+        if (error) throw error;
+
+        successCount++;
+      } catch (error) {
+        console.error(`Error importing catechist ${catechist.email}:`, error);
+        errorCount++;
+      }
+    }
+
+    await queryClient.invalidateQueries({ queryKey: ['catechists'] });
+    if (successCount > 0) toast.success(`Đã import thành công ${successCount} giáo lý viên`);
+    if (errorCount > 0) toast.error(`${errorCount} giáo lý viên không import được (có thể email đã tồn tại)`);
   };
 
   const assignedCount = filteredCatechists.filter(c => 
@@ -164,14 +209,19 @@ export default function Catechists() {
               </div>
               
               {userRole === 'admin' && (
-                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                  <DialogTrigger asChild>
-                    <Button variant="gold" onClick={() => setIsDialogOpen(true)}>
-                      <Plus className="mr-2 h-4 w-4" />
-                      Thêm GLV
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
+                <div className="flex gap-2">
+                  <Button variant="outline" onClick={() => setIsImportDialogOpen(true)}>
+                    <Upload className="mr-2 h-4 w-4" />
+                    Import từ CSV
+                  </Button>
+                  <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button variant="gold" onClick={() => setIsDialogOpen(true)}>
+                        <Plus className="mr-2 h-4 w-4" />
+                        Thêm GLV
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
                     <DialogHeader>
                       <DialogTitle>Thêm Giáo lý viên mới</DialogTitle>
                       <DialogDescription>
@@ -245,8 +295,9 @@ export default function Catechists() {
                         )}
                       </Button>
                     </DialogFooter>
-                  </DialogContent>
-                </Dialog>
+                    </DialogContent>
+                  </Dialog>
+                </div>
               )}
             </div>
           </CardContent>
@@ -480,6 +531,12 @@ export default function Catechists() {
           </DialogContent>
         </Dialog>
       </div>
+      <ImportCatechistsDialog
+        open={isImportDialogOpen}
+        onOpenChange={setIsImportDialogOpen}
+        onImport={handleImportCatechists}
+        existingEmails={(catechists || []).map(catechist => catechist.email || '')}
+      />
     </MainLayout>
   );
 }
