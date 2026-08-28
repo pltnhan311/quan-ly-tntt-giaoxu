@@ -58,7 +58,7 @@ serve(async (req) => {
     }
 
     // Insert catechist with full details
-    const { error: catechistError } = await supabase
+    const { data: catechistData, error: catechistError } = await supabase
       .from('catechists')
       .insert({
         user_id: authData.user.id,
@@ -97,6 +97,9 @@ serve(async (req) => {
         login_info: {
           email: email,
           password: password
+        },
+        catechist: {
+          id: catechistData.id
         }
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
