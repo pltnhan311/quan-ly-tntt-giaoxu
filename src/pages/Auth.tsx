@@ -67,7 +67,7 @@ export default function Auth() {
               <Church className="h-6 w-6 text-gold-foreground" aria-hidden="true" />
             </div>
             <div>
-              <p className="font-heading text-lg font-semibold">Giáo Lý Xóm Chiếu</p>
+              <p className="font-heading text-lg font-semibold">Giáo Xứ Xóm Chiếu</p>
               <p className="text-xs text-[hsl(var(--hero-foreground)/0.82)]">Đoàn Thiếu Nhi Thánh Thể</p>
             </div>
           </div>
@@ -75,10 +75,10 @@ export default function Auth() {
           <div className="max-w-xl pb-8">
             <p className="mb-4 text-sm font-medium uppercase tracking-[0.2em] text-gold">Giáo Lý Xóm Chiếu</p>
             <h1 className="font-heading text-4xl font-semibold leading-tight text-[hsl(var(--hero-foreground))] xl:text-5xl">
-              Cùng xây dựng điều tốt đẹp.
+              Quản lý hoạt động giáo lý rõ ràng, nhanh chóng.
             </h1>
             <p className="mt-5 max-w-lg text-base leading-7 text-[hsl(var(--hero-foreground)/0.84)]">
-              Một không gian chung cho công việc giáo lý mỗi ngày.
+              Một không gian chung để Admin, Trưởng ngành và Giáo lý viên phối hợp chăm sóc từng chi đoàn.
             </p>
           </div>
 
@@ -93,7 +93,7 @@ export default function Auth() {
               <Church className="h-6 w-6 text-gold-foreground" aria-hidden="true" />
             </div>
             <div>
-              <p className="font-heading text-lg font-semibold text-foreground">Giáo Lý Xóm Chiếu</p>
+              <p className="font-heading text-lg font-semibold text-foreground">Giáo Xứ Xóm Chiếu</p>
               <p className="text-xs text-muted-foreground">Đoàn Thiếu Nhi Thánh Thể</p>
             </div>
           </div>
