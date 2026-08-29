@@ -116,17 +116,17 @@ export default function ClassDetail() {
       title={classInfo.name} 
       subtitle={`Niên khóa ${classInfo.academic_years?.name || ''}`}
     >
-      <div className="space-y-6">
+      <div className="space-y-8">
         {/* Back button */}
-        <Button variant="ghost" onClick={() => navigate('/classes')}>
+        <Button variant="ghost" className="h-10" onClick={() => navigate('/classes')}>
           <ArrowLeft className="mr-2 h-4 w-4" />
           Quay lại danh sách lớp
         </Button>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
           <Card variant="elevated">
-            <CardContent className="flex items-center gap-4 p-6">
+            <CardContent className="flex items-center gap-4 p-5 sm:p-6">
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
                 <Users className="h-6 w-6 text-primary" />
               </div>
@@ -137,7 +137,7 @@ export default function ClassDetail() {
             </CardContent>
           </Card>
           <Card variant="elevated">
-            <CardContent className="flex items-center gap-4 p-6">
+            <CardContent className="flex items-center gap-4 p-5 sm:p-6">
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent/10">
                 <UserCheck className="h-6 w-6 text-accent" />
               </div>
@@ -148,7 +148,7 @@ export default function ClassDetail() {
             </CardContent>
           </Card>
           <Card variant="elevated">
-            <CardContent className="flex items-center gap-4 p-6">
+            <CardContent className="flex items-center gap-4 p-5 sm:p-6">
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-success/10">
                 <Clock className="h-6 w-6 text-success" />
               </div>
@@ -159,7 +159,7 @@ export default function ClassDetail() {
             </CardContent>
           </Card>
           <Card variant="gold">
-            <CardContent className="flex items-center gap-4 p-6">
+            <CardContent className="flex items-center gap-4 p-5 sm:p-6">
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-success/10">
                 <TrendingUp className="h-6 w-6 text-success" />
               </div>
@@ -175,7 +175,7 @@ export default function ClassDetail() {
           {/* Students List */}
           <Card variant="elevated" className="lg:col-span-2">
             <CardHeader>
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <CardTitle>Danh sách đoàn viên</CardTitle>
                   <CardDescription>{classStudents.length} đoàn viên</CardDescription>
@@ -189,7 +189,8 @@ export default function ClassDetail() {
             </CardHeader>
             <CardContent>
               {classStudents.length > 0 ? (
-                <Table>
+                <div className="overflow-x-auto">
+                  <Table>
                   <TableHeader>
                     <TableRow>
                       <TableHead>STT</TableHead>
@@ -208,7 +209,8 @@ export default function ClassDetail() {
                       </TableRow>
                     ))}
                   </TableBody>
-                </Table>
+                  </Table>
+                </div>
               ) : (
                 <p className="text-center text-muted-foreground py-8">
                   Chưa có học viên trong lớp này
@@ -220,12 +222,12 @@ export default function ClassDetail() {
           {/* Catechists */}
           <Card variant="elevated">
             <CardHeader>
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <CardTitle>Giáo lý viên</CardTitle>
                 {userRole === 'admin' && (
                   <Dialog open={isAssignOpen} onOpenChange={setIsAssignOpen}>
                     <DialogTrigger asChild>
-                      <Button variant="gold" size="sm">
+                      <Button variant="gold" size="sm" className="h-10">
                         <Plus className="mr-2 h-4 w-4" />
                         Gán GLV
                       </Button>
@@ -304,22 +306,22 @@ export default function ClassDetail() {
         </div>
 
         {/* Quick Actions */}
-        <Card variant="flat" className="border">
+        <Card variant="flat" className="border-border/80">
           <CardContent className="pt-6">
             <div className="flex flex-wrap gap-3">
-              <Button variant="outline" asChild>
+              <Button variant="outline" className="h-11" asChild>
                 <Link to={`/attendance?classId=${id}`}>
                   <Calendar className="mr-2 h-4 w-4" />
                   Điểm danh
                 </Link>
               </Button>
-              <Button variant="outline" asChild>
+              <Button variant="outline" className="h-11" asChild>
                 <Link to={`/scores?classId=${id}`}>
                   <TrendingUp className="mr-2 h-4 w-4" />
                   Xem điểm
                 </Link>
               </Button>
-              <Button variant="outline" asChild>
+              <Button variant="outline" className="h-11" asChild>
                 <Link to={`/materials?classId=${id}`}>
                   Tài liệu
                 </Link>
