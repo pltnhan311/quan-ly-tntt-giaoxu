@@ -73,7 +73,7 @@ export default function Auth() {
           </div>
 
           <div className="max-w-xl pb-8">
-            <p className="mb-4 text-sm font-medium uppercase tracking-[0.2em] text-gold">Giáo Lý Xóm Chiếu</p>
+            <p className="mb-4 text-sm font-medium uppercase tracking-[0.2em] text-gold">Cùng nhau phục vụ và đồng hành</p>
             <h1 className="font-heading text-4xl font-semibold leading-tight text-[hsl(var(--hero-foreground))] xl:text-5xl">
               Quản lý hoạt động giáo lý rõ ràng, nhanh chóng.
             </h1>
