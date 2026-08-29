@@ -16,6 +16,7 @@ export function Header({ title, subtitle, onMenuClick }: HeaderProps) {
         <Button 
           variant="ghost" 
           size="icon" 
+          aria-label="Mở menu điều hướng"
           className="md:hidden"
           onClick={onMenuClick}
         >
@@ -23,7 +24,7 @@ export function Header({ title, subtitle, onMenuClick }: HeaderProps) {
         </Button>
         
         <div>
-          <h1 className="text-lg md:text-xl font-semibold text-foreground">{title}</h1>
+          <h1 className="font-heading text-lg font-semibold text-foreground md:text-xl">{title}</h1>
           {subtitle && <p className="text-xs md:text-sm text-muted-foreground">{subtitle}</p>}
         </div>
       </div>

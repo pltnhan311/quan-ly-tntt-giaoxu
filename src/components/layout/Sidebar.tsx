@@ -1,94 +1,9 @@
-import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import {
-  LayoutDashboard,
-  CalendarDays,
-  GraduationCap,
-  Users,
-  ClipboardCheck,
-  BookOpen,
-  BarChart3,
-  Settings,
-  LogOut,
-  ChevronLeft,
-  ChevronRight,
-  Star,
-  UserCheck,
-  Home,
-  Shield
-} from 'lucide-react';
-
-const menuItems = [
-  { 
-    icon: LayoutDashboard, 
-    label: 'Tổng quan', 
-    path: '/dashboard',
-    roles: ['admin', 'truong_nganh', 'glv']
-  },
-  { 
-    icon: CalendarDays, 
-    label: 'Niên khóa', 
-    path: '/academic-years',
-    roles: ['admin']
-  },
-  { 
-    icon: GraduationCap, 
-    label: 'Chi đoàn', 
-    path: '/classes',
-    roles: ['admin', 'truong_nganh', 'glv']
-  },
-  { 
-    icon: UserCheck, 
-    label: 'Giáo lý viên', 
-    path: '/catechists',
-    roles: ['admin', 'truong_nganh']
-  },
-  { 
-    icon: Users, 
-    label: 'Đoàn viên', 
-    path: '/students',
-    roles: ['admin', 'truong_nganh', 'glv']
-  },
-  { 
-    icon: ClipboardCheck, 
-    label: 'Điểm danh', 
-    path: '/attendance',
-    roles: ['admin', 'truong_nganh', 'glv']
-  },
-  { 
-    icon: Star, 
-    label: 'Điểm số', 
-    path: '/scores',
-    roles: ['admin', 'truong_nganh', 'glv']
-  },
-  { 
-    icon: BookOpen, 
-    label: 'Tài liệu', 
-    path: '/materials',
-    roles: ['admin', 'truong_nganh', 'glv']
-  },
-  { 
-    icon: BarChart3, 
-    label: 'Báo cáo', 
-    path: '/reports',
-    roles: ['admin', 'truong_nganh']
-  },
-  { 
-    icon: Shield, 
-    label: 'Người dùng', 
-    path: '/users',
-    roles: ['admin']
-  },
-  { 
-    icon: Settings, 
-    label: 'Cài đặt', 
-    path: '/settings',
-    roles: ['admin']
-  },
-];
+import { ChevronLeft, ChevronRight, GraduationCap, LogOut } from 'lucide-react';
+import { navigationGroups } from './navigation';
 
 export interface SidebarProps {
   collapsed: boolean;
@@ -98,105 +13,100 @@ export interface SidebarProps {
 export function Sidebar({ collapsed, onCollapseChange }: SidebarProps) {
   const location = useLocation();
   const { user, signOut, hasRole, userRole } = useAuth();
-
-  const filteredMenu = menuItems.filter(item => 
-    hasRole(item.roles as any[])
-  );
-
   const displayName = user?.user_metadata?.name || user?.email?.split('@')[0] || 'Người dùng';
   const roleLabel = userRole === 'admin' ? 'Quản trị viên' : userRole === 'truong_nganh' ? 'Trưởng Ngành' : 'Giáo lý viên';
 
   return (
-    <aside 
+    <aside
+      aria-label="Thanh điều hướng chính"
       className={cn(
-        "fixed left-0 top-0 z-40 h-screen bg-sidebar text-sidebar-foreground transition-all duration-300 hidden md:block",
-        collapsed ? "w-20" : "w-64"
+        'fixed left-0 top-0 z-40 hidden h-screen flex-col bg-sidebar text-sidebar-foreground transition-[width] duration-200 md:flex',
+        collapsed ? 'w-20' : 'w-64'
       )}
     >
-      {/* Logo */}
-      <div className="flex h-16 items-center justify-between border-b border-sidebar-border px-4">
-        {!collapsed && (
-          <Link to="/dashboard" className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg gradient-gold">
-              <GraduationCap className="h-6 w-6 text-sidebar-primary-foreground" />
-            </div>
-            <div className="flex flex-col">
-              <span className="text-lg font-semibold text-sidebar-foreground">
-                Giáo Lý
-              </span>
-              <span className="text-xs text-sidebar-foreground/60">
-                Xóm Chiếu
-              </span>
-            </div>
-          </Link>
-        )}
-        {collapsed && (
-          <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-lg gradient-gold">
-            <GraduationCap className="h-6 w-6 text-sidebar-primary-foreground" />
+      <div className="flex h-16 shrink-0 items-center justify-between border-b border-sidebar-border px-4">
+        <Link to="/dashboard" className={cn('flex items-center gap-3', collapsed && 'mx-auto')}>
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg gradient-gold">
+            <GraduationCap className="h-6 w-6 text-gold-foreground" aria-hidden="true" />
           </div>
-        )}
+          {!collapsed && (
+            <div className="flex min-w-0 flex-col">
+              <span className="font-heading text-lg font-semibold">Giáo Lý</span>
+              <span className="text-xs text-sidebar-foreground/60">Xóm Chiếu</span>
+            </div>
+          )}
+        </Link>
       </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 space-y-1 overflow-y-auto p-4">
-        {filteredMenu.map((item) => {
-          const isActive = location.pathname === item.path || location.pathname.startsWith(item.path + '/');
+      <nav aria-label="Điều hướng chính" className="flex-1 space-y-5 overflow-y-auto p-4">
+        {navigationGroups.map((group) => {
+          const groupItems = group.items.filter(item => hasRole(item.roles));
+          if (groupItems.length === 0) return null;
+
           return (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
-                isActive 
-                  ? "bg-sidebar-accent text-sidebar-primary" 
-                  : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+            <div key={group.label} className="space-y-1">
+              {!collapsed && (
+                <p className="px-3 pb-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-sidebar-foreground/45">
+                  {group.label}
+                </p>
               )}
-            >
-              <item.icon className={cn("h-5 w-5 flex-shrink-0", isActive && "text-sidebar-primary")} />
-              {!collapsed && <span>{item.label}</span>}
-            </Link>
+              {groupItems.map((item) => {
+                const isActive = location.pathname === item.path || location.pathname.startsWith(item.path + '/');
+                return (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    aria-current={isActive ? 'page' : undefined}
+                    title={collapsed ? item.label : undefined}
+                    className={cn(
+                      'flex min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors duration-200',
+                      collapsed && 'justify-center px-2',
+                      isActive
+                        ? 'bg-sidebar-accent text-sidebar-primary'
+                        : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground'
+                    )}
+                  >
+                    <item.icon className={cn('h-5 w-5 shrink-0', isActive && 'text-sidebar-primary')} aria-hidden="true" />
+                    {!collapsed && <span>{item.label}</span>}
+                  </Link>
+                );
+              })}
+            </div>
           );
         })}
       </nav>
 
-      {/* User section */}
-      <div className="border-t border-sidebar-border p-4">
+      <div className="shrink-0 border-t border-sidebar-border p-4">
         {!collapsed && user && (
           <div className="mb-3 flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-sidebar-accent text-sm font-medium">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sidebar-accent text-sm font-medium" aria-hidden="true">
               {displayName.charAt(0).toUpperCase()}
             </div>
-            <div className="flex-1 truncate">
+            <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-medium">{displayName}</p>
-              <p className="truncate text-xs text-sidebar-foreground/60 capitalize">
-                {roleLabel}
-              </p>
+              <p className="truncate text-xs text-sidebar-foreground/60">{roleLabel}</p>
             </div>
           </div>
         )}
-        <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size={collapsed ? "icon" : "default"}
-            onClick={signOut}
-            className="flex-1 justify-start text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground"
-          >
-            <LogOut className="h-5 w-5" />
-            {!collapsed && <span className="ml-2">Đăng xuất</span>}
-          </Button>
-        </div>
+        <Button
+          variant="ghost"
+          size={collapsed ? 'icon' : 'default'}
+          onClick={signOut}
+          aria-label="Đăng xuất"
+          className={cn('min-h-11 text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground', collapsed ? 'w-full' : 'w-full justify-start')}
+        >
+          <LogOut className="h-5 w-5" aria-hidden="true" />
+          {!collapsed && <span className="ml-2">Đăng xuất</span>}
+        </Button>
       </div>
 
-      {/* Collapse toggle */}
       <button
+        type="button"
+        aria-label={collapsed ? 'Mở rộng thanh điều hướng' : 'Thu gọn thanh điều hướng'}
         onClick={() => onCollapseChange(!collapsed)}
-        className="absolute -right-3 top-20 flex h-6 w-6 items-center justify-center rounded-full border border-sidebar-border bg-sidebar text-sidebar-foreground shadow-md transition-colors hover:bg-sidebar-accent"
+        className="absolute -right-3 top-20 flex h-7 w-7 items-center justify-center rounded-full border border-sidebar-border bg-sidebar text-sidebar-foreground shadow-md transition-colors hover:bg-sidebar-accent"
       >
-        {collapsed ? (
-          <ChevronRight className="h-4 w-4" />
-        ) : (
-          <ChevronLeft className="h-4 w-4" />
-        )}
+        {collapsed ? <ChevronRight className="h-4 w-4" aria-hidden="true" /> : <ChevronLeft className="h-4 w-4" aria-hidden="true" />}
       </button>
     </aside>
   );
