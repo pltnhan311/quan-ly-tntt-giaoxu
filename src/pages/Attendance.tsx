@@ -364,7 +364,7 @@ export default function Attendance() {
       title="Điểm danh" 
       subtitle="Điểm danh Giáo lý và Thánh lễ"
     >
-      <div className="space-y-6">
+      <div className="space-y-8">
         {/* Export Dialog */}
         <ExportAttendanceDialog
           open={isExportDialogOpen}
@@ -373,14 +373,14 @@ export default function Attendance() {
         />
 
         {/* Selection */}
-        <Card variant="flat" className="border">
+        <Card variant="flat" className="border-border/80 bg-card/80">
           <CardContent className="pt-6">
             <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-              <div className="flex flex-col gap-4 md:flex-row md:items-end flex-1">
-                <div className="space-y-2 flex-1 max-w-xs">
-                  <label className="text-sm font-medium">Chọn lớp</label>
+              <div className="flex flex-1 flex-col gap-4 md:flex-row md:items-end">
+                <div className="max-w-xs flex-1 space-y-2">
+                  <label htmlFor="attendance-class" className="text-sm font-medium">Chọn lớp</label>
                   <Select value={selectedClass} onValueChange={handleClassChange}>
-                    <SelectTrigger>
+                    <SelectTrigger id="attendance-class" className="h-11">
                       <SelectValue placeholder="Chọn lớp để điểm danh" />
                     </SelectTrigger>
                     <SelectContent>
@@ -392,10 +392,10 @@ export default function Attendance() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="space-y-2 flex-1 max-w-[100px]">
-                  <label className="text-sm font-medium">Năm</label>
+                <div className="max-w-[100px] flex-1 space-y-2">
+                  <label htmlFor="attendance-year" className="text-sm font-medium">Năm</label>
                   <Select value={String(selectedYear)} onValueChange={handleYearChange}>
-                    <SelectTrigger>
+                    <SelectTrigger id="attendance-year" className="h-11">
                       <SelectValue placeholder="Năm" />
                     </SelectTrigger>
                     <SelectContent>
@@ -407,10 +407,10 @@ export default function Attendance() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="space-y-2 flex-1 max-w-[130px]">
-                  <label className="text-sm font-medium">Tháng</label>
+                <div className="max-w-[130px] flex-1 space-y-2">
+                  <label htmlFor="attendance-month" className="text-sm font-medium">Tháng</label>
                   <Select value={String(selectedMonth)} onValueChange={handleMonthChange}>
-                    <SelectTrigger>
+                    <SelectTrigger id="attendance-month" className="h-11">
                       <SelectValue placeholder="Tháng" />
                     </SelectTrigger>
                     <SelectContent>
@@ -422,10 +422,10 @@ export default function Attendance() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="space-y-2 flex-1 max-w-[150px]">
-                  <label className="text-sm font-medium">Ngày (Chủ nhật)</label>
+                <div className="max-w-[150px] flex-1 space-y-2">
+                  <label htmlFor="attendance-date" className="text-sm font-medium">Ngày (Chủ nhật)</label>
                   <Select value={selectedDate} onValueChange={setSelectedDate}>
-                    <SelectTrigger>
+                    <SelectTrigger id="attendance-date" className="h-11">
                       <SelectValue placeholder="Chọn ngày" />
                     </SelectTrigger>
                     <SelectContent>
@@ -441,7 +441,7 @@ export default function Attendance() {
                   </Select>
                 </div>
               </div>
-              <Button variant="outline" onClick={() => setIsExportDialogOpen(true)}>
+              <Button variant="outline" className="h-11" onClick={() => setIsExportDialogOpen(true)}>
                 <Download className="mr-2 h-4 w-4" />
                 Xuất báo cáo
               </Button>
@@ -475,7 +475,7 @@ export default function Attendance() {
           </Card>
         ) : (
           <Tabs defaultValue="catechism" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-2 lg:w-[400px]">
+            <TabsList className="grid h-11 w-full grid-cols-2 bg-muted/70 p-1 lg:w-[420px]">
               <TabsTrigger value="catechism" className="flex items-center gap-2">
                 <Calendar className="h-4 w-4" />
                 Điểm danh trực tiếp
@@ -489,7 +489,7 @@ export default function Attendance() {
             {/* Catechism Attendance Tab */}
             <TabsContent value="catechism" className="space-y-6">
               {isAttending && (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                   <Card className="border-success/20 bg-success/5">
                     <CardContent className="flex items-center gap-3 p-4">
                       <CheckCircle2 className="h-8 w-8 text-success" />
@@ -522,9 +522,9 @@ export default function Attendance() {
 
               <Card variant="elevated">
                 <CardHeader>
-                  <div className="flex items-center justify-between">
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                     <div>
-                      <CardTitle className="flex items-center gap-2 text-xl font-bold">
+                          <CardTitle className="flex items-center gap-2 text-xl">
                         <Users className="h-5 w-5 text-primary" />
                         {selectedClassInfo?.name} - Điểm danh Giáo lý (Trực tiếp)
                       </CardTitle>
@@ -541,7 +541,7 @@ export default function Attendance() {
                         </p>
                       </div>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex shrink-0 gap-2">
                       {isAttending ? (
                         <>
                           <Button variant="outline" onClick={() => setIsAttending(false)} disabled={isSaving}>
@@ -571,6 +571,7 @@ export default function Attendance() {
                   </div>
                 </CardHeader>
                 <CardContent>
+                  <div className="overflow-x-auto">
                   <Table>
                     <TableHeader>
                       <TableRow>
@@ -618,6 +619,7 @@ export default function Attendance() {
                                     size="sm"
                                     variant={currentRecord.status === 'present' ? 'success' : 'outline'}
                                     onClick={() => handleStatusChange(student.id, 'present')}
+                                    aria-label={`Đánh dấu ${student.name} có mặt`}
                                     title="Có mặt"
                                   >
                                     <CheckCircle2 className="h-4 w-4" />
@@ -626,6 +628,7 @@ export default function Attendance() {
                                     size="sm"
                                     variant={currentRecord.status === 'absent' ? 'destructive' : 'outline'}
                                     onClick={() => handleStatusChange(student.id, 'absent')}
+                                    aria-label={`Đánh dấu ${student.name} vắng`}
                                     title="Vắng"
                                   >
                                     <XCircle className="h-4 w-4" />
@@ -634,6 +637,7 @@ export default function Attendance() {
                                     size="sm"
                                     variant={currentRecord.status === 'excused' ? 'secondary' : 'outline'}
                                     onClick={() => handleStatusChange(student.id, 'excused')}
+                                    aria-label={`Đánh dấu ${student.name} có phép`}
                                     title="Có phép"
                                   >
                                     <AlertCircle className="h-4 w-4" />
@@ -671,6 +675,7 @@ export default function Attendance() {
                       })}
                     </TableBody>
                   </Table>
+                  </div>
                 </CardContent>
               </Card>
 
@@ -680,7 +685,7 @@ export default function Attendance() {
             {/* Mass Attendance Tab */}
             <TabsContent value="mass" className="space-y-6">
               {isMassRecording && (
-                <div className="grid grid-cols-2 gap-4 max-w-md">
+                <div className="grid max-w-md grid-cols-2 gap-4">
                   <Card className="border-success/20 bg-success/5">
                     <CardContent className="flex items-center gap-3 p-4">
                       <CheckCircle2 className="h-8 w-8 text-success" />
@@ -704,9 +709,9 @@ export default function Attendance() {
 
               <Card variant="elevated">
                 <CardHeader>
-                  <div className="flex items-center justify-between">
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                     <div>
-                      <CardTitle className="flex items-center gap-2 text-xl font-bold">
+                          <CardTitle className="flex items-center gap-2 text-xl">
                         <Church className="h-5 w-5 text-primary" />
                         {selectedClassInfo?.name} - Tham dự Thánh lễ
                       </CardTitle>
@@ -723,7 +728,7 @@ export default function Attendance() {
                         </p>
                       </div>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex shrink-0 gap-2">
                       {isMassRecording ? (
                         <>
                           <Button variant="outline" onClick={() => setIsMassRecording(false)} disabled={isSaving}>
@@ -753,6 +758,7 @@ export default function Attendance() {
                   </div>
                 </CardHeader>
                 <CardContent>
+                  <div className="overflow-x-auto">
                   <Table>
                     <TableHeader>
                       <TableRow>
@@ -801,6 +807,7 @@ export default function Attendance() {
                       })}
                     </TableBody>
                   </Table>
+                  </div>
                 </CardContent>
               </Card>
             </TabsContent>
