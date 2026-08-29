@@ -261,15 +261,17 @@ export default function Students() {
       title="Quản lý Học viên" 
       subtitle="Danh sách và thông tin học viên"
     >
-      <div className="space-y-6">
+      <div className="space-y-8">
         {/* Filters */}
-        <Card variant="flat" className="border">
+        <Card variant="flat" className="border-border/80 bg-card/80">
           <CardContent className="pt-6">
-            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-              <div className="flex flex-1 gap-4">
-                <div className="relative flex-1 max-w-sm">
+            <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+              <div className="flex flex-1 flex-col gap-4 sm:flex-row">
+                <div className="relative min-w-0 flex-1 sm:max-w-sm">
                   <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                   <Input
+                    type="search"
+                    aria-label="Tìm kiếm đoàn viên"
                     placeholder="Tìm theo tên hoặc mã HV..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
@@ -281,7 +283,7 @@ export default function Students() {
                   setNewStudent(current => ({ ...current, class_id: val }));
                   setSearchParams(val ? { classId: val } : {});
                 }}>
-                  <SelectTrigger className="w-[180px]">
+                  <SelectTrigger className="h-11 w-full sm:w-[180px]">
                     <SelectValue placeholder="Chọn chi đoàn" />
                   </SelectTrigger>
                   <SelectContent>
@@ -293,10 +295,10 @@ export default function Students() {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2 xl:justify-end">
                   <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline">
+                    <Button variant="outline" className="h-11">
                       <MoreHorizontal className="mr-2 h-4 w-4" />
                       Thêm
                     </Button>
@@ -318,8 +320,9 @@ export default function Students() {
                 {canManageClass && (
                   <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                     <DialogTrigger asChild>
-                      <Button
+                        <Button
                         variant="gold"
+                        className="h-11"
                         disabled={!selectedClass || !classes || classes.length === 0}
                         onClick={() => setNewStudent(current => ({ ...current, class_id: selectedClass }))}
                       >
@@ -472,6 +475,7 @@ export default function Students() {
                   <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
                 </div>
               ) : filteredStudents.length > 0 ? (
+                <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -508,6 +512,7 @@ export default function Students() {
                           <Button 
                             variant="ghost" 
                             size="icon"
+                            aria-label={`Xem thông tin ${student.name}`}
                             onClick={() => {
                               setSelectedStudent(student);
                               setIsDetailOpen(true);
@@ -519,6 +524,7 @@ export default function Students() {
                             <Button 
                               variant="ghost" 
                               size="icon"
+                              aria-label={`Chỉnh sửa ${student.name}`}
                               onClick={() => {
                                 setEditingStudent(student);
                                 setIsEditDialogOpen(true);
@@ -533,6 +539,7 @@ export default function Students() {
                   ))}
                 </TableBody>
               </Table>
+              </div>
             ) : (
               <div className="flex flex-col items-center justify-center py-12">
                 <Database className="h-12 w-12 text-muted-foreground mb-4" />
