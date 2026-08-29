@@ -24,7 +24,7 @@ export default function Settings() {
       title="Cài đặt hệ thống" 
       subtitle="Quản lý cấu hình và thiết lập hệ thống"
     >
-      <div className="space-y-6 max-w-5xl">
+      <div className="max-w-5xl space-y-8">
         {/* System Configuration Display */}
         <Card variant="elevated" className="overflow-hidden">
           <CardHeader className="border-b bg-muted/30">
@@ -40,7 +40,7 @@ export default function Settings() {
           </CardHeader>
           <CardContent className="divide-y p-0">
             {/* Study Schedule Config */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 hover:bg-muted/10 transition-colors">
+            <div className="flex flex-col justify-between gap-4 p-5 transition-colors hover:bg-muted/10 sm:flex-row sm:items-center sm:p-6">
               <div className="flex items-start gap-4">
                 <div className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-accent/15 text-accent">
                   <Clock className="h-5 w-5" />
@@ -60,7 +60,7 @@ export default function Settings() {
             </div>
 
             {/* Default Password Config */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 hover:bg-muted/10 transition-colors">
+            <div className="flex flex-col justify-between gap-4 p-5 transition-colors hover:bg-muted/10 sm:flex-row sm:items-center sm:p-6">
               <div className="flex items-start gap-4">
                 <div className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
                   <KeyRound className="h-5 w-5" />
@@ -80,7 +80,7 @@ export default function Settings() {
             </div>
 
             {/* Timezone Config */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 hover:bg-muted/10 transition-colors">
+            <div className="flex flex-col justify-between gap-4 p-5 transition-colors hover:bg-muted/10 sm:flex-row sm:items-center sm:p-6">
               <div className="flex items-start gap-4">
                 <div className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
                   <Globe className="h-5 w-5" />
@@ -100,7 +100,7 @@ export default function Settings() {
             </div>
 
             {/* Verification & Access Config */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 hover:bg-muted/10 transition-colors">
+            <div className="flex flex-col justify-between gap-4 p-5 transition-colors hover:bg-muted/10 sm:flex-row sm:items-center sm:p-6">
               <div className="flex items-start gap-4">
                 <div className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-success/10 text-success">
                   <ShieldCheck className="h-5 w-5" />
@@ -137,14 +137,14 @@ export default function Settings() {
             </div>
           </CardHeader>
           <CardContent className="pt-2">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 bg-muted/30 p-4 rounded-lg border border-dashed">
+            <div className="flex flex-col justify-between gap-6 rounded-lg border border-dashed bg-muted/30 p-4 sm:flex-row sm:items-center">
               <div className="max-w-xl">
                 <p className="text-sm font-medium text-foreground">Import Setup Niên khóa mới</p>
                 <p className="text-xs text-muted-foreground mt-1">
                   Hệ thống sẽ tự động liên kết các Chi đoàn với các Giáo lý viên tương ứng dựa trên tên lớp được cấu hình trong file CSV.
                 </p>
               </div>
-              <Button onClick={() => setImportDialogOpen(true)} variant="gold" className="shrink-0">
+              <Button onClick={() => setImportDialogOpen(true)} variant="gold" className="h-11 shrink-0">
                 <Upload className="mr-2 h-4 w-4" />
                 Import dữ liệu niên khóa
               </Button>
