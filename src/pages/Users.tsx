@@ -93,13 +93,13 @@ export default function Users() {
 
   return (
     <MainLayout title="Quản lý người dùng">
-      <div className="container mx-auto py-6 space-y-6">
-        <div className="flex items-center gap-4">
+      <div className="space-y-8">
+        <div className="flex items-center gap-4 rounded-xl border border-border/70 bg-card/70 p-4 sm:p-5">
           <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
             <UsersIcon className="h-6 w-6 text-primary" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold">Quản lý người dùng</h1>
+            <h2 className="font-heading text-xl font-bold sm:text-2xl">Quản lý người dùng</h2>
             <p className="text-muted-foreground">
               Quản lý phân quyền và thông tin người dùng
             </p>
@@ -115,9 +115,9 @@ export default function Users() {
                   Xem và thay đổi vai trò của người dùng trong hệ thống
                 </CardDescription>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex w-full items-center gap-2 sm:w-auto">
                 <Select value={selectedRoleFilter} onValueChange={setSelectedRoleFilter}>
-                  <SelectTrigger className="w-[180px]">
+                  <SelectTrigger className="h-11 w-full sm:w-[200px]" aria-label="Lọc theo vai trò">
                     <SelectValue placeholder="Lọc theo vai trò" />
                   </SelectTrigger>
                   <SelectContent>
@@ -137,7 +137,7 @@ export default function Users() {
                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
               </div>
             ) : filteredAndSortedUsers.length > 0 ? (
-              <div className="rounded-md border">
+              <div className="overflow-x-auto rounded-md border">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -164,7 +164,7 @@ export default function Users() {
                               handleRoleChange(user.user_id, value as AppRole)
                             }
                           >
-                            <SelectTrigger className="w-[160px]">
+                            <SelectTrigger className="h-10 w-[160px]" aria-label={`Vai trò của ${user.name}`}>
                               <SelectValue>
                                 <Badge variant={roleBadgeVariants[user.role]}>
                                   {roleLabels[user.role]}
@@ -206,6 +206,7 @@ export default function Users() {
                             variant="ghost"
                             size="icon"
                             onClick={() => handleDeleteClick(user.user_id)}
+                            aria-label={`Xóa người dùng ${user.name}`}
                           >
                             <Trash2 className="h-4 w-4 text-destructive" />
                           </Button>
