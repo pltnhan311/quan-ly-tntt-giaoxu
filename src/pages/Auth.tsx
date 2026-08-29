@@ -5,9 +5,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsContent } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-import { GraduationCap, KeyRound, Loader2, Mail, IdCard } from 'lucide-react';
+import { GraduationCap, KeyRound, Loader2, Mail } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
 export default function Auth() {
@@ -19,15 +19,9 @@ export default function Auth() {
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
 
-  // Student login form
-  const [studentId, setStudentId] = useState('');
-  const [studentPassword, setStudentPassword] = useState('');
-
   useEffect(() => {
     if (isAuthenticated && !authLoading) {
-      if (userRole === 'student') {
-        navigate('/student');
-      } else {
+      if (userRole !== 'student') {
         navigate('/dashboard');
       }
     }
@@ -51,27 +45,6 @@ export default function Auth() {
       } else {
         toast.success('Đăng nhập thành công!');
       }
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleStudentLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    
-    try {
-      const email = `${studentId}@student.local`;
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password: studentPassword,
-      });
-
-      if (error) throw error;
-
-      toast.success('Đăng nhập thành công!');
-    } catch (error: any) {
-      toast.error('Mã học viên hoặc mật khẩu không đúng');
     } finally {
       setIsLoading(false);
     }
@@ -141,17 +114,12 @@ export default function Auth() {
             <CardHeader className="space-y-1 pb-4">
               <CardTitle className="text-2xl text-center">Chào mừng</CardTitle>
               <CardDescription className="text-center">
-                Chọn phương thức đăng nhập
+                Đăng nhập để quản lý hoạt động giáo lý
               </CardDescription>
             </CardHeader>
             <CardContent>
               <Tabs defaultValue="login" className="w-full">
-                <TabsList className="grid w-full grid-cols-2 mb-6">
-                  <TabsTrigger value="login">Đăng nhập</TabsTrigger>
-                  <TabsTrigger value="student">Học viên</TabsTrigger>
-                </TabsList>
-                
-                <TabsContent value="login">
+                <TabsContent value="login" className="mt-0">
                   <form onSubmit={handleLogin} className="space-y-4">
                     <div className="space-y-2">
                       <Label htmlFor="login-email">Email</Label>
@@ -182,53 +150,6 @@ export default function Auth() {
                           required
                         />
                       </div>
-                    </div>
-                    <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
-                      {isLoading ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Đang đăng nhập...
-                        </>
-                      ) : (
-                        'Đăng nhập'
-                      )}
-                    </Button>
-                  </form>
-                </TabsContent>
-
-                <TabsContent value="student">
-                  <form onSubmit={handleStudentLogin} className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="student-id">Mã học viên</Label>
-                      <div className="relative">
-                        <IdCard className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                        <Input
-                          id="student-id"
-                          placeholder="HS2025001"
-                          value={studentId}
-                          onChange={(e) => setStudentId(e.target.value)}
-                          className="pl-10"
-                          required
-                        />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="student-password">Mật khẩu</Label>
-                      <div className="relative">
-                        <KeyRound className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                        <Input
-                          id="student-password"
-                          type="password"
-                          placeholder="123456"
-                          value={studentPassword}
-                          onChange={(e) => setStudentPassword(e.target.value)}
-                          className="pl-10"
-                          required
-                        />
-                      </div>
-                      <p className="text-xs text-muted-foreground">
-                        Mật khẩu mặc định: 123456
-                      </p>
                     </div>
                     <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
                       {isLoading ? (

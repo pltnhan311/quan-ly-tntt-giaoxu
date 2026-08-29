@@ -20,7 +20,6 @@ import {
   LogOut,
   Star,
   UserCheck,
-  Home
 } from 'lucide-react';
 
 const menuItems = [
@@ -100,7 +99,7 @@ export function MobileMenu({ open, onOpenChange }: MobileMenuProps) {
   );
 
   const displayName = user?.user_metadata?.name || user?.email?.split('@')[0] || 'Người dùng';
-  const roleLabel = userRole === 'admin' ? 'Quản trị viên' : userRole === 'truong_nganh' ? 'Trưởng Ngành' : userRole === 'glv' ? 'Giáo lý viên' : 'Học viên';
+  const roleLabel = userRole === 'admin' ? 'Quản trị viên' : userRole === 'truong_nganh' ? 'Trưởng Ngành' : 'Giáo lý viên';
 
   const handleSignOut = async () => {
     onOpenChange(false);

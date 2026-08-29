@@ -21,16 +21,10 @@ import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import Users from "./pages/Users";
 
-// Student pages
-import StudentDashboard from "./pages/student/StudentDashboard";
-import StudentMaterials from "./pages/student/StudentMaterials";
-import StudentAttendance from "./pages/student/StudentAttendance";
-import StudentScores from "./pages/student/StudentScores";
-
 const queryClient = new QueryClient();
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, userRole } = useAuth();
 
   if (isLoading) {
     return (
@@ -42,6 +36,10 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
   if (!isAuthenticated) {
     return <Navigate to="/auth" replace />;
+  }
+
+  if (userRole === 'student') {
+    return <NotFound />;
   }
 
   return <>{children}</>;
@@ -61,7 +59,6 @@ function AppRoutes() {
   // Determine default route based on role
   const getDefaultRoute = () => {
     if (!isAuthenticated) return "/auth";
-    if (userRole === 'student') return "/student";
     return "/dashboard";
   };
 
@@ -84,12 +81,6 @@ function AppRoutes() {
       <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
       <Route path="/users" element={<ProtectedRoute><Users /></ProtectedRoute>} />
       <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-      
-      {/* Student routes */}
-      <Route path="/student" element={<ProtectedRoute><StudentDashboard /></ProtectedRoute>} />
-      <Route path="/student/materials" element={<ProtectedRoute><StudentMaterials /></ProtectedRoute>} />
-      <Route path="/student/attendance" element={<ProtectedRoute><StudentAttendance /></ProtectedRoute>} />
-      <Route path="/student/scores" element={<ProtectedRoute><StudentScores /></ProtectedRoute>} />
       
       <Route path="*" element={<NotFound />} />
     </Routes>

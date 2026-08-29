@@ -104,7 +104,7 @@ export function Sidebar({ collapsed, onCollapseChange }: SidebarProps) {
   );
 
   const displayName = user?.user_metadata?.name || user?.email?.split('@')[0] || 'Người dùng';
-  const roleLabel = userRole === 'admin' ? 'Quản trị viên' : userRole === 'truong_nganh' ? 'Trưởng Ngành' : userRole === 'glv' ? 'Giáo lý viên' : 'Học viên';
+  const roleLabel = userRole === 'admin' ? 'Quản trị viên' : userRole === 'truong_nganh' ? 'Trưởng Ngành' : 'Giáo lý viên';
 
   return (
     <aside 
@@ -116,7 +116,7 @@ export function Sidebar({ collapsed, onCollapseChange }: SidebarProps) {
       {/* Logo */}
       <div className="flex h-16 items-center justify-between border-b border-sidebar-border px-4">
         {!collapsed && (
-          <Link to={userRole === 'student' ? '/student' : '/dashboard'} className="flex items-center gap-3">
+          <Link to="/dashboard" className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg gradient-gold">
               <GraduationCap className="h-6 w-6 text-sidebar-primary-foreground" />
             </div>
