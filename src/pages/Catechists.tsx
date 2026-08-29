@@ -178,11 +178,11 @@ export default function Catechists() {
       title="Quản lý Giáo lý viên" 
       subtitle="Danh sách và thông tin GLV"
     >
-      <div className="space-y-6">
+      <div className="space-y-8">
         {/* Stats */}
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
           <Card variant="elevated">
-            <CardContent className="flex items-center gap-4 p-6">
+            <CardContent className="flex items-center gap-4 p-5">
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent/10">
                 <GraduationCap className="h-6 w-6 text-accent" />
               </div>
@@ -193,7 +193,7 @@ export default function Catechists() {
             </CardContent>
           </Card>
           <Card variant="elevated">
-            <CardContent className="flex items-center gap-4 p-6">
+            <CardContent className="flex items-center gap-4 p-5">
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-success/10">
                 <GraduationCap className="h-6 w-6 text-success" />
               </div>
@@ -204,7 +204,7 @@ export default function Catechists() {
             </CardContent>
           </Card>
           <Card variant="elevated">
-            <CardContent className="flex items-center gap-4 p-6">
+            <CardContent className="flex items-center gap-4 p-5">
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
                 <GraduationCap className="h-6 w-6 text-primary" />
               </div>
@@ -217,12 +217,14 @@ export default function Catechists() {
         </div>
 
         {/* Filters */}
-        <Card variant="flat" className="border">
+        <Card variant="flat" className="border-border/80 bg-card/80">
           <CardContent className="pt-6">
-            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-              <div className="relative flex-1 max-w-sm">
+            <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+              <div className="relative min-w-0 flex-1 xl:max-w-sm">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
+                  type="search"
+                  aria-label="Tìm kiếm giáo lý viên"
                   placeholder="Tìm theo tên hoặc email..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
@@ -231,18 +233,18 @@ export default function Catechists() {
               </div>
               
               {userRole === 'admin' && (
-                <div className="flex gap-2">
-                  <Button variant="outline" onClick={handleExportCatechists} disabled={filteredCatechists.length === 0}>
+                <div className="flex flex-wrap gap-2 xl:justify-end">
+                  <Button variant="outline" className="h-11" onClick={handleExportCatechists} disabled={filteredCatechists.length === 0}>
                     <Download className="mr-2 h-4 w-4" />
                     Xuất CSV
                   </Button>
-                  <Button variant="outline" onClick={() => setIsImportDialogOpen(true)}>
+                  <Button variant="outline" className="h-11" onClick={() => setIsImportDialogOpen(true)}>
                     <Upload className="mr-2 h-4 w-4" />
                     Import từ CSV
                   </Button>
                   <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                     <DialogTrigger asChild>
-                      <Button variant="gold" onClick={() => setIsDialogOpen(true)}>
+                      <Button variant="gold" className="h-11" onClick={() => setIsDialogOpen(true)}>
                         <Plus className="mr-2 h-4 w-4" />
                         Thêm GLV
                       </Button>
@@ -342,6 +344,7 @@ export default function Catechists() {
                 <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
               </div>
             ) : filteredCatechists.length > 0 ? (
+              <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -384,6 +387,7 @@ export default function Catechists() {
                           <Button 
                             variant="ghost" 
                             size="icon"
+                            aria-label={`Xem thông tin ${catechist.name}`}
                             onClick={() => {
                               setSelectedCatechist(catechist);
                               setIsDetailOpen(true);
@@ -396,6 +400,7 @@ export default function Catechists() {
                               <Button 
                                 variant="ghost" 
                                 size="icon"
+                                aria-label={`Chỉnh sửa ${catechist.name}`}
                                 onClick={() => {
                                   setEditingCatechist(catechist);
                                   setIsEditDialogOpen(true);
@@ -406,6 +411,7 @@ export default function Catechists() {
                               <Button 
                                 variant="ghost" 
                                 size="icon" 
+                                aria-label={`Xóa ${catechist.name}`}
                                 className="text-destructive hover:text-destructive"
                                 onClick={() => handleDelete(catechist.user_id)}
                               >
@@ -419,6 +425,7 @@ export default function Catechists() {
                   ))}
                 </TableBody>
               </Table>
+              </div>
             ) : (
               <div className="flex flex-col items-center justify-center py-12">
                 <Database className="h-12 w-12 text-muted-foreground mb-4" />
