@@ -192,14 +192,17 @@ export default function Reports() {
       title="Báo cáo" 
       subtitle="Thống kê chuyên cần, điểm danh lễ và điểm số"
     >
-      <div className="space-y-6">
+      <div className="space-y-8">
         {/* Filters */}
-        <Card variant="flat" className="border">
+        <Card variant="flat" className="border-border/80 bg-card/80">
           <CardContent className="pt-6">
-            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-              <div className="flex gap-4">
+            <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
+              <div className="flex flex-col gap-2">
+                <label htmlFor="reports-class" className="text-sm font-medium text-foreground">
+                  Chi đoàn cần xem
+                </label>
                 <Select value={selectedClass} onValueChange={setSelectedClass}>
-                  <SelectTrigger className="w-[200px]">
+                  <SelectTrigger id="reports-class" className="h-11 w-full sm:w-[260px]">
                     <SelectValue placeholder="Chọn lớp" />
                   </SelectTrigger>
                   <SelectContent>
@@ -215,6 +218,7 @@ export default function Reports() {
                 variant="outline" 
                 onClick={() => handleExport('Excel')}
                 disabled={!selectedClass}
+                className="h-11"
               >
                 <Download className="mr-2 h-4 w-4" />
                 Xuất Excel
@@ -237,9 +241,9 @@ export default function Reports() {
         ) : (
           <>
             {/* Summary Stats */}
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+            <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
               <Card variant="elevated">
-                <CardContent className="flex items-center gap-4 p-6">
+                <CardContent className="flex items-center gap-4 p-5 sm:p-6">
                   <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-success/10">
                     <Users className="h-6 w-6 text-success" />
                   </div>
@@ -250,7 +254,7 @@ export default function Reports() {
                 </CardContent>
               </Card>
               <Card variant="elevated">
-                <CardContent className="flex items-center gap-4 p-6">
+                <CardContent className="flex items-center gap-4 p-5 sm:p-6">
                   <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
                     <Church className="h-6 w-6 text-primary" />
                   </div>
@@ -261,7 +265,7 @@ export default function Reports() {
                 </CardContent>
               </Card>
               <Card variant="gold">
-                <CardContent className="flex items-center gap-4 p-6">
+                <CardContent className="flex items-center gap-4 p-5 sm:p-6">
                   <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent/10">
                     <TrendingUp className="h-6 w-6 text-accent" />
                   </div>
@@ -275,7 +279,7 @@ export default function Reports() {
 
             {/* Reports Tabs */}
             <Tabs defaultValue="attendance" className="space-y-6">
-              <TabsList className="grid w-full grid-cols-3 lg:w-[400px]">
+              <TabsList className="grid h-11 w-full grid-cols-3 bg-muted/70 p-1 lg:w-[400px]">
                 <TabsTrigger value="attendance">Chuyên cần</TabsTrigger>
                 <TabsTrigger value="mass">Tham dự lễ</TabsTrigger>
                 <TabsTrigger value="scores">Điểm số</TabsTrigger>
@@ -295,7 +299,8 @@ export default function Reports() {
                   </CardHeader>
                   <CardContent>
                     {attendanceReport.length > 0 ? (
-                      <Table>
+                      <div className="overflow-x-auto">
+                        <Table>
                         <TableHeader>
                           <TableRow>
                             <TableHead className="w-[60px]">STT</TableHead>
@@ -322,7 +327,8 @@ export default function Reports() {
                             </TableRow>
                           ))}
                         </TableBody>
-                      </Table>
+                        </Table>
+                      </div>
                     ) : (
                       <p className="text-center text-muted-foreground py-8">Chưa có dữ liệu điểm danh</p>
                     )}
@@ -344,7 +350,8 @@ export default function Reports() {
                   </CardHeader>
                   <CardContent>
                     {massAttendanceReport.length > 0 ? (
-                      <Table>
+                      <div className="overflow-x-auto">
+                        <Table>
                         <TableHeader>
                           <TableRow>
                             <TableHead className="w-[60px]">STT</TableHead>
@@ -369,7 +376,8 @@ export default function Reports() {
                             </TableRow>
                           ))}
                         </TableBody>
-                      </Table>
+                        </Table>
+                      </div>
                     ) : (
                       <p className="text-center text-muted-foreground py-8">Chưa có dữ liệu điểm danh lễ</p>
                     )}
@@ -391,7 +399,8 @@ export default function Reports() {
                   </CardHeader>
                   <CardContent>
                     {scoreReport.length > 0 ? (
-                      <Table>
+                      <div className="overflow-x-auto">
+                        <Table>
                         <TableHeader>
                           <TableRow>
                             <TableHead className="w-[60px]">STT</TableHead>
@@ -424,7 +433,8 @@ export default function Reports() {
                             </TableRow>
                           ))}
                         </TableBody>
-                      </Table>
+                        </Table>
+                      </div>
                     ) : (
                       <p className="text-center text-muted-foreground py-8">Chưa có dữ liệu điểm số</p>
                     )}
