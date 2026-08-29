@@ -14,7 +14,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
+        sans: ['Noto Sans', 'sans-serif'],
+        heading: ['Be Vietnam Pro', 'Noto Sans', 'sans-serif'],
+        body: ['Noto Sans', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -49,6 +51,10 @@ export default {
         accent: {
           DEFAULT: "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
+        },
+        gold: {
+          DEFAULT: "hsl(var(--gold))",
+          foreground: "hsl(var(--gold-foreground))",
         },
         popover: {
           DEFAULT: "hsl(var(--popover))",
