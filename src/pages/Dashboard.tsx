@@ -15,7 +15,6 @@ import {
   GraduationCap, 
   UserCheck, 
   TrendingUp, 
-  Calendar, 
   Clock, 
   ChevronRight, 
   Loader2, 
@@ -24,6 +23,15 @@ import {
   Layers
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+
+const BRANCH_ORDER: Record<string, number> = {
+  'Chiên Con': 1,
+  'Ấu Nhi': 2,
+  'Thiếu Nhi': 3,
+  'Nghĩa Sĩ': 4,
+  'Hiệp Sĩ': 5,
+  'Dự Trưởng': 6,
+};
 
 function getClassInitials(name: string): string {
   // Bỏ tiền tố "Chi đoàn" không phân biệt hoa thường
@@ -224,10 +232,6 @@ export default function Dashboard() {
     });
   })();
 
-  const maxStudentCount = branchBreakdown.length > 0 
-    ? Math.max(...branchBreakdown.map(b => b.studentCount), 1)
-    : 1;
-
   return (
     <MainLayout 
       title="Tổng quan" 
@@ -423,84 +427,30 @@ export default function Dashboard() {
         {userRole === 'admin' && branchBreakdown.length > 0 && (
           <Card variant="elevated">
             <CardHeader>
-              <CardTitle>Phân bố đoàn viên theo Ngành</CardTitle>
-              <CardDescription>Tình hình phân bổ nhân số và lớp học tại giáo xứ</CardDescription>
+              <CardTitle>Phân bổ theo ngành</CardTitle>
+              <CardDescription>Số chi đoàn và đoàn viên trong từng ngành</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {branchBreakdown.map((b) => (
-                  <div key={b.id} className="space-y-2 rounded-lg border border-border p-4 bg-muted/10">
-                    <div className="flex items-center justify-between">
-                      <p className="font-semibold text-foreground">{b.name}</p>
-                      <span className="text-xs font-medium bg-primary/10 text-primary px-2 py-0.5 rounded-full">
-                        {b.classCount} chi đoàn
-                      </span>
-                    </div>
-                    
-                    {/* Progress Bar and counts */}
-                    <div className="space-y-1">
-                      <div className="flex items-center justify-between text-xs text-muted-foreground">
-                        <span>Đoàn viên:</span>
-                        <span className="font-bold text-foreground">{b.studentCount}</span>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {[...branchBreakdown]
+                  .sort((a, b) => (BRANCH_ORDER[a.name] ?? 99) - (BRANCH_ORDER[b.name] ?? 99))
+                  .map((b) => (
+                    <div key={b.id} className="flex items-center justify-between gap-4 rounded-2xl border border-border/80 bg-background/70 px-4 py-3">
+                      <div className="flex min-w-0 items-center gap-3">
+                        <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${b.studentCount > 0 ? 'bg-success' : 'bg-muted-foreground/30'}`} aria-hidden="true" />
+                        <p className="truncate font-semibold text-foreground">{b.name}</p>
                       </div>
-                      <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
-                        <div 
-                          className="h-full rounded-full bg-gradient-to-r from-primary to-accent transition-all duration-500" 
-                          style={{ width: `${(b.studentCount / maxStudentCount) * 100}%` }}
-                        />
+                      <div className="shrink-0 text-right">
+                        <p className="font-bold tabular-nums text-foreground">{b.studentCount}</p>
+                        <p className="text-[11px] text-muted-foreground">{b.classCount} chi đoàn</p>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
               </div>
             </CardContent>
           </Card>
         )}
 
-        {/* Upcoming Schedule (Lịch sinh hoạt chi đoàn tuần này) */}
-        <Card variant="elevated">
-          <CardHeader>
-            <CardTitle>Lịch sinh hoạt chi đoàn tuần này</CardTitle>
-            <CardDescription>
-              {new Date().toLocaleDateString('vi-VN', {
-                weekday: 'long',
-                day: 'numeric',
-                month: 'long',
-                year: 'numeric'
-              })}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <div className="flex items-center justify-center py-8">
-                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-              </div>
-            ) : displayClasses && displayClasses.length > 0 ? (
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4">
-                {displayClasses.map(cls => (
-                  <div key={cls.id} className="flex items-center gap-4 rounded-lg border border-border p-4 bg-card hover:shadow-custom-sm transition-all">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent/10">
-                      <Calendar className="h-5 w-5 text-accent" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-foreground">{cls.name}</p>
-                      <div className="flex flex-col gap-0.5 mt-0.5">
-                        <p className="text-xs text-muted-foreground">{cls.schedule || 'CN | 9:00 - 10:30'}</p>
-                        {cls.branches && (
-                          <p className="text-[10px] text-accent font-semibold">{cls.branches.name}</p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-center py-8 text-muted-foreground">
-                Chưa có lịch sinh hoạt nào được xếp
-              </p>
-            )}
-          </CardContent>
-        </Card>
       </div>
     </MainLayout>
   );
