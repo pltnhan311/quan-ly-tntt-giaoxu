@@ -106,3 +106,32 @@ $$;
 
 REVOKE ALL ON FUNCTION public.assign_branch_leader(uuid, uuid) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.assign_branch_leader(uuid, uuid) TO authenticated;
+
+CREATE OR REPLACE FUNCTION public.prevent_leader_role_demotion()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path TO 'public'
+AS $$
+BEGIN
+  IF OLD.role = 'truong_nganh'::public.app_role
+     AND NEW.role NOT IN ('truong_nganh'::public.app_role, 'admin'::public.app_role)
+     AND EXISTS (
+       SELECT 1
+       FROM public.branches b
+       JOIN public.catechists c ON c.id = b.leader_catechist_id
+       WHERE c.user_id = NEW.user_id
+     ) THEN
+    RAISE EXCEPTION 'Unassign this catechist from all branches before changing the role'
+      USING ERRCODE = '23514';
+  END IF;
+
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS protect_active_branch_leader_role ON public.user_roles;
+CREATE TRIGGER protect_active_branch_leader_role
+  BEFORE UPDATE OF role ON public.user_roles
+  FOR EACH ROW
+  EXECUTE FUNCTION public.prevent_leader_role_demotion();
