@@ -94,15 +94,19 @@ export default function Users() {
   return (
     <MainLayout title="Quản lý người dùng">
       <div className="space-y-8">
-        <div className="flex items-center gap-4 rounded-xl border border-border/70 bg-card/70 p-4 sm:p-5">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-            <UsersIcon className="h-6 w-6 text-primary" />
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-primary p-6 text-primary-foreground shadow-custom-lg sm:p-8">
+          <div className="absolute -right-10 -top-16 h-48 w-48 rounded-full bg-accent/15 blur-2xl" aria-hidden="true" />
+          <div className="relative flex items-center gap-4">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gold text-gold-foreground shadow-gold">
+            <UsersIcon className="h-6 w-6" />
           </div>
           <div>
+            <p className="mb-1 text-xs font-bold uppercase tracking-[0.2em] text-gold">Quyền truy cập</p>
             <h2 className="font-heading text-xl font-bold sm:text-2xl">Quản lý người dùng</h2>
-            <p className="text-muted-foreground">
+            <p className="text-primary-foreground/70">
               Quản lý phân quyền và thông tin người dùng
             </p>
+          </div>
           </div>
         </div>
 
