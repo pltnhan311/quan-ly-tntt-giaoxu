@@ -179,7 +179,7 @@ export default function Catechists() {
       subtitle="Danh sách và thông tin GLV"
     >
       <div className="space-y-8">
-        <section className="relative overflow-hidden rounded-3xl bg-gradient-primary px-6 py-7 text-[hsl(var(--hero-foreground))] shadow-custom-lg sm:px-8 sm:py-8">
+        <section className="relative overflow-hidden rounded-3xl gradient-primary px-6 py-7 text-[hsl(var(--hero-foreground))] shadow-custom-lg sm:px-8 sm:py-8">
           <div className="absolute -right-10 -top-16 h-48 w-48 rounded-full bg-accent/15 blur-2xl" aria-hidden="true" />
           <div className="relative flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
             <div>

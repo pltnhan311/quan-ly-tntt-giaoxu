@@ -25,7 +25,7 @@ export default function Settings() {
       subtitle="Quản lý cấu hình và thiết lập hệ thống"
     >
       <div className="max-w-5xl space-y-8">
-        <section className="relative overflow-hidden rounded-3xl bg-gradient-primary px-6 py-7 text-[hsl(var(--hero-foreground))] shadow-custom-lg sm:px-8 sm:py-8">
+        <section className="relative overflow-hidden rounded-3xl gradient-primary px-6 py-7 text-[hsl(var(--hero-foreground))] shadow-custom-lg sm:px-8 sm:py-8">
           <div className="absolute -right-10 -top-16 h-48 w-48 rounded-full border-[18px] border-gold/15" aria-hidden="true" />
           <div className="relative">
             <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-gold">Trung tâm vận hành</p>

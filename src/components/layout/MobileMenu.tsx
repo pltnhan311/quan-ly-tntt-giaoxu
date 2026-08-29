@@ -72,11 +72,11 @@ export function MobileMenu({ open, onOpenChange }: MobileMenuProps) {
                       className={cn(
                         'flex min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors duration-200',
                         isActive
-                          ? 'bg-sidebar-accent text-sidebar-primary'
+                          ? 'bg-sidebar-primary text-sidebar-primary-foreground'
                           : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground'
                       )}
                     >
-                      <item.icon className={cn('h-5 w-5 shrink-0', isActive && 'text-sidebar-primary')} aria-hidden="true" />
+                      <item.icon className={cn('h-5 w-5 shrink-0', isActive && 'text-sidebar-primary-foreground')} aria-hidden="true" />
                       <span>{item.label}</span>
                     </Link>
                   );

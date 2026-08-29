@@ -66,7 +66,7 @@ export function Sidebar({ collapsed, onCollapseChange }: SidebarProps) {
                         : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground'
                     )}
                   >
-                    <item.icon className={cn('h-5 w-5 shrink-0', isActive && 'text-sidebar-primary')} aria-hidden="true" />
+                    <item.icon className={cn('h-5 w-5 shrink-0', isActive && 'text-sidebar-primary-foreground')} aria-hidden="true" />
                     {!collapsed && <span>{item.label}</span>}
                   </Link>
                 );

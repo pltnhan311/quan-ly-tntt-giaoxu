@@ -238,7 +238,7 @@ export default function Dashboard() {
       }
     >
       <div className="space-y-8">
-        <section className="relative overflow-hidden rounded-3xl bg-gradient-hero px-6 py-7 text-[hsl(var(--hero-foreground))] shadow-custom-lg sm:px-8 sm:py-9">
+        <section className="relative overflow-hidden rounded-3xl gradient-hero px-6 py-7 text-[hsl(var(--hero-foreground))] shadow-custom-lg sm:px-8 sm:py-9">
           <div className="absolute -right-16 -top-20 h-56 w-56 rounded-full border-[24px] border-gold/15" aria-hidden="true" />
           <div className="absolute -bottom-28 right-24 h-48 w-48 rounded-full bg-accent/10 blur-2xl" aria-hidden="true" />
           <div className="relative flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
