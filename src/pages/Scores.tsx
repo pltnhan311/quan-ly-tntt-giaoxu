@@ -260,11 +260,11 @@ export default function Scores() {
       title="Quản lý Điểm số" 
       subtitle="Nhập và quản lý điểm thuyết trình, học kỳ"
     >
-      <div className="space-y-6">
+      <div className="space-y-8">
         {/* Stats */}
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
           <Card variant="elevated">
-            <CardContent className="flex items-center gap-4 p-6">
+            <CardContent className="flex items-center gap-4 p-5">
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent/10">
                 <Star className="h-6 w-6 text-accent" />
               </div>
@@ -275,7 +275,7 @@ export default function Scores() {
             </CardContent>
           </Card>
           <Card variant="elevated">
-            <CardContent className="flex items-center gap-4 p-6">
+            <CardContent className="flex items-center gap-4 p-5">
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
                 <BookOpen className="h-6 w-6 text-primary" />
               </div>
@@ -286,7 +286,7 @@ export default function Scores() {
             </CardContent>
           </Card>
           <Card variant="elevated">
-            <CardContent className="flex items-center gap-4 p-6">
+            <CardContent className="flex items-center gap-4 p-5">
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-success/10">
                 <Award className="h-6 w-6 text-success" />
               </div>
@@ -299,13 +299,13 @@ export default function Scores() {
         </div>
 
         {/* Selection */}
-        <Card variant="flat" className="border">
+        <Card variant="flat" className="border-border/80 bg-card/80">
           <CardContent className="pt-6">
-            <div className="flex flex-col gap-4 md:flex-row md:items-end">
-              <div className="space-y-2 flex-1 max-w-xs">
-                <label className="text-sm font-medium">Chọn lớp</label>
+            <div className="flex flex-col gap-4 xl:flex-row xl:items-end">
+              <div className="max-w-xs flex-1 space-y-2">
+                <label htmlFor="scores-class" className="text-sm font-medium">Chọn lớp</label>
                 <Select value={selectedClass} onValueChange={handleClassChange}>
-                  <SelectTrigger>
+                  <SelectTrigger id="scores-class" className="h-11">
                     <SelectValue placeholder="Chọn lớp để nhập điểm" />
                   </SelectTrigger>
                   <SelectContent>
@@ -317,10 +317,10 @@ export default function Scores() {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-2 flex-1 max-w-xs">
-                <label className="text-sm font-medium">Loại điểm</label>
+              <div className="max-w-xs flex-1 space-y-2">
+                <label htmlFor="scores-type" className="text-sm font-medium">Loại điểm</label>
                 <Select value={scoreType} onValueChange={(v: typeof scoreType) => setScoreType(v)}>
-                  <SelectTrigger>
+                  <SelectTrigger id="scores-type" className="h-11">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -336,6 +336,7 @@ export default function Scores() {
                   <Button 
                     variant={isEditing ? 'outline' : 'gold'}
                     onClick={() => isEditing ? setIsEditing(false) : startEditing()}
+                    className="h-11"
                     disabled={saveMutation.isPending}
                   >
                     {isEditing ? 'Hủy' : 'Nhập điểm'}
@@ -344,6 +345,7 @@ export default function Scores() {
                     <Button 
                       variant="success" 
                       onClick={handleSaveScores}
+                      className="h-11"
                       disabled={saveMutation.isPending}
                     >
                       {saveMutation.isPending ? (
@@ -397,6 +399,7 @@ export default function Scores() {
               </CardDescription>
             </CardHeader>
             <CardContent>
+              <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -487,6 +490,7 @@ export default function Scores() {
                   })}
                 </TableBody>
               </Table>
+              </div>
             </CardContent>
           </Card>
         )}
