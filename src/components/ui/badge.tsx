@@ -14,7 +14,7 @@ const badgeVariants = cva(
         outline: "text-foreground",
         success: "border-transparent bg-success/10 text-success border-success/20",
         warning: "border-transparent bg-warning/10 text-warning-foreground border-warning/20",
-        gold: "border-transparent bg-accent/10 text-accent-foreground border-accent/20",
+        gold: "border-accent/25 bg-accent/15 text-secondary-foreground hover:bg-accent/25",
         present: "border-transparent bg-success/10 text-success",
         absent: "border-transparent bg-destructive/10 text-destructive",
         late: "border-transparent bg-warning/10 text-warning-foreground",
