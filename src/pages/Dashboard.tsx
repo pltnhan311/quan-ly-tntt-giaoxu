@@ -237,9 +237,9 @@ export default function Dashboard() {
           : "Chào mừng quay trở lại! Đây là tình hình hôm nay."
       }
     >
-      <div className="space-y-6">
+      <div className="space-y-8">
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {statCards.map((card, idx) => (
             <StatCard 
               key={idx}
@@ -253,13 +253,13 @@ export default function Dashboard() {
         </div>
 
         {/* Main Content Grid */}
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1.6fr)_minmax(300px,0.8fr)]">
           
           {/* Classes Overview (Danh sách chi đoàn) */}
-          <Card variant="elevated" className="lg:col-span-2">
+          <Card variant="elevated" className="min-w-0">
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
-                <CardTitle className="font-sans">Danh sách chi đoàn</CardTitle>
+                <CardTitle className="font-heading">Danh sách chi đoàn</CardTitle>
                 <CardDescription>
                   {userRole === 'admin' 
                     ? "Các chi đoàn trong niên khóa hiện tại" 
@@ -286,16 +286,16 @@ export default function Dashboard() {
                   {displayClasses.slice(0, 5).map((cls, index) => (
                     <div 
                       key={cls.id} 
-                      className="flex items-center justify-between rounded-lg border border-border bg-card p-4 transition-all hover:shadow-custom-sm animate-fade-in"
+                      className="flex flex-col gap-3 rounded-lg border border-border bg-card p-4 transition-shadow hover:shadow-custom-sm animate-fade-in sm:flex-row sm:items-center sm:justify-between"
                       style={{ animationDelay: `${index * 100}ms` }}
                     >
-                      <div className="flex items-center gap-4">
+                      <div className="flex min-w-0 items-center gap-4">
                         <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-lg font-bold text-primary">
                           {getClassInitials(cls.name)}
                         </div>
-                        <div>
-                          <p className="font-medium text-foreground">{cls.name}</p>
-                          <div className="flex items-center gap-2 mt-1">
+                        <div className="min-w-0">
+                          <p className="truncate font-medium text-foreground">{cls.name}</p>
+                          <div className="mt-1 flex flex-wrap items-center gap-2">
                             <span className="text-xs text-muted-foreground">{cls.schedule || 'CN | 9:00 - 10:30'}</span>
                             {cls.branches && (
                               <Badge variant="outline" className="text-[10px] py-0 px-1.5 h-4 bg-muted/30">
@@ -305,7 +305,7 @@ export default function Dashboard() {
                           </div>
                         </div>
                       </div>
-                      <div className="flex items-center gap-6">
+                      <div className="flex w-full items-center justify-between gap-4 sm:w-auto sm:justify-end">
                         <div className="text-right">
                           <p className="text-sm font-medium text-foreground">
                             {cls.students?.[0]?.count || 0} đoàn viên
@@ -342,19 +342,19 @@ export default function Dashboard() {
                 <CardTitle className="text-lg">Thao tác nhanh</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Button variant="default" className="w-full justify-start" asChild>
+                <Button variant="default" className="h-11 w-full justify-start" asChild>
                   <Link to="/attendance">
                     <Clock className="mr-2 h-4 w-4" />
                     Điểm danh hôm nay
                   </Link>
                 </Button>
-                <Button variant="outline" className="w-full justify-start" asChild>
+                <Button variant="outline" className="h-11 w-full justify-start" asChild>
                   <Link to="/students">
                     <Users className="mr-2 h-4 w-4" />
                     Xem danh sách đoàn viên
                   </Link>
                 </Button>
-                <Button variant="outline" className="w-full justify-start" asChild>
+                <Button variant="outline" className="h-11 w-full justify-start" asChild>
                   <Link to="/scores">
                     <TrendingUp className="mr-2 h-4 w-4" />
                     Nhập điểm
