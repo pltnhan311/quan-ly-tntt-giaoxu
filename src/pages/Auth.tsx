@@ -73,12 +73,12 @@ export default function Auth() {
           </div>
 
           <div className="max-w-xl pb-8">
-            <p className="mb-4 text-sm font-medium uppercase tracking-[0.2em] text-gold">Cùng phục vụ và đồng hành</p>
+            <p className="mb-4 text-sm font-medium uppercase tracking-[0.2em] text-gold">Cùng nhau phục vụ</p>
             <h1 className="font-heading text-4xl font-semibold leading-tight text-[hsl(var(--hero-foreground))] xl:text-5xl">
-              Quản lý hoạt động giáo lý rõ ràng, nhẹ nhàng hơn.
+              Đồng hành cùng từng chi đoàn.
             </h1>
             <p className="mt-5 max-w-lg text-base leading-7 text-[hsl(var(--hero-foreground)/0.84)]">
-              Một không gian chung để Admin, Trưởng ngành và Giáo lý viên phối hợp chăm sóc từng chi đoàn.
+              Quản lý lớp học, đoàn viên và sinh hoạt trên một không gian chung.
             </p>
           </div>
 
