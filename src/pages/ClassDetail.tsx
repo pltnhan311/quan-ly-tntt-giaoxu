@@ -55,12 +55,10 @@ export default function ClassDetail() {
     const isAssignedToThisClass = assignedCatechists.some(ac => ac.id === cat.id);
     if (isAssignedToThisClass) return false;
 
-    // 2. Check if already assigned to ANY class in the current academic year
-    const isAssignedInCurrentYear = cat.class_catechists?.some(cc => 
-      cc.classes?.academic_year_id === classInfo?.academic_year_id
-    );
+    // 2. A catechist can only be assigned to one class in the system.
+    const isAssignedToAnyClass = (cat.class_catechists?.length || 0) > 0;
 
-    return !isAssignedInCurrentYear;
+    return !isAssignedToAnyClass;
   }) || [];
 
   if (classLoading || studentsLoading) {

@@ -17,7 +17,7 @@ import {
 import { useAcademicYears, useCreateAcademicYear, useUpdateAcademicYear, useDeleteAcademicYear } from '@/hooks/useAcademicYears';
 import { useClasses } from '@/hooks/useClasses';
 import { useStudents } from '@/hooks/useStudents';
-import { useBranches, useUpdateBranch } from '@/hooks/useBranches';
+import { useBranches, useAssignBranchLeader } from '@/hooks/useBranches';
 import { useCatechists } from '@/hooks/useCatechists';
 import { Plus, Calendar, Users, GraduationCap, MoreVertical, Pencil, Trash2, Loader2, Database, ChevronDown, ChevronRight, UserCheck } from 'lucide-react';
 import {
@@ -63,7 +63,7 @@ export default function AcademicYears() {
   const createAcademicYear = useCreateAcademicYear();
   const updateAcademicYear = useUpdateAcademicYear();
   const deleteAcademicYear = useDeleteAcademicYear();
-  const updateBranch = useUpdateBranch();
+  const assignBranchLeader = useAssignBranchLeader();
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [expandedYearId, setExpandedYearId] = useState<string | null>(null);
@@ -122,9 +122,9 @@ export default function AcademicYears() {
   };
 
   const handleAssignLeader = (branchId: string, catechistId: string | null) => {
-    updateBranch.mutate({
-      id: branchId,
-      leader_catechist_id: catechistId || null,
+    assignBranchLeader.mutate({
+      branchId,
+      catechistId,
     });
   };
 
@@ -327,6 +327,11 @@ export default function AcademicYears() {
                               .map((branch) => {
                               const colorClass = BRANCH_COLORS[branch.name] || 'bg-gray-100 text-gray-800 border-gray-200';
                               const branchClasses = (classes || []).filter(c => c.branch_id === branch.id);
+                              const assignedToAnotherBranch = new Set(
+                                (expandedBranches || [])
+                                  .filter(otherBranch => otherBranch.id !== branch.id && otherBranch.leader_catechist_id)
+                                  .map(otherBranch => otherBranch.leader_catechist_id as string)
+                              );
                               return (
                                 <div
                                   key={branch.id}
@@ -347,7 +352,7 @@ export default function AcademicYears() {
                                       </SelectTrigger>
                                       <SelectContent>
                                         <SelectItem value="none">— Chưa phân công —</SelectItem>
-                                        {(catechists || []).map(cat => (
+                                        {(catechists || []).filter(cat => !assignedToAnotherBranch.has(cat.id)).map(cat => (
                                           <SelectItem key={cat.id} value={cat.id}>
                                             {cat.name}
                                           </SelectItem>

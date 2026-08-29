@@ -79,6 +79,40 @@ export function useMyBranch() {
   });
 }
 
+export function useAssignBranchLeader() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ branchId, catechistId }: { branchId: string; catechistId: string | null }) => {
+      const { data, error } = await supabase.rpc('assign_branch_leader', {
+        p_branch_id: branchId,
+        p_catechist_id: catechistId,
+      });
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['branches'] });
+      queryClient.invalidateQueries({ queryKey: ['my-branch'] });
+      queryClient.invalidateQueries({ queryKey: ['users-with-roles'] });
+      queryClient.invalidateQueries({ queryKey: ['classes'] });
+      queryClient.invalidateQueries({ queryKey: ['students'] });
+      queryClient.invalidateQueries({ queryKey: ['catechists'] });
+      toast.success('Đã cập nhật phân công trưởng ngành và quyền truy cập');
+    },
+    onError: (error: { code?: string; message?: string }) => {
+      if (error.code === '23505') {
+        toast.error('GLV này đã là trưởng một ngành khác');
+      } else if (error.code === '42501') {
+        toast.error('Chỉ quản trị viên mới được phân công trưởng ngành');
+      } else {
+        toast.error('Không thể cập nhật phân công: ' + (error.message || 'Lỗi không xác định'));
+      }
+    },
+  });
+}
+
 export function useCreateBranch() {
   const queryClient = useQueryClient();
   return useMutation({

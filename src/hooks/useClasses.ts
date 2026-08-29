@@ -223,7 +223,11 @@ export function useAssignCatechist() {
     },
     onError: (error) => {
       console.error('Error assigning catechist:', error);
-      toast.error('Không thể gán giáo lý viên');
+      if ((error as { code?: string }).code === '23505') {
+        toast.error('Giáo lý viên này đã được gán vào một lớp khác');
+      } else {
+        toast.error('Không thể gán giáo lý viên');
+      }
     },
   });
 }
