@@ -1,6 +1,5 @@
-import { Search, Menu } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 
 interface HeaderProps {
   title: string;
@@ -29,12 +28,7 @@ export function Header({ title, subtitle, onMenuClick }: HeaderProps) {
         </div>
       </div>
       
-      <div className="flex items-center gap-2 md:gap-4">
-        <div className="relative hidden lg:block">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input placeholder="Tìm kiếm..." className="w-64 pl-9" />
-        </div>
-      </div>
+      <div aria-hidden="true" className="hidden h-2 w-24 rounded-full bg-primary/10 sm:block" />
     </header>
   );
 }

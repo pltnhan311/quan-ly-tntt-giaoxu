@@ -104,7 +104,7 @@ export function Sidebar({ collapsed, onCollapseChange }: SidebarProps) {
         type="button"
         aria-label={collapsed ? 'Mở rộng thanh điều hướng' : 'Thu gọn thanh điều hướng'}
         onClick={() => onCollapseChange(!collapsed)}
-        className="absolute -right-3 top-20 flex h-7 w-7 items-center justify-center rounded-full border border-sidebar-border bg-sidebar text-sidebar-foreground shadow-md transition-colors hover:bg-sidebar-accent"
+        className="absolute -right-4 top-20 flex h-9 w-9 items-center justify-center rounded-full border border-sidebar-border bg-sidebar text-sidebar-foreground shadow-md transition-colors hover:bg-sidebar-accent"
       >
         {collapsed ? <ChevronRight className="h-4 w-4" aria-hidden="true" /> : <ChevronLeft className="h-4 w-4" aria-hidden="true" />}
       </button>

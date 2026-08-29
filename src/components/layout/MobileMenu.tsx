@@ -24,7 +24,7 @@ export function MobileMenu({ open, onOpenChange }: MobileMenuProps) {
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="left" className="w-72 bg-sidebar p-0 text-sidebar-foreground">
+      <SheetContent side="left" className="flex w-72 flex-col bg-sidebar p-0 text-sidebar-foreground">
         <SheetHeader className="border-b border-sidebar-border p-4">
           <SheetTitle className="flex items-center gap-3 text-sidebar-foreground">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg gradient-gold">
