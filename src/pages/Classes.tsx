@@ -212,12 +212,12 @@ export default function Classes() {
       title="Quản lý Chi đoàn" 
       subtitle="Tạo và quản lý các chi đoàn trong từng ngành"
     >
-      <div className="space-y-6">
+      <div className="space-y-8">
         {/* Header */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex gap-3 flex-wrap">
+          <div className="flex flex-wrap items-center gap-3">
             <Select value={selectedYearFilter} onValueChange={(v) => { setSelectedYearFilter(v); setSelectedBranchFilter('all'); }}>
-              <SelectTrigger className="w-[160px]">
+              <SelectTrigger className="h-11 w-full sm:w-[160px]">
                 <SelectValue placeholder="Tất cả niên khóa" />
               </SelectTrigger>
               <SelectContent>
@@ -230,7 +230,7 @@ export default function Classes() {
               </SelectContent>
             </Select>
             <Select value={selectedBranchFilter} onValueChange={setSelectedBranchFilter} disabled={selectedYearFilter === 'all'}>
-              <SelectTrigger className="w-[160px]">
+              <SelectTrigger className="h-11 w-full sm:w-[160px]">
                 <SelectValue placeholder="Tất cả ngành" />
               </SelectTrigger>
               <SelectContent>
@@ -247,7 +247,7 @@ export default function Classes() {
           {userRole === 'admin' && (
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button variant="gold" disabled={!academicYears || academicYears.length === 0}>
+                <Button variant="gold" className="h-11" disabled={!academicYears || academicYears.length === 0}>
                   <Plus className="mr-2 h-4 w-4" />
                   Tạo lớp mới
                 </Button>
@@ -506,7 +506,7 @@ export default function Classes() {
             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
           </div>
         ) : filteredClasses.length > 0 ? (
-          <div className={userRole === 'admin' ? "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3" : "grid grid-cols-1 gap-6 md:grid-cols-2"}>
+          <div className={userRole === 'admin' ? "grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3" : "grid grid-cols-1 gap-5 md:grid-cols-2"}>
             {filteredClasses.map((cls, index) => {
               const isAdmin = userRole === 'admin';
               
@@ -515,7 +515,7 @@ export default function Classes() {
                   <Card 
                     key={cls.id} 
                     variant="interactive"
-                    className="animate-fade-in cursor-pointer overflow-hidden flex flex-col justify-between"
+                    className="animate-fade-in flex cursor-pointer flex-col justify-between overflow-hidden"
                     style={{ animationDelay: `${index * 100}ms` }}
                     onClick={() => navigate(`/classes/${cls.id}`)}
                   >
