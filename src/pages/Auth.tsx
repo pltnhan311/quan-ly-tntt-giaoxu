@@ -86,7 +86,7 @@ export default function Auth() {
         </div>
       </section>
 
-      <section className="flex min-h-dvh items-center justify-center px-5 py-10 sm:px-8 lg:px-14 xl:px-24" aria-label="Đăng nhập hệ thống">
+      <section className="flex min-h-dvh items-center justify-center bg-secondary/20 px-5 py-10 sm:px-8 lg:px-14 xl:px-24" aria-label="Đăng nhập hệ thống">
         <div className="w-full max-w-md">
           <div className="mb-8 flex items-center gap-3 lg:hidden">
             <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gold shadow-gold">
