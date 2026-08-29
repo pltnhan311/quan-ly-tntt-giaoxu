@@ -91,6 +91,10 @@ export function useUpdateUserRole() {
 
   return useMutation({
     mutationFn: async ({ userId, newRole }: { userId: string; newRole: AppRole }) => {
+      if (newRole === 'truong_nganh') {
+        throw new Error('Trưởng ngành chỉ được cấp thông qua phân công ngành');
+      }
+
       // Get current role to check if we need to sync catechists
       const { data: currentRole } = await supabase
         .from('user_roles')

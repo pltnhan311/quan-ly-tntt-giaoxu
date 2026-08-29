@@ -162,43 +162,46 @@ export default function Users() {
                         <TableCell>{user.email || "—"}</TableCell>
                         <TableCell>{user.phone || "—"}</TableCell>
                         <TableCell>
-                          <Select
-                            value={user.role}
-                            onValueChange={(value) =>
-                              handleRoleChange(user.user_id, value as AppRole)
-                            }
-                          >
-                            <SelectTrigger className="h-10 w-[160px]" aria-label={`Vai trò của ${user.name}`}>
-                              <SelectValue>
-                                <Badge variant={roleBadgeVariants[user.role]}>
-                                  {roleLabels[user.role]}
-                                </Badge>
-                              </SelectValue>
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="admin">
-                                <div className="flex items-center gap-2">
-                                  <Shield className="h-4 w-4" />
-                                  {roleLabels.admin}
-                                </div>
-                              </SelectItem>
-                              <SelectItem value="truong_nganh">
-                                <div className="flex items-center gap-2">
-                                  <Shield className="h-4 w-4 text-orange-500" />
-                                  {roleLabels.truong_nganh}
-                                </div>
-                              </SelectItem>
-                              <SelectItem value="glv">
-                                <div className="flex items-center gap-2">
-                                  <UsersIcon className="h-4 w-4" />
-                                  {roleLabels.glv}
-                                </div>
-                              </SelectItem>
-                              <SelectItem value="student">
-                                {roleLabels.student}
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
+                          {user.role === 'truong_nganh' ? (
+                            <div className="flex w-[190px] flex-col gap-1">
+                              <Badge variant={roleBadgeVariants[user.role]} className="w-fit">
+                                {roleLabels[user.role]}
+                              </Badge>
+                              <span className="text-[11px] text-muted-foreground">Quản lý từ phân công ngành</span>
+                            </div>
+                          ) : (
+                            <Select
+                              value={user.role}
+                              onValueChange={(value) =>
+                                handleRoleChange(user.user_id, value as AppRole)
+                              }
+                            >
+                              <SelectTrigger className="h-10 w-[160px]" aria-label={`Vai trò của ${user.name}`}>
+                                <SelectValue>
+                                  <Badge variant={roleBadgeVariants[user.role]}>
+                                    {roleLabels[user.role]}
+                                  </Badge>
+                                </SelectValue>
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="admin">
+                                  <div className="flex items-center gap-2">
+                                    <Shield className="h-4 w-4" />
+                                    {roleLabels.admin}
+                                  </div>
+                                </SelectItem>
+                                <SelectItem value="glv">
+                                  <div className="flex items-center gap-2">
+                                    <UsersIcon className="h-4 w-4" />
+                                    {roleLabels.glv}
+                                  </div>
+                                </SelectItem>
+                                <SelectItem value="student">
+                                  {roleLabels.student}
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                          )}
                         </TableCell>
                         <TableCell>
                           {format(new Date(user.created_at), "dd/MM/yyyy", {
