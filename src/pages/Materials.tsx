@@ -264,12 +264,12 @@ export default function Materials() {
       title="Tài liệu Giáo án" 
       subtitle="Upload và quản lý tài liệu học tập"
     >
-      <div className="space-y-6">
+      <div className="space-y-8">
         {/* Header */}
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div className="flex items-center gap-4">
+        <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+          <div className="flex flex-wrap items-center gap-4">
             <Select value={selectedClass} onValueChange={setSelectedClass}>
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="h-11 w-full sm:w-[180px]">
                 <SelectValue placeholder="Chọn lớp" />
               </SelectTrigger>
               <SelectContent>
@@ -291,7 +291,7 @@ export default function Materials() {
               if (!open) resetForm();
             }}>
               <DialogTrigger asChild>
-                <Button variant="gold">
+                <Button variant="gold" className="h-11">
                   <Upload className="mr-2 h-4 w-4" />
                   Upload tài liệu
                 </Button>
@@ -454,9 +454,9 @@ export default function Materials() {
             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
           </div>
         ) : materials && materials.length > 0 ? (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {materials.map((material) => (
-              <Card key={material.id} className="group hover:shadow-md transition-shadow">
+              <Card key={material.id} className="group">
                 <CardContent className="p-4">
                   <div className="flex items-start gap-3">
                     <div className="p-2 bg-primary/10 rounded-lg">
@@ -500,7 +500,7 @@ export default function Materials() {
                       </div>
                     </div>
                   </div>
-                  <div className="flex gap-2 mt-4">
+                  <div className="mt-4 flex gap-2">
                     <Button
                       variant="outline"
                       size="sm"
@@ -528,7 +528,7 @@ export default function Materials() {
                         className="text-destructive hover:text-destructive hover:bg-destructive/10"
                         onClick={() => setDeleteTarget(material)}
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="h-4 w-4" aria-hidden="true" />
                       </Button>
                     )}
                   </div>
@@ -542,7 +542,7 @@ export default function Materials() {
               <FileText className="h-12 w-12 text-muted-foreground mb-4" />
               <h3 className="text-lg font-semibold mb-2">Chưa có tài liệu</h3>
               <p className="text-muted-foreground text-center mb-4">
-                Upload tài liệu giáo án PDF hoặc Word để chia sẻ với GLV và học viên
+                Upload tài liệu giáo án PDF hoặc Word để chia sẻ trong đội ngũ giáo lý viên
               </p>
               {userRole !== 'truong_nganh' && (
                 <Button variant="gold" onClick={() => setIsDialogOpen(true)}>
