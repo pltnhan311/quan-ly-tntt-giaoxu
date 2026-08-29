@@ -133,9 +133,9 @@ export default function AcademicYears() {
       title="Quản lý Niên khóa" 
       subtitle="Tạo và quản lý các niên khóa học — Tự động tạo 6 ngành mỗi niên khóa"
     >
-      <div className="space-y-6">
+      <div className="space-y-8">
         {/* Header Actions */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-muted-foreground">
               Tổng cộng {academicYears?.length || 0} niên khóa
@@ -143,7 +143,7 @@ export default function AcademicYears() {
           </div>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button variant="gold">
+              <Button variant="gold" className="h-11">
                 <Plus className="mr-2 h-4 w-4" />
                 Tạo niên khóa
               </Button>
@@ -222,7 +222,7 @@ export default function AcademicYears() {
                   className="animate-fade-in"
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
-                  <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-3">
+                  <CardHeader className="flex flex-col gap-4 pb-3 sm:flex-row sm:items-start sm:justify-between sm:space-y-0">
                     <div className="flex-1">
                       <CardTitle className="flex items-center gap-2">
                         {year.name}
@@ -234,12 +234,12 @@ export default function AcademicYears() {
                         {formatDate(year.start_date)} - {formatDate(year.end_date)}
                       </CardDescription>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => setExpandedYearId(isExpanded ? null : year.id)}
-                        className="text-muted-foreground"
+                        className="h-10 text-muted-foreground"
                       >
                         {isExpanded ? (
                           <ChevronDown className="h-4 w-4 mr-1" />
@@ -250,7 +250,7 @@ export default function AcademicYears() {
                       </Button>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
+                          <Button variant="ghost" size="icon" aria-label={`Tùy chọn niên khóa ${year.name}`}>
                             <MoreVertical className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
@@ -277,8 +277,8 @@ export default function AcademicYears() {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="grid grid-cols-2 gap-4 mb-4">
-                      <div className="flex items-center gap-3 rounded-lg bg-muted/50 p-3">
+                    <div className="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                      <div className="flex items-center gap-3 rounded-lg bg-muted/50 p-4">
                         <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
                           <GraduationCap className="h-5 w-5 text-primary" />
                         </div>
@@ -287,7 +287,7 @@ export default function AcademicYears() {
                           <p className="text-xs text-muted-foreground">Chi đoàn</p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-3 rounded-lg bg-muted/50 p-3">
+                      <div className="flex items-center gap-3 rounded-lg bg-muted/50 p-4">
                         <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent/10">
                           <Users className="h-5 w-5 text-accent" />
                         </div>
@@ -300,13 +300,13 @@ export default function AcademicYears() {
 
                     {/* Branches expanded view */}
                     {isExpanded && (
-                      <div className="mt-2 border-t pt-4">
-                        <h4 className="text-sm font-semibold text-muted-foreground mb-3 flex items-center gap-1.5">
+                      <div className="mt-2 border-t pt-5">
+                        <h4 className="mb-3 flex items-center gap-1.5 text-sm font-semibold text-muted-foreground">
                           <GraduationCap className="h-4 w-4" />
                           Các ngành trong niên khóa
                         </h4>
                         {expandedBranches ? (
-                          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                             {[...expandedBranches]
                               .sort((a, b) => (BRANCH_ORDER[a.name] ?? Number.MAX_SAFE_INTEGER) - (BRANCH_ORDER[b.name] ?? Number.MAX_SAFE_INTEGER))
                               .map((branch) => {
