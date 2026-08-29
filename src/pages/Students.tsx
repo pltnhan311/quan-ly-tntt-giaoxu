@@ -262,6 +262,21 @@ export default function Students() {
       subtitle="Danh sách và thông tin học viên"
     >
       <div className="space-y-8">
+        <section className="relative overflow-hidden rounded-3xl bg-gradient-primary px-6 py-7 text-primary-foreground shadow-custom-lg sm:px-8 sm:py-8">
+          <div className="absolute -right-10 -top-16 h-48 w-48 rounded-full border-[20px] border-gold/15" aria-hidden="true" />
+          <div className="relative flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-gold">Hồ sơ đoàn viên</p>
+              <h2 className="font-heading text-2xl font-bold tracking-tight sm:text-3xl">Danh sách đoàn viên</h2>
+              <p className="mt-2 max-w-xl text-sm leading-6 text-primary-foreground/70">Tìm kiếm, cập nhật và tổ chức thông tin đoàn viên theo từng chi đoàn.</p>
+            </div>
+            <div className="relative rounded-2xl border border-primary-foreground/15 bg-primary-foreground/10 px-5 py-3">
+              <p className="text-3xl font-bold tracking-tight">{filteredStudents.length}</p>
+              <p className="text-xs text-primary-foreground/65">đoàn viên hiển thị</p>
+            </div>
+          </div>
+        </section>
+
         {/* Filters */}
         <Card variant="flat" className="border-border/80 bg-card/80">
           <CardContent className="pt-6">
