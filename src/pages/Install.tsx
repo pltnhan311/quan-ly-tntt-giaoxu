@@ -61,24 +61,24 @@ export default function Install() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="w-full max-w-lg space-y-6">
+    <div className="flex min-h-screen items-center justify-center bg-background p-4 sm:p-6">
+      <div className="w-full max-w-lg space-y-8">
         {/* Header */}
-        <div className="text-center space-y-4">
-          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-2xl bg-primary shadow-lg">
+        <div className="space-y-4 text-center">
+          <div className="gradient-gold mx-auto flex h-20 w-20 items-center justify-center rounded-2xl shadow-lg">
             <GraduationCap className="h-12 w-12 text-primary-foreground" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-foreground">Quản Lý Giáo Lý</h1>
+            <h1 className="font-heading text-2xl font-bold text-foreground">Quản Lý Giáo Lý</h1>
             <p className="text-muted-foreground">Đoàn Thiếu Nhi Thánh Thể - Giáo xứ Xóm Chiếu</p>
           </div>
         </div>
 
         {/* Install Status */}
         {isInstalled ? (
-          <Card className="border-green-500/50 bg-green-500/10">
+          <Card className="border-success/30 bg-success/5">
             <CardContent className="pt-6">
-              <div className="flex items-center gap-3 text-green-600">
+              <div className="flex items-center gap-3 text-success">
                 <Check className="h-6 w-6" />
                 <div>
                   <p className="font-medium">Đã cài đặt thành công!</p>
@@ -86,7 +86,7 @@ export default function Install() {
                 </div>
               </div>
               <Link to="/dashboard" className="mt-4 block">
-                <Button className="w-full">Mở ứng dụng</Button>
+                  <Button className="h-11 w-full">Mở ứng dụng</Button>
               </Link>
             </CardContent>
           </Card>
@@ -105,7 +105,7 @@ export default function Install() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <Button onClick={handleInstall} className="w-full" size="lg">
+                    <Button onClick={handleInstall} className="h-12 w-full" size="lg">
                     <Download className="mr-2 h-5 w-5" />
                     Cài đặt ngay
                   </Button>
@@ -127,7 +127,7 @@ export default function Install() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex items-start gap-3">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm font-bold">1</div>
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">1</div>
                     <div className="flex-1">
                       <p className="font-medium">Nhấn nút Chia sẻ</p>
                       <p className="text-sm text-muted-foreground flex items-center gap-1">
@@ -136,7 +136,7 @@ export default function Install() {
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm font-bold">2</div>
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">2</div>
                     <div className="flex-1">
                       <p className="font-medium">Chọn "Thêm vào MH chính"</p>
                       <p className="text-sm text-muted-foreground flex items-center gap-1">
@@ -145,7 +145,7 @@ export default function Install() {
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm font-bold">3</div>
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">3</div>
                     <div className="flex-1">
                       <p className="font-medium">Xác nhận cài đặt</p>
                       <p className="text-sm text-muted-foreground">Nhấn "Thêm" ở góc phải trên</p>
@@ -169,7 +169,7 @@ export default function Install() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex items-start gap-3">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm font-bold">1</div>
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">1</div>
                     <div className="flex-1">
                       <p className="font-medium">Mở menu trình duyệt</p>
                       <p className="text-sm text-muted-foreground flex items-center gap-1">
@@ -178,14 +178,14 @@ export default function Install() {
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm font-bold">2</div>
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">2</div>
                     <div className="flex-1">
                       <p className="font-medium">Chọn "Cài đặt ứng dụng"</p>
                       <p className="text-sm text-muted-foreground">Hoặc "Thêm vào màn hình chính"</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm font-bold">3</div>
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">3</div>
                     <div className="flex-1">
                       <p className="font-medium">Xác nhận cài đặt</p>
                       <p className="text-sm text-muted-foreground">Nhấn "Cài đặt" trong hộp thoại</p>
@@ -209,7 +209,7 @@ export default function Install() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex items-start gap-3">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm font-bold">1</div>
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">1</div>
                     <div className="flex-1">
                       <p className="font-medium">Tìm biểu tượng cài đặt</p>
                       <p className="text-sm text-muted-foreground">
@@ -218,7 +218,7 @@ export default function Install() {
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm font-bold">2</div>
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">2</div>
                     <div className="flex-1">
                       <p className="font-medium">Nhấn "Cài đặt"</p>
                       <p className="text-sm text-muted-foreground">Xác nhận trong hộp thoại xuất hiện</p>
@@ -237,19 +237,19 @@ export default function Install() {
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex items-center gap-3">
-              <Check className="h-5 w-5 text-green-500" />
+              <Check className="h-5 w-5 text-success" />
               <span className="text-sm">Truy cập nhanh từ màn hình chính</span>
             </div>
             <div className="flex items-center gap-3">
-              <Check className="h-5 w-5 text-green-500" />
+              <Check className="h-5 w-5 text-success" />
               <span className="text-sm">Hoạt động mượt mà như ứng dụng native</span>
             </div>
             <div className="flex items-center gap-3">
-              <Check className="h-5 w-5 text-green-500" />
+              <Check className="h-5 w-5 text-success" />
               <span className="text-sm">Tải nhanh hơn nhờ cache thông minh</span>
             </div>
             <div className="flex items-center gap-3">
-              <Check className="h-5 w-5 text-green-500" />
+              <Check className="h-5 w-5 text-success" />
               <span className="text-sm">Nhận thông báo (sắp có)</span>
             </div>
           </CardContent>
