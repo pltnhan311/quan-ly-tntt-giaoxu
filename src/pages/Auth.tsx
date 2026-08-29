@@ -1,47 +1,41 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-import { GraduationCap, KeyRound, Loader2, Mail } from 'lucide-react';
+import { Church, KeyRound, Loader2, Mail } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
 export default function Auth() {
   const navigate = useNavigate();
   const { isAuthenticated, isLoading: authLoading, userRole } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
-  
-  // Login form
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
 
   useEffect(() => {
-    if (isAuthenticated && !authLoading) {
-      if (userRole !== 'student') {
-        navigate('/dashboard');
-      }
+    if (isAuthenticated && !authLoading && userRole !== 'student') {
+      navigate('/dashboard');
     }
   }, [isAuthenticated, authLoading, userRole, navigate]);
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     setIsLoading(true);
-    
+
     try {
       const { error } = await supabase.auth.signInWithPassword({
         email: loginEmail,
         password: loginPassword,
       });
+
       if (error) {
-        if (error.message.includes('Invalid login credentials')) {
-          toast.error('Email hoặc mật khẩu không đúng');
-        } else {
-          toast.error(error.message);
-        }
+        toast.error(error.message.includes('Invalid login credentials')
+          ? 'Email hoặc mật khẩu không đúng'
+          : error.message);
       } else {
         toast.success('Đăng nhập thành công!');
       }
@@ -52,126 +46,115 @@ export default function Auth() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="flex min-h-dvh items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" aria-label="Đang tải" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background flex">
-      {/* Left side - Branding */}
-      <div className="hidden lg:flex lg:w-1/2 bg-primary items-center justify-center p-12 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-20 left-20 w-64 h-64 rounded-full bg-accent blur-3xl" />
-          <div className="absolute bottom-20 right-20 w-96 h-96 rounded-full bg-primary-foreground blur-3xl" />
-        </div>
-        
-        <div className="relative z-10 text-center animate-fade-in">
-          <div className="mx-auto mb-8 flex h-24 w-24 items-center justify-center rounded-2xl bg-accent shadow-lg">
-            <GraduationCap className="h-14 w-14 text-accent-foreground" />
-          </div>
-          <h1 className="text-4xl font-bold text-primary-foreground mb-4">
-            Quản Lý Giáo Lý
-          </h1>
-          <p className="text-xl text-primary-foreground/80 mb-2">
-            Đoàn Thiếu Nhi Thánh Thể
-          </p>
-          <p className="text-primary-foreground/60">
-            Giáo xứ Xóm Chiếu
-          </p>
-          
-          <div className="mt-12 space-y-4 text-left text-primary-foreground/70">
-            <div className="flex items-center gap-3">
-              <div className="h-2 w-2 rounded-full bg-accent" />
-              <span>Quản lý học viên và giáo lý viên</span>
+    <main className="min-h-dvh bg-background lg:grid lg:grid-cols-[minmax(0,0.95fr)_minmax(460px,1.05fr)]">
+      <section className="relative hidden min-h-dvh overflow-hidden bg-primary lg:block" aria-label="Giới thiệu Giáo xứ Xóm Chiếu">
+        <img
+          src="/church-xom-chieu.webp"
+          alt="Mặt tiền nhà thờ Xóm Chiếu"
+          className="absolute inset-0 h-full w-full object-cover object-center opacity-55"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/65 to-primary/15" />
+        <div className="relative z-10 flex min-h-dvh flex-col justify-between p-10 xl:p-16">
+          <div className="flex items-center gap-3 text-primary-foreground">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gold shadow-gold">
+              <Church className="h-6 w-6 text-gold-foreground" aria-hidden="true" />
             </div>
-            <div className="flex items-center gap-3">
-              <div className="h-2 w-2 rounded-full bg-accent" />
-              <span>Điểm danh và theo dõi chuyên cần</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="h-2 w-2 rounded-full bg-accent" />
-              <span>Quản lý điểm số và tài liệu</span>
+            <div>
+              <p className="font-heading text-lg font-semibold">Giáo Lý Xóm Chiếu</p>
+              <p className="text-xs text-primary-foreground/70">Đoàn Thiếu Nhi Thánh Thể</p>
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* Right side - Auth form */}
-      <div className="flex-1 flex items-center justify-center p-4 md:p-8">
-        <div className="w-full max-w-md animate-fade-in">
-          <div className="lg:hidden text-center mb-8">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-xl bg-accent shadow-lg">
-              <GraduationCap className="h-9 w-9 text-accent-foreground" />
-            </div>
-            <h1 className="text-2xl font-bold text-foreground">
-              Quản Lý Giáo Lý
+          <div className="max-w-xl pb-8">
+            <p className="mb-4 text-sm font-medium uppercase tracking-[0.2em] text-gold">Cùng phục vụ và đồng hành</p>
+            <h1 className="font-heading text-4xl font-semibold leading-tight text-primary-foreground xl:text-5xl">
+              Quản lý hoạt động giáo lý rõ ràng, nhẹ nhàng hơn.
             </h1>
+            <p className="mt-5 max-w-lg text-base leading-7 text-primary-foreground/75">
+              Một không gian chung để Admin, Trưởng ngành và Giáo lý viên phối hợp chăm sóc từng chi đoàn.
+            </p>
           </div>
 
-          <Card className="border-0 shadow-xl">
-            <CardHeader className="space-y-1 pb-4">
-              <CardTitle className="text-2xl text-center">Chào mừng</CardTitle>
-              <CardDescription className="text-center">
-                Đăng nhập để quản lý hoạt động giáo lý
-              </CardDescription>
+          <p className="text-xs text-primary-foreground/60">Giáo xứ Xóm Chiếu · Quận 4 · Thành phố Hồ Chí Minh</p>
+        </div>
+      </section>
+
+      <section className="flex min-h-dvh items-center justify-center px-5 py-10 sm:px-8 lg:px-14 xl:px-24" aria-label="Đăng nhập hệ thống">
+        <div className="w-full max-w-md">
+          <div className="mb-8 flex items-center gap-3 lg:hidden">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gold shadow-gold">
+              <Church className="h-6 w-6 text-gold-foreground" aria-hidden="true" />
+            </div>
+            <div>
+              <p className="font-heading text-lg font-semibold text-foreground">Giáo Lý Xóm Chiếu</p>
+              <p className="text-xs text-muted-foreground">Đoàn Thiếu Nhi Thánh Thể</p>
+            </div>
+          </div>
+
+          <div className="mb-8">
+            <p className="mb-2 text-sm font-medium text-accent">Cổng quản lý nội bộ</p>
+            <h2 className="font-heading text-3xl font-semibold tracking-tight text-foreground">Chào mừng trở lại</h2>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">Đăng nhập để tiếp tục quản lý hoạt động giáo lý.</p>
+          </div>
+
+          <Card className="border-border/80 shadow-custom-lg">
+            <CardHeader className="space-y-1 border-b border-border/70 pb-5">
+              <CardTitle className="font-heading text-xl">Đăng nhập</CardTitle>
+              <CardDescription>Sử dụng tài khoản được cấp cho nhân sự phụ trách.</CardDescription>
             </CardHeader>
-            <CardContent>
-              <Tabs defaultValue="login" className="w-full">
-                <TabsContent value="login" className="mt-0">
-                  <form onSubmit={handleLogin} className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="login-email">Email</Label>
-                      <div className="relative">
-                        <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                        <Input
-                          id="login-email"
-                          type="email"
-                          placeholder="email@example.com"
-                          value={loginEmail}
-                          onChange={(e) => setLoginEmail(e.target.value)}
-                          className="pl-10"
-                          required
-                        />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="login-password">Mật khẩu</Label>
-                      <div className="relative">
-                        <KeyRound className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                        <Input
-                          id="login-password"
-                          type="password"
-                          placeholder="••••••••"
-                          value={loginPassword}
-                          onChange={(e) => setLoginPassword(e.target.value)}
-                          className="pl-10"
-                          required
-                        />
-                      </div>
-                    </div>
-                    <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
-                      {isLoading ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Đang đăng nhập...
-                        </>
-                      ) : (
-                        'Đăng nhập'
-                      )}
-                    </Button>
-                  </form>
-                </TabsContent>
-              </Tabs>
+            <CardContent className="pt-6">
+              <form onSubmit={handleLogin} className="space-y-5">
+                <div className="space-y-2">
+                  <Label htmlFor="login-email">Email</Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+                    <Input
+                      id="login-email"
+                      type="email"
+                      autoComplete="email"
+                      placeholder="ten@example.com"
+                      value={loginEmail}
+                      onChange={(event) => setLoginEmail(event.target.value)}
+                      className="h-11 pl-10"
+                      required
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="login-password">Mật khẩu</Label>
+                  <div className="relative">
+                    <KeyRound className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+                    <Input
+                      id="login-password"
+                      type="password"
+                      autoComplete="current-password"
+                      placeholder="Nhập mật khẩu"
+                      value={loginPassword}
+                      onChange={(event) => setLoginPassword(event.target.value)}
+                      className="h-11 pl-10"
+                      required
+                    />
+                  </div>
+                </div>
+                <Button type="submit" className="h-11 w-full" disabled={isLoading}>
+                  {isLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Đang đăng nhập...</> : 'Đăng nhập'}
+                </Button>
+              </form>
             </CardContent>
           </Card>
-          
-          <p className="mt-6 text-center text-sm text-muted-foreground">
-            © 2026 Giáo xứ Xóm Chiếu. Đoàn Thiếu Nhi Thánh Thể.
+
+          <p className="mt-6 text-center text-xs leading-5 text-muted-foreground">
+            © 2026 Giáo xứ Xóm Chiếu · Khu vực dành cho Admin, Trưởng ngành và Giáo lý viên.
           </p>
         </div>
-      </div>
-    </div>
+      </section>
+    </main>
   );
 }
