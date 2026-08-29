@@ -16,12 +16,13 @@ interface StatCardProps {
 
 export function StatCard({ title, value, subtitle, icon: Icon, trend, variant = 'default' }: StatCardProps) {
   return (
-    <Card variant={variant === 'gold' ? 'gold' : 'elevated'} className="overflow-hidden">
-      <CardContent className="p-4 sm:p-5">
+    <Card variant={variant === 'gold' ? 'gold' : 'elevated'} className="group relative overflow-hidden">
+      <div className={cn("absolute inset-x-0 top-0 h-1", variant === 'gold' ? 'bg-accent' : variant === 'primary' ? 'bg-primary' : 'bg-success/70')} />
+      <CardContent className="p-5 pt-6 sm:p-6 sm:pt-7">
         <div className="flex items-start justify-between gap-3">
           <div className="space-y-1 flex-1 min-w-0">
             <p className="text-xs sm:text-sm font-medium text-muted-foreground truncate" title={title}>{title}</p>
-            <p className="text-2xl sm:text-3xl font-bold text-foreground leading-tight">{value}</p>
+            <p className="text-3xl font-bold tracking-tight text-foreground leading-tight sm:text-4xl">{value}</p>
             {subtitle && (
               <p className="text-xs sm:text-sm text-muted-foreground truncate" title={subtitle}>{subtitle}</p>
             )}

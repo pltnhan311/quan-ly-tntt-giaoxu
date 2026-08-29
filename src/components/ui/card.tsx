@@ -3,15 +3,15 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const cardVariants = cva(
-  "rounded-xl border bg-card text-card-foreground transition-shadow duration-200",
+  "rounded-2xl border bg-card text-card-foreground transition-all duration-200",
   {
     variants: {
       variant: {
-        default: "shadow-custom-sm",
+        default: "shadow-custom-sm hover:shadow-custom-md",
         elevated: "shadow-custom-md",
         flat: "shadow-none",
         interactive: "shadow-custom-sm hover:shadow-custom-lg hover:-translate-y-0.5 cursor-pointer",
-        gold: "shadow-gold border-accent/20 bg-gradient-to-br from-card to-secondary/30",
+        gold: "shadow-gold border-accent/30 bg-gradient-to-br from-card via-card to-secondary/45",
       },
     },
     defaultVariants: {
@@ -37,7 +37,7 @@ Card.displayName = "Card";
 
 const CardHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn("flex flex-col space-y-1.5 p-6", className)} {...props} />
+    <div ref={ref} className={cn("flex flex-col space-y-1.5 p-6 md:p-7", className)} {...props} />
   ),
 );
 CardHeader.displayName = "CardHeader";

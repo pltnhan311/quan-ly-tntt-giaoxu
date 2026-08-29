@@ -9,7 +9,7 @@ interface HeaderProps {
 
 export function Header({ title, subtitle, onMenuClick }: HeaderProps) {
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border bg-background/95 px-4 md:px-6 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-30 flex h-20 items-center justify-between border-b border-border/70 bg-background/90 px-4 backdrop-blur-xl supports-[backdrop-filter]:bg-background/75 md:px-8">
       <div className="flex items-center gap-3">
         {/* Mobile menu button */}
         <Button 
@@ -23,7 +23,8 @@ export function Header({ title, subtitle, onMenuClick }: HeaderProps) {
         </Button>
         
         <div>
-          <h1 className="font-heading text-lg font-semibold text-foreground md:text-xl">{title}</h1>
+          <p className="mb-0.5 text-[10px] font-bold uppercase tracking-[0.18em] text-accent">Giáo lý Xóm Chiếu</p>
+          <h1 className="font-heading text-xl font-bold tracking-tight text-foreground md:text-2xl">{title}</h1>
           {subtitle && <p className="text-xs md:text-sm text-muted-foreground">{subtitle}</p>}
         </div>
       </div>

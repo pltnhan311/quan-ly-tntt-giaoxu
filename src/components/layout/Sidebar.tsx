@@ -20,25 +20,25 @@ export function Sidebar({ collapsed, onCollapseChange }: SidebarProps) {
     <aside
       aria-label="Thanh điều hướng chính"
       className={cn(
-        'fixed left-0 top-0 z-40 hidden h-screen flex-col bg-sidebar text-sidebar-foreground transition-[width] duration-200 md:flex',
+        'fixed left-0 top-0 z-40 hidden h-screen flex-col bg-sidebar text-sidebar-foreground shadow-2xl shadow-slate-950/20 transition-[width] duration-200 md:flex',
         collapsed ? 'w-20' : 'w-64'
       )}
     >
-      <div className="flex h-16 shrink-0 items-center justify-between border-b border-sidebar-border px-4">
+      <div className="flex h-20 shrink-0 items-center justify-between border-b border-sidebar-border px-4">
         <Link to="/dashboard" className={cn('flex items-center gap-3', collapsed && 'mx-auto')}>
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg gradient-gold">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl gradient-gold shadow-gold">
             <GraduationCap className="h-6 w-6 text-gold-foreground" aria-hidden="true" />
           </div>
           {!collapsed && (
             <div className="flex min-w-0 flex-col">
-              <span className="font-heading text-lg font-semibold">Giáo Lý</span>
-              <span className="text-xs text-sidebar-foreground/60">Xóm Chiếu</span>
+              <span className="font-heading text-lg font-bold tracking-tight">Giáo Lý</span>
+              <span className="text-[11px] font-medium uppercase tracking-[0.18em] text-sidebar-foreground/50">Xóm Chiếu</span>
             </div>
           )}
         </Link>
       </div>
 
-      <nav aria-label="Điều hướng chính" className="flex-1 space-y-5 overflow-y-auto p-4">
+      <nav aria-label="Điều hướng chính" className="flex-1 space-y-6 overflow-y-auto p-4">
         {navigationGroups.map((group) => {
           const groupItems = group.items.filter(item => hasRole(item.roles));
           if (groupItems.length === 0) return null;
@@ -59,10 +59,10 @@ export function Sidebar({ collapsed, onCollapseChange }: SidebarProps) {
                     aria-current={isActive ? 'page' : undefined}
                     title={collapsed ? item.label : undefined}
                     className={cn(
-                      'flex min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors duration-200',
+                      'flex min-h-12 items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium transition-all duration-200',
                       collapsed && 'justify-center px-2',
                       isActive
-                        ? 'bg-sidebar-accent text-sidebar-primary'
+                        ? 'bg-sidebar-primary text-sidebar-primary-foreground shadow-gold'
                         : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground'
                     )}
                   >

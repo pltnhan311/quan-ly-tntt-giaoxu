@@ -6,42 +6,42 @@
 
 @layer base {
   :root {
-    /* Xóm Chiếu Heritage: deep navy, warm plaster, terracotta and stained glass */
-    --primary: 215 38% 24%;
+    /* Modern Liturgical Editorial: ink, parchment, saffron and sage */
+    --primary: 222 47% 18%;
     --primary-foreground: 38 33% 97%;
     
     /* Background - Warm Cream */
-    --background: 38 33% 97%;
-    --foreground: 215 32% 16%;
+    --background: 42 33% 96%;
+    --foreground: 222 35% 14%;
 
     /* Card - Pure White with warmth */
     --card: 0 0% 100%;
-    --card-foreground: 215 32% 16%;
+    --card-foreground: 222 35% 14%;
 
     /* Popover */
     --popover: 0 0% 100%;
     --popover-foreground: 215 32% 16%;
 
     /* Secondary - Warm Gold */
-    --secondary: 24 55% 92%;
-    --secondary-foreground: 22 40% 25%;
+    --secondary: 39 68% 90%;
+    --secondary-foreground: 30 44% 20%;
 
     /* Muted - Soft Gray with warmth */
-    --muted: 38 20% 93%;
-    --muted-foreground: 215 16% 42%;
+    --muted: 40 20% 91%;
+    --muted-foreground: 220 16% 42%;
 
     /* Accent - Gold/Amber */
-    --accent: 22 72% 57%;
+    --accent: 34 82% 48%;
     --accent-foreground: 0 0% 100%;
-    --gold: 39 76% 56%;
-    --gold-foreground: 28 70% 16%;
+    --gold: 38 85% 55%;
+    --gold-foreground: 30 60% 16%;
 
     /* Destructive */
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
     /* Success */
-    --success: 160 42% 36%;
+    --success: 156 48% 34%;
     --success-foreground: 0 0% 100%;
 
     /* Warning */
@@ -49,52 +49,52 @@
     --warning-foreground: 28 70% 16%;
 
     /* Border & Input */
-    --border: 32 20% 87%;
-    --input: 32 20% 82%;
-    --ring: 22 72% 57%;
+    --border: 38 22% 84%;
+    --input: 38 18% 78%;
+    --ring: 34 82% 48%;
 
-    --radius: 0.75rem;
+    --radius: 0.9rem;
 
     /* Sidebar */
-    --sidebar-background: 215 38% 19%;
+    --sidebar-background: 222 47% 13%;
     --sidebar-foreground: 38 33% 95%;
-    --sidebar-primary: 39 76% 56%;
-    --sidebar-primary-foreground: 28 70% 16%;
-    --sidebar-accent: 215 32% 27%;
+    --sidebar-primary: 38 85% 55%;
+    --sidebar-primary-foreground: 30 60% 16%;
+    --sidebar-accent: 222 34% 22%;
     --sidebar-accent-foreground: 38 33% 95%;
-    --sidebar-border: 215 24% 29%;
-    --sidebar-ring: 39 76% 56%;
+    --sidebar-border: 222 24% 24%;
+    --sidebar-ring: 38 85% 55%;
 
     /* Custom gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(215 38% 24%), hsl(215 38% 31%));
-    --gradient-gold: linear-gradient(135deg, hsl(39 76% 56%), hsl(30 78% 64%));
-    --gradient-hero: linear-gradient(135deg, hsl(215 38% 19%), hsl(22 38% 28%));
+    --gradient-primary: linear-gradient(135deg, hsl(222 47% 18%), hsl(222 38% 28%));
+    --gradient-gold: linear-gradient(135deg, hsl(38 85% 55%), hsl(28 88% 60%));
+    --gradient-hero: linear-gradient(135deg, hsl(222 47% 13%), hsl(218 37% 24%));
     
     /* Shadows */
-    --shadow-sm: 0 1px 2px 0 hsl(215 32% 16% / 0.05);
-    --shadow-md: 0 4px 6px -1px hsl(215 32% 16% / 0.08), 0 2px 4px -2px hsl(215 32% 16% / 0.05);
-    --shadow-lg: 0 10px 15px -3px hsl(215 32% 16% / 0.1), 0 4px 6px -4px hsl(215 32% 16% / 0.05);
-    --shadow-xl: 0 20px 25px -5px hsl(215 32% 16% / 0.1), 0 8px 10px -6px hsl(215 32% 16% / 0.05);
-    --shadow-gold: 0 4px 14px -3px hsl(39 76% 56% / 0.32);
+    --shadow-sm: 0 1px 2px 0 hsl(222 35% 14% / 0.06);
+    --shadow-md: 0 8px 18px -10px hsl(222 35% 14% / 0.26), 0 2px 5px -3px hsl(222 35% 14% / 0.1);
+    --shadow-lg: 0 18px 36px -18px hsl(222 35% 14% / 0.3), 0 6px 10px -6px hsl(222 35% 14% / 0.1);
+    --shadow-xl: 0 26px 48px -22px hsl(222 35% 14% / 0.35);
+    --shadow-gold: 0 10px 24px -10px hsl(34 82% 48% / 0.48);
   }
 
   .dark {
-    --primary: 39 76% 56%;
+    --primary: 38 85% 55%;
     --primary-foreground: 28 70% 16%;
 
-    --background: 215 38% 10%;
+    --background: 222 40% 9%;
     --foreground: 38 33% 95%;
 
-    --card: 215 32% 14%;
+    --card: 222 32% 14%;
     --card-foreground: 38 33% 95%;
 
-    --popover: 215 32% 14%;
+    --popover: 222 32% 14%;
     --popover-foreground: 38 33% 95%;
 
-    --secondary: 215 28% 20%;
+    --secondary: 222 27% 20%;
     --secondary-foreground: 38 33% 90%;
 
-    --muted: 215 28% 18%;
+    --muted: 222 27% 18%;
     --muted-foreground: 38 20% 68%;
 
     --accent: 22 72% 57%;
@@ -105,11 +105,11 @@
     --destructive: 0 62% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 215 24% 25%;
-    --input: 215 24% 25%;
-    --ring: 39 76% 56%;
+    --border: 222 24% 25%;
+    --input: 222 24% 25%;
+    --ring: 38 85% 55%;
 
-    --sidebar-background: 215 38% 8%;
+    --sidebar-background: 222 47% 7%;
     --sidebar-foreground: 38 33% 95%;
     --sidebar-primary: 39 76% 56%;
     --sidebar-primary-foreground: 28 70% 16%;
