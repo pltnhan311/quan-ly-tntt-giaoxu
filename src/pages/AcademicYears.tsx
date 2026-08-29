@@ -134,6 +134,21 @@ export default function AcademicYears() {
       subtitle="Tạo và quản lý các niên khóa học — Tự động tạo 6 ngành mỗi niên khóa"
     >
       <div className="space-y-8">
+        <section className="relative overflow-hidden rounded-3xl border border-primary/10 bg-card p-6 shadow-custom-sm sm:p-8">
+          <div className="absolute right-0 top-0 h-full w-1/3 bg-gradient-to-l from-secondary/55 to-transparent" aria-hidden="true" />
+          <div className="relative flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-accent">Nền tảng tổ chức</p>
+              <h2 className="font-heading text-2xl font-bold tracking-tight text-foreground sm:text-3xl">Các niên khóa</h2>
+              <p className="mt-2 max-w-xl text-sm leading-6 text-muted-foreground">Mỗi niên khóa là một mùa sinh hoạt mới, với hệ thống ngành được khởi tạo sẵn để bắt đầu nhanh hơn.</p>
+            </div>
+            <div className="relative rounded-2xl bg-primary px-5 py-3 text-primary-foreground shadow-custom-md">
+              <p className="text-3xl font-bold tracking-tight">{academicYears?.length || 0}</p>
+              <p className="text-xs text-primary-foreground/65">niên khóa</p>
+            </div>
+          </div>
+        </section>
+
         {/* Header Actions */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
