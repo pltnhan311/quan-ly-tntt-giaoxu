@@ -16,7 +16,7 @@ const buttonVariants = cva(
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
         gold: "bg-accent text-accent-foreground hover:bg-accent/90 shadow-gold hover:shadow-lg active:scale-[0.98]",
-        hero: "gradient-primary text-primary-foreground shadow-custom-lg hover:shadow-custom-xl active:scale-[0.98] border-0",
+        hero: "gradient-primary text-[hsl(var(--hero-foreground))] shadow-custom-lg hover:shadow-custom-xl active:scale-[0.98] border-0",
         success: "bg-success text-success-foreground hover:bg-success/90 shadow-custom-sm",
       },
       size: {

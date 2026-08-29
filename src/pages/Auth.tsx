@@ -54,35 +54,35 @@ export default function Auth() {
 
   return (
     <main className="min-h-dvh bg-background lg:grid lg:grid-cols-[minmax(0,0.95fr)_minmax(460px,1.05fr)]">
-      <section className="relative hidden min-h-dvh overflow-hidden bg-primary lg:block" aria-label="Giới thiệu Giáo xứ Xóm Chiếu">
+      <section className="relative hidden min-h-dvh overflow-hidden bg-sidebar lg:block" aria-label="Giới thiệu Giáo xứ Xóm Chiếu">
         <img
           src="/church-xom-chieu.webp"
           alt="Mặt tiền nhà thờ Xóm Chiếu"
           className="absolute inset-0 h-full w-full object-cover object-center opacity-55"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/65 to-primary/15" />
+        <div className="absolute inset-0 bg-gradient-to-t from-sidebar via-sidebar/75 to-sidebar/20" />
         <div className="relative z-10 flex min-h-dvh flex-col justify-between p-10 xl:p-16">
-          <div className="flex items-center gap-3 text-primary-foreground">
+          <div className="flex items-center gap-3 text-[hsl(var(--hero-foreground))]">
             <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gold shadow-gold">
               <Church className="h-6 w-6 text-gold-foreground" aria-hidden="true" />
             </div>
             <div>
               <p className="font-heading text-lg font-semibold">Giáo Lý Xóm Chiếu</p>
-              <p className="text-xs text-primary-foreground/70">Đoàn Thiếu Nhi Thánh Thể</p>
+              <p className="text-xs text-[hsl(var(--hero-foreground)/0.82)]">Đoàn Thiếu Nhi Thánh Thể</p>
             </div>
           </div>
 
           <div className="max-w-xl pb-8">
             <p className="mb-4 text-sm font-medium uppercase tracking-[0.2em] text-gold">Cùng phục vụ và đồng hành</p>
-            <h1 className="font-heading text-4xl font-semibold leading-tight text-primary-foreground xl:text-5xl">
+            <h1 className="font-heading text-4xl font-semibold leading-tight text-[hsl(var(--hero-foreground))] xl:text-5xl">
               Quản lý hoạt động giáo lý rõ ràng, nhẹ nhàng hơn.
             </h1>
-            <p className="mt-5 max-w-lg text-base leading-7 text-primary-foreground/75">
+            <p className="mt-5 max-w-lg text-base leading-7 text-[hsl(var(--hero-foreground)/0.84)]">
               Một không gian chung để Admin, Trưởng ngành và Giáo lý viên phối hợp chăm sóc từng chi đoàn.
             </p>
           </div>
 
-          <p className="text-xs text-primary-foreground/60">Giáo xứ Xóm Chiếu · Quận 4 · Thành phố Hồ Chí Minh</p>
+          <p className="text-xs text-[hsl(var(--hero-foreground)/0.76)]">Giáo xứ Xóm Chiếu · Quận 4 · Thành phố Hồ Chí Minh</p>
         </div>
       </section>
 

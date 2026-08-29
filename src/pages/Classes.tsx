@@ -223,7 +223,7 @@ export default function Classes() {
             </div>
             <div className="relative flex items-center gap-3 rounded-2xl bg-primary px-4 py-3 text-primary-foreground shadow-custom-md">
               <span className="text-3xl font-bold tracking-tight">{filteredClasses.length}</span>
-              <span className="max-w-16 text-xs font-medium leading-4 text-primary-foreground/70">chi đoàn trong bộ lọc</span>
+              <span className="max-w-16 text-xs font-medium leading-4 text-primary-foreground/75">chi đoàn trong bộ lọc</span>
             </div>
           </div>
         </section>

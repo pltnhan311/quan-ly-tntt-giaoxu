@@ -9,6 +9,7 @@
     /* Modern Liturgical Editorial: ink, parchment, saffron and sage */
     --primary: 222 47% 18%;
     --primary-foreground: 38 33% 97%;
+    --hero-foreground: 38 33% 97%;
     
     /* Background - Warm Cream */
     --background: 42 33% 96%;
@@ -81,6 +82,7 @@
   .dark {
     --primary: 38 85% 55%;
     --primary-foreground: 28 70% 16%;
+    --hero-foreground: 38 33% 97%;
 
     --background: 222 40% 9%;
     --foreground: 38 33% 95%;

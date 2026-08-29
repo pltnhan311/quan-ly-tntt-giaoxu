@@ -238,14 +238,14 @@ export default function Dashboard() {
       }
     >
       <div className="space-y-8">
-        <section className="relative overflow-hidden rounded-3xl bg-gradient-hero px-6 py-7 text-primary-foreground shadow-custom-lg sm:px-8 sm:py-9">
+        <section className="relative overflow-hidden rounded-3xl bg-gradient-hero px-6 py-7 text-[hsl(var(--hero-foreground))] shadow-custom-lg sm:px-8 sm:py-9">
           <div className="absolute -right-16 -top-20 h-56 w-56 rounded-full border-[24px] border-gold/15" aria-hidden="true" />
           <div className="absolute -bottom-28 right-24 h-48 w-48 rounded-full bg-accent/10 blur-2xl" aria-hidden="true" />
           <div className="relative flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
             <div className="max-w-2xl">
               <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-gold">Bảng điều hành</p>
               <h2 className="font-heading text-2xl font-bold tracking-tight sm:text-3xl">Một tuần sinh hoạt thật tốt nhé{user?.user_metadata?.name ? `, ${user.user_metadata.name}` : ''}.</h2>
-              <p className="mt-3 max-w-xl text-sm leading-6 text-primary-foreground/70">Theo dõi lớp học, đoàn viên và lịch sinh hoạt của giáo xứ trong một không gian thống nhất.</p>
+              <p className="mt-3 max-w-xl text-sm leading-6 text-[hsl(var(--hero-foreground)/0.82)]">Theo dõi lớp học, đoàn viên và lịch sinh hoạt của giáo xứ trong một không gian thống nhất.</p>
             </div>
             <Button variant="gold" className="w-fit shrink-0 shadow-gold" asChild>
               <Link to="/attendance">
