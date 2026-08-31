@@ -37,21 +37,18 @@ const roleLabels: Record<AppRole, string> = {
   admin: "Quản trị viên",
   truong_nganh: "Trưởng Ngành",
   glv: "Giáo lý viên",
-  student: "Học viên",
 };
 
 const roleBadgeVariants: Record<AppRole, "default" | "secondary" | "outline" | "destructive"> = {
   admin: "default",
   truong_nganh: "destructive",
   glv: "secondary",
-  student: "outline",
 };
 
 const roleOrder: Record<AppRole, number> = {
   admin: 1,
   truong_nganh: 2,
   glv: 3,
-  student: 4,
 };
 
 export default function Users() {
@@ -113,7 +110,6 @@ export default function Users() {
                     <SelectItem value="admin">Quản trị viên</SelectItem>
                     <SelectItem value="truong_nganh">Trưởng Ngành</SelectItem>
                     <SelectItem value="glv">Giáo lý viên</SelectItem>
-                    <SelectItem value="student">Học viên</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -179,9 +175,6 @@ export default function Users() {
                                     <UsersIcon className="h-4 w-4" />
                                     {roleLabels.glv}
                                   </div>
-                                </SelectItem>
-                                <SelectItem value="student">
-                                  {roleLabels.student}
                                 </SelectItem>
                               </SelectContent>
                             </Select>

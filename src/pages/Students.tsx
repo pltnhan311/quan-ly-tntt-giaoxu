@@ -36,13 +36,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useStudents, useCreateStudent, useUpdateStudent, Student } from '@/hooks/useStudents';
+import { useStudents, useCreateStudent, useUpdateStudent, useStudentEnrollments, Student } from '@/hooks/useStudents';
 import { supabase } from '@/integrations/supabase/client';
 import { useClasses } from '@/hooks/useClasses';
 import { useCatechists } from '@/hooks/useCatechists';
 import { useMyBranch } from '@/hooks/useBranches';
 import { useAuth } from '@/contexts/AuthContext';
-import { Plus, Search, Eye, Pencil, User, Phone, MapPin, Calendar, Loader2, Database, Upload, Download, MoreHorizontal } from 'lucide-react';
+import { Plus, Search, Eye, Pencil, User, Phone, MapPin, Calendar, Loader2, Database, Upload, Download, MoreHorizontal, History } from 'lucide-react';
 import { toast } from 'sonner';
 import { ImportStudentsDialog } from '@/components/students/ImportStudentsDialog';
 import { generateStudentCSV, downloadCSV, StudentImportData } from '@/utils/csvUtils';
@@ -66,6 +66,7 @@ export default function Students() {
   const { data: classes } = useClasses();
   const { data: catechists } = useCatechists();
   const { data: myBranch } = useMyBranch();
+  const { data: enrollmentHistory, isLoading: enrollmentHistoryLoading } = useStudentEnrollments(selectedStudent?.id);
   const createStudent = useCreateStudent();
   const updateStudent = useUpdateStudent();
 
@@ -719,6 +720,36 @@ export default function Students() {
                           <p className="font-medium">{selectedStudent.address}</p>
                         </div>
                       </div>
+                    )}
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <History className="h-5 w-5 text-primary" />
+                      <h4 className="font-semibold">Lịch sử xếp lớp</h4>
+                    </div>
+                    {enrollmentHistoryLoading ? (
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <Loader2 className="h-4 w-4 animate-spin" /> Đang tải lịch sử...
+                      </div>
+                    ) : enrollmentHistory?.length ? (
+                      <div className="space-y-2">
+                        {enrollmentHistory.map((enrollment) => (
+                          <div key={enrollment.id} className="flex items-center justify-between rounded-lg border px-3 py-2.5 text-sm">
+                            <div>
+                              <p className="font-medium">{enrollment.classes?.name || 'Không xác định'}</p>
+                              <p className="text-xs text-muted-foreground">
+                                {enrollment.academic_years?.name || 'Không xác định'} · Từ {formatDate(enrollment.started_on)}
+                              </p>
+                            </div>
+                            <Badge variant={enrollment.ended_on ? 'outline' : 'gold'}>
+                              {enrollment.ended_on ? 'Đã chuyển' : 'Hiện tại'}
+                            </Badge>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-muted-foreground">Chưa có lịch sử xếp lớp.</p>
                     )}
                   </div>
                 </div>

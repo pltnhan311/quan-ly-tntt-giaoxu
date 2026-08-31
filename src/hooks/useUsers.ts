@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
-export type AppRole = 'admin' | 'truong_nganh' | 'glv' | 'student';
+export type AppRole = 'admin' | 'truong_nganh' | 'glv';
 
 export interface UserWithRole {
   id: string;
@@ -34,18 +34,9 @@ export function useUsers() {
 
       if (catechistsError) throw catechistsError;
 
-      // Fetch students
-      const { data: students, error: studentsError } = await supabase
-        .from('students')
-        .select('*')
-        .eq('is_active', true);
-
-      if (studentsError) throw studentsError;
-
       // Combine all users with roles
       const usersWithRoles: UserWithRole[] = (roles || []).map(roleRecord => {
         const catechist = catechists?.find(c => c.user_id === roleRecord.user_id);
-        const student = students?.find(s => s.user_id === roleRecord.user_id);
 
         if (catechist) {
           return {
@@ -54,16 +45,6 @@ export function useUsers() {
             name: catechist.name,
             email: catechist.email,
             phone: catechist.phone,
-            role: roleRecord.role as AppRole,
-            created_at: roleRecord.created_at,
-          };
-        } else if (student) {
-          return {
-            id: student.id,
-            user_id: student.user_id!,
-            name: student.name,
-            email: student.phone || null,
-            phone: student.phone,
             role: roleRecord.role as AppRole,
             created_at: roleRecord.created_at,
           };
@@ -140,14 +121,6 @@ export function useUpdateUserRole() {
 
           if (reactivateError) console.error('Error reactivating catechist:', reactivateError);
         }
-      } else if (newRole === 'student') {
-        // If changing to student, deactivate catechist
-        const { error: deactivateError } = await supabase
-          .from('catechists')
-          .update({ is_active: false })
-          .eq('user_id', userId);
-
-        if (deactivateError) console.error('Error deactivating catechist:', deactivateError);
       }
     },
     onSuccess: () => {
@@ -174,23 +147,12 @@ export function useDeleteUser() {
         .eq('user_id', userId)
         .single();
 
-      if (userRole?.role === 'student') {
-        // Deactivate student
-        const { error } = await supabase
-          .from('students')
-          .update({ is_active: false })
-          .eq('user_id', userId);
+      const { error } = await supabase
+        .from('catechists')
+        .update({ is_active: false })
+        .eq('user_id', userId);
 
-        if (error) throw error;
-      } else {
-        // Deactivate catechist (admin/glv)
-        const { error } = await supabase
-          .from('catechists')
-          .update({ is_active: false })
-          .eq('user_id', userId);
-
-        if (error) throw error;
-      }
+      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users-with-roles'] });

@@ -17,7 +17,7 @@ export default function Auth() {
   const [loginPassword, setLoginPassword] = useState('');
 
   useEffect(() => {
-    if (isAuthenticated && !authLoading && userRole !== 'student') {
+    if (isAuthenticated && !authLoading && userRole) {
       navigate('/dashboard');
     }
   }, [isAuthenticated, authLoading, userRole, navigate]);

@@ -23,6 +23,17 @@ export interface Student {
   } | null;
 }
 
+export interface StudentEnrollment {
+  id: string;
+  student_id: string;
+  class_id: string;
+  academic_year_id: string;
+  started_on: string;
+  ended_on: string | null;
+  classes?: { name: string } | null;
+  academic_years?: { name: string } | null;
+}
+
 export function useStudents(classId?: string) {
   return useQuery({
     queryKey: ['students', classId],
@@ -77,6 +88,34 @@ export function useStudent(id: string) {
       return data as Student | null;
     },
     enabled: !!id,
+  });
+}
+
+export function useStudentEnrollments(studentId?: string) {
+  return useQuery({
+    queryKey: ['student-enrollments', studentId],
+    queryFn: async () => {
+      if (!studentId) return [];
+
+      const { data, error } = await supabase
+        .from('student_enrollments')
+        .select(`
+          id,
+          student_id,
+          class_id,
+          academic_year_id,
+          started_on,
+          ended_on,
+          classes (name),
+          academic_years (name)
+        `)
+        .eq('student_id', studentId)
+        .order('started_on', { ascending: false });
+
+      if (error) throw error;
+      return data as StudentEnrollment[];
+    },
+    enabled: !!studentId,
   });
 }
 

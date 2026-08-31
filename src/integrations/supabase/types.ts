@@ -462,6 +462,58 @@ export type Database = {
           },
         ]
       }
+      student_enrollments: {
+        Row: {
+          academic_year_id: string
+          class_id: string
+          created_at: string
+          ended_on: string | null
+          id: string
+          started_on: string
+          student_id: string
+        }
+        Insert: {
+          academic_year_id: string
+          class_id: string
+          created_at?: string
+          ended_on?: string | null
+          id?: string
+          started_on?: string
+          student_id: string
+        }
+        Update: {
+          academic_year_id?: string
+          class_id?: string
+          created_at?: string
+          ended_on?: string | null
+          id?: string
+          started_on?: string
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_enrollments_academic_year_fkey"
+            columns: ["academic_year_id"]
+            isOneToOne: false
+            referencedRelation: "academic_years"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "student_enrollments_class_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "student_enrollments_student_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -498,7 +550,7 @@ export type Database = {
       is_staff: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
-      app_role: "admin" | "truong_nganh" | "glv" | "student"
+      app_role: "admin" | "truong_nganh" | "glv"
       attendance_status: "present" | "absent" | "late" | "excused"
       gender: "male" | "female"
       score_type: "presentation" | "presentation2" | "semester1" | "semester2"
@@ -629,7 +681,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "truong_nganh", "glv", "student"],
+      app_role: ["admin", "truong_nganh", "glv"],
       attendance_status: ["present", "absent", "late", "excused"],
       gender: ["male", "female"],
       score_type: ["presentation", "presentation2", "semester1", "semester2"],
