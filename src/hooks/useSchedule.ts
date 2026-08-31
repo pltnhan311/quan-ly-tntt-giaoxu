@@ -93,6 +93,31 @@ export function useCreateClassSchedule() {
   });
 }
 
+export function useUpdateClassSchedule() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, ...schedule }: Partial<ClassSchedule> & { id: string }) => {
+      const { data, error } = await supabase.from('class_schedules' as any).update(schedule).eq('id', id).select().single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['class-schedules'] }); toast.success('Đã cập nhật lịch sinh hoạt'); },
+    onError: () => toast.error('Không thể cập nhật lịch sinh hoạt'),
+  });
+}
+
+export function useDeleteClassSchedule() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('class_schedules' as any).delete().eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['class-schedules'] }); toast.success('Đã xóa lịch sinh hoạt'); },
+    onError: () => toast.error('Không thể xóa lịch sinh hoạt'),
+  });
+}
+
 export function useCreateParishEvent() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -106,6 +131,31 @@ export function useCreateParishEvent() {
       toast.success('Đã thêm sự kiện');
     },
     onError: () => toast.error('Không thể thêm sự kiện'),
+  });
+}
+
+export function useUpdateParishEvent() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, ...event }: Partial<ParishEvent> & { id: string }) => {
+      const { data, error } = await supabase.from('parish_events' as any).update(event).eq('id', id).select().single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['parish-events'] }); toast.success('Đã cập nhật sự kiện'); },
+    onError: () => toast.error('Không thể cập nhật sự kiện'),
+  });
+}
+
+export function useDeleteParishEvent() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('parish_events' as any).delete().eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['parish-events'] }); toast.success('Đã xóa sự kiện'); },
+    onError: () => toast.error('Không thể xóa sự kiện'),
   });
 }
 

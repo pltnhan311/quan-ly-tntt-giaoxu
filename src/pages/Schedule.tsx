@@ -12,7 +12,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogT
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useClasses } from '@/hooks/useClasses';
 import { useActiveAcademicYear } from '@/hooks/useAcademicYears';
-import { useClassSchedules, useCreateClassSchedule, useCreateParishEvent, useCreateScheduleException, useParishEvents, useScheduleExceptions } from '@/hooks/useSchedule';
+import { useClassSchedules, useCreateClassSchedule, useCreateParishEvent, useCreateScheduleException, useDeleteClassSchedule, useDeleteParishEvent, useParishEvents, useScheduleExceptions, useUpdateClassSchedule, useUpdateParishEvent } from '@/hooks/useSchedule';
 
 const WEEKDAYS = [
   { value: 1, label: 'Thứ Hai' }, { value: 2, label: 'Thứ Ba' }, { value: 3, label: 'Thứ Tư' },
@@ -27,13 +27,19 @@ export default function Schedule() {
   const [cursor, setCursor] = useState(new Date());
   const [scheduleOpen, setScheduleOpen] = useState(false);
   const [eventOpen, setEventOpen] = useState(false);
+  const [editingScheduleId, setEditingScheduleId] = useState<string | null>(null);
+  const [editingEventId, setEditingEventId] = useState<string | null>(null);
   const { data: activeYear } = useActiveAcademicYear();
   const { data: classes, isError: classesError } = useClasses(activeYear?.id);
   const { data: schedules, isLoading: schedulesLoading, isError: schedulesError } = useClassSchedules();
   const { data: events, isError: eventsError } = useParishEvents();
   const { data: exceptions, isError: exceptionsError } = useScheduleExceptions();
   const createSchedule = useCreateClassSchedule();
+  const updateSchedule = useUpdateClassSchedule();
+  const deleteSchedule = useDeleteClassSchedule();
   const createEvent = useCreateParishEvent();
+  const updateEvent = useUpdateParishEvent();
+  const deleteEvent = useDeleteParishEvent();
   const createException = useCreateScheduleException();
   const [scheduleForm, setScheduleForm] = useState({ class_id: '', weekday: '0', start_time: '09:00', end_time: '10:30', note: '' });
   const [eventForm, setEventForm] = useState({ title: '', event_date: format(new Date(), 'yyyy-MM-dd'), start_time: '', end_time: '', location: '', description: '' });
@@ -68,12 +74,16 @@ export default function Schedule() {
 
   const handleCreateSchedule = () => {
     if (!scheduleForm.class_id) return;
-    createSchedule.mutate({ ...scheduleForm, weekday: Number(scheduleForm.weekday) }, { onSuccess: () => { setScheduleOpen(false); setScheduleForm(form => ({ ...form, class_id: '', note: '' })); } });
+    const onSuccess = () => { setScheduleOpen(false); setEditingScheduleId(null); setScheduleForm(form => ({ ...form, class_id: '', note: '' })); };
+    if (editingScheduleId) updateSchedule.mutate({ id: editingScheduleId, ...scheduleForm, weekday: Number(scheduleForm.weekday) }, { onSuccess });
+    else createSchedule.mutate({ ...scheduleForm, weekday: Number(scheduleForm.weekday) }, { onSuccess });
   };
 
   const handleCreateEvent = () => {
     if (!eventForm.title || !eventForm.event_date) return;
-    createEvent.mutate(eventForm, { onSuccess: () => { setEventOpen(false); setEventForm(form => ({ ...form, title: '', description: '', location: '' })); } });
+    const onSuccess = () => { setEventOpen(false); setEditingEventId(null); setEventForm(form => ({ ...form, title: '', description: '', location: '' })); };
+    if (editingEventId) updateEvent.mutate({ id: editingEventId, ...eventForm }, { onSuccess });
+    else createEvent.mutate(eventForm, { onSuccess });
   };
 
   const handleCreateException = () => {
@@ -96,24 +106,24 @@ export default function Schedule() {
               <TabsList><TabsTrigger value="week">Tuần</TabsTrigger><TabsTrigger value="month">Tháng</TabsTrigger></TabsList>
             </Tabs>
             <Dialog open={scheduleOpen} onOpenChange={setScheduleOpen}>
-              <DialogTrigger asChild><Button variant="outline"><Plus className="mr-2 h-4 w-4" />Lịch chi đoàn</Button></DialogTrigger>
+              <DialogTrigger asChild><Button variant="outline" onClick={() => setEditingScheduleId(null)}><Plus className="mr-2 h-4 w-4" />Lịch chi đoàn</Button></DialogTrigger>
               <DialogContent>
-                <DialogHeader><DialogTitle>Thêm lịch sinh hoạt định kỳ</DialogTitle></DialogHeader>
+                <DialogHeader><DialogTitle>{editingScheduleId ? 'Sửa lịch sinh hoạt' : 'Thêm lịch sinh hoạt định kỳ'}</DialogTitle></DialogHeader>
                 <div className="space-y-4 py-3">
                   <div className="space-y-2"><Label>Chi đoàn</Label><Select value={scheduleForm.class_id} onValueChange={value => setScheduleForm({ ...scheduleForm, class_id: value })}><SelectTrigger><SelectValue placeholder="Chọn chi đoàn" /></SelectTrigger><SelectContent>{(classes || []).map(cls => <SelectItem key={cls.id} value={cls.id}>{cls.name}</SelectItem>)}</SelectContent></Select></div>
                   <div className="space-y-2"><Label>Ngày trong tuần</Label><Select value={scheduleForm.weekday} onValueChange={value => setScheduleForm({ ...scheduleForm, weekday: value })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{WEEKDAYS.map(day => <SelectItem key={day.value} value={String(day.value)}>{day.label}</SelectItem>)}</SelectContent></Select></div>
                   <div className="grid grid-cols-2 gap-3"><div className="space-y-2"><Label>Bắt đầu</Label><Input type="time" value={scheduleForm.start_time} onChange={event => setScheduleForm({ ...scheduleForm, start_time: event.target.value })} /></div><div className="space-y-2"><Label>Kết thúc</Label><Input type="time" value={scheduleForm.end_time} onChange={event => setScheduleForm({ ...scheduleForm, end_time: event.target.value })} /></div></div>
                   <div className="space-y-2"><Label>Ghi chú</Label><Input value={scheduleForm.note} onChange={event => setScheduleForm({ ...scheduleForm, note: event.target.value })} placeholder="Ví dụ: Phòng giáo lý số 2" /></div>
                 </div>
-                <DialogFooter><Button variant="outline" onClick={() => setScheduleOpen(false)}>Hủy</Button><Button onClick={handleCreateSchedule} disabled={createSchedule.isPending}>{createSchedule.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Lưu lịch</Button></DialogFooter>
+                <DialogFooter><Button variant="outline" onClick={() => setScheduleOpen(false)}>Hủy</Button><Button onClick={handleCreateSchedule} disabled={createSchedule.isPending || updateSchedule.isPending}>{(createSchedule.isPending || updateSchedule.isPending) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Lưu lịch</Button></DialogFooter>
               </DialogContent>
             </Dialog>
             <Dialog open={eventOpen} onOpenChange={setEventOpen}>
-              <DialogTrigger asChild><Button variant="gold"><Plus className="mr-2 h-4 w-4" />Sự kiện chung</Button></DialogTrigger>
+              <DialogTrigger asChild><Button variant="gold" onClick={() => setEditingEventId(null)}><Plus className="mr-2 h-4 w-4" />Sự kiện chung</Button></DialogTrigger>
               <DialogContent>
-                <DialogHeader><DialogTitle>Thêm sự kiện chung</DialogTitle></DialogHeader>
+                <DialogHeader><DialogTitle>{editingEventId ? 'Sửa sự kiện chung' : 'Thêm sự kiện chung'}</DialogTitle></DialogHeader>
                 <div className="space-y-4 py-3"><div className="space-y-2"><Label>Tên sự kiện</Label><Input value={eventForm.title} onChange={event => setEventForm({ ...eventForm, title: event.target.value })} placeholder="Ví dụ: Thánh lễ khai giảng" /></div><div className="space-y-2"><Label>Ngày</Label><Input type="date" value={eventForm.event_date} onChange={event => setEventForm({ ...eventForm, event_date: event.target.value })} /></div><div className="grid grid-cols-2 gap-3"><div className="space-y-2"><Label>Bắt đầu</Label><Input type="time" value={eventForm.start_time} onChange={event => setEventForm({ ...eventForm, start_time: event.target.value })} /></div><div className="space-y-2"><Label>Kết thúc</Label><Input type="time" value={eventForm.end_time} onChange={event => setEventForm({ ...eventForm, end_time: event.target.value })} /></div></div><div className="space-y-2"><Label>Địa điểm</Label><Input value={eventForm.location} onChange={event => setEventForm({ ...eventForm, location: event.target.value })} placeholder="Nhà thờ Xóm Chiếu" /></div></div>
-                <DialogFooter><Button variant="outline" onClick={() => setEventOpen(false)}>Hủy</Button><Button onClick={handleCreateEvent} disabled={createEvent.isPending}>{createEvent.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Lưu sự kiện</Button></DialogFooter>
+                <DialogFooter><Button variant="outline" onClick={() => setEventOpen(false)}>Hủy</Button><Button onClick={handleCreateEvent} disabled={createEvent.isPending || updateEvent.isPending}>{(createEvent.isPending || updateEvent.isPending) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Lưu sự kiện</Button></DialogFooter>
               </DialogContent>
             </Dialog>
             <Dialog open={exceptionOpen} onOpenChange={setExceptionOpen}>
@@ -143,6 +153,17 @@ export default function Schedule() {
         ) : (
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{days.map(day => <DayCard key={day.toISOString()} day={day} items={getDayItems(day)} compact />)}</div>
         )}
+
+        <div className="grid gap-6 lg:grid-cols-2">
+          <Card>
+            <CardHeader><CardTitle className="text-base">Lịch định kỳ</CardTitle></CardHeader>
+            <CardContent>{schedules?.length ? <div className="space-y-2">{schedules.map(schedule => <div key={schedule.id} className="flex items-center justify-between gap-3 rounded-lg border p-3"><div className="min-w-0"><p className="truncate text-sm font-medium">{schedule.classes?.name}</p><p className="text-xs text-muted-foreground">{WEEKDAYS.find(day => day.value === schedule.weekday)?.label} · {toTime(schedule.start_time)} – {toTime(schedule.end_time)}</p></div><div className="flex shrink-0 gap-1"><Button variant="ghost" size="sm" onClick={() => { setEditingScheduleId(schedule.id); setScheduleForm({ class_id: schedule.class_id, weekday: String(schedule.weekday), start_time: toTime(schedule.start_time), end_time: toTime(schedule.end_time), note: schedule.note || '' }); setScheduleOpen(true); }}>Sửa</Button><Button variant="ghost" size="sm" className="text-destructive hover:text-destructive" onClick={() => { if (window.confirm('Xóa lịch định kỳ này?')) deleteSchedule.mutate(schedule.id); }}>Xóa</Button></div></div>)}</div> : <p className="text-sm text-muted-foreground">Chưa có lịch định kỳ.</p>}</CardContent>
+          </Card>
+          <Card>
+            <CardHeader><CardTitle className="text-base">Sự kiện chung</CardTitle></CardHeader>
+            <CardContent>{events?.length ? <div className="space-y-2">{events.map(event => <div key={event.id} className="flex items-center justify-between gap-3 rounded-lg border p-3"><div className="min-w-0"><p className="truncate text-sm font-medium">{event.title}</p><p className="text-xs text-muted-foreground">{format(new Date(`${event.event_date}T00:00:00`), 'dd/MM/yyyy')}{event.start_time && ` · ${toTime(event.start_time)}`}{event.location && ` · ${event.location}`}</p></div><div className="flex shrink-0 gap-1"><Button variant="ghost" size="sm" onClick={() => { setEditingEventId(event.id); setEventForm({ title: event.title, event_date: event.event_date, start_time: event.start_time ? toTime(event.start_time) : '', end_time: event.end_time ? toTime(event.end_time) : '', location: event.location || '', description: event.description || '' }); setEventOpen(true); }}>Sửa</Button><Button variant="ghost" size="sm" className="text-destructive hover:text-destructive" onClick={() => { if (window.confirm('Xóa sự kiện này?')) deleteEvent.mutate(event.id); }}>Xóa</Button></div></div>)}</div> : <p className="text-sm text-muted-foreground">Chưa có sự kiện chung.</p>}</CardContent>
+          </Card>
+        </div>
       </div>
     </MainLayout>
   );
