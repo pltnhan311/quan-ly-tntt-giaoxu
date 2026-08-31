@@ -66,7 +66,11 @@ export default function Students() {
   const { data: classes } = useClasses();
   const { data: catechists } = useCatechists();
   const { data: myBranch } = useMyBranch();
-  const { data: enrollmentHistory, isLoading: enrollmentHistoryLoading } = useStudentEnrollments(selectedStudent?.id);
+  const {
+    data: enrollmentHistory,
+    isLoading: enrollmentHistoryLoading,
+    isError: enrollmentHistoryError,
+  } = useStudentEnrollments(selectedStudent?.id);
   const createStudent = useCreateStudent();
   const updateStudent = useUpdateStudent();
 
@@ -670,7 +674,7 @@ export default function Students() {
 
         {/* Student Detail Dialog */}
         <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
-          <DialogContent className="sm:max-w-[500px]">
+          <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-[500px]">
             {selectedStudent && (
               <>
                 <DialogHeader>
@@ -732,6 +736,8 @@ export default function Students() {
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <Loader2 className="h-4 w-4 animate-spin" /> Đang tải lịch sử...
                       </div>
+                    ) : enrollmentHistoryError ? (
+                      <p className="text-sm text-destructive">Không thể tải lịch sử xếp lớp.</p>
                     ) : enrollmentHistory?.length ? (
                       <div className="space-y-2">
                         {enrollmentHistory.map((enrollment) => (
