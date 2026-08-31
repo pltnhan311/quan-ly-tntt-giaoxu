@@ -25,15 +25,6 @@ export default function Settings() {
       subtitle="Quản lý cấu hình và thiết lập hệ thống"
     >
       <div className="max-w-5xl space-y-8">
-        <section className="relative overflow-hidden rounded-3xl gradient-primary px-6 py-7 text-[hsl(var(--hero-foreground))] shadow-custom-lg sm:px-8 sm:py-8">
-          <div className="absolute -right-10 -top-16 h-48 w-48 rounded-full border-[18px] border-gold/15" aria-hidden="true" />
-          <div className="relative">
-            <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-gold">Trung tâm vận hành</p>
-            <h2 className="font-heading text-2xl font-bold tracking-tight sm:text-3xl">Cài đặt hệ thống</h2>
-            <p className="mt-2 max-w-xl text-sm leading-6 text-[hsl(var(--hero-foreground)/0.82)]">Những thiết lập nền tảng giúp giáo xứ vận hành nhất quán qua từng niên khóa.</p>
-          </div>
-        </section>
-
         {/* System Configuration Display */}
         <Card variant="elevated" className="overflow-hidden">
           <CardHeader className="border-b bg-muted/30">

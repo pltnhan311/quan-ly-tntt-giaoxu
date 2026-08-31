@@ -365,21 +365,6 @@ export default function Attendance() {
       subtitle="Điểm danh Giáo lý và Thánh lễ"
     >
       <div className="space-y-8">
-        <section className="relative overflow-hidden rounded-3xl border border-accent/20 bg-secondary/45 px-6 py-7 shadow-custom-sm sm:px-8 sm:py-8">
-          <div className="absolute -right-12 -top-20 h-52 w-52 rounded-full bg-accent/15 blur-2xl" aria-hidden="true" />
-          <div className="relative flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-accent">Nhịp sinh hoạt</p>
-              <h2 className="font-heading text-2xl font-bold tracking-tight text-foreground sm:text-3xl">Điểm danh hôm nay</h2>
-              <p className="mt-2 max-w-xl text-sm leading-6 text-muted-foreground">Ghi nhận sự hiện diện của đoàn viên trong giờ giáo lý và Thánh lễ.</p>
-            </div>
-            <div className="rounded-2xl bg-card px-4 py-3 shadow-custom-sm">
-              <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Lớp đang chọn</p>
-              <p className="mt-1 max-w-48 truncate text-sm font-bold text-foreground">{selectedClassInfo?.name || 'Chưa chọn lớp'}</p>
-            </div>
-          </div>
-        </section>
-
         {/* Export Dialog */}
         <ExportAttendanceDialog
           open={isExportDialogOpen}

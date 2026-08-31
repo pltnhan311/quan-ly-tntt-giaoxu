@@ -261,21 +261,6 @@ export default function Scores() {
       subtitle="Nhập và quản lý điểm thuyết trình, học kỳ"
     >
       <div className="space-y-8">
-        <section className="relative overflow-hidden rounded-3xl gradient-primary px-6 py-7 text-[hsl(var(--hero-foreground))] shadow-custom-lg sm:px-8 sm:py-8">
-          <div className="absolute -right-12 -top-16 h-48 w-48 rounded-full border-[18px] border-gold/15" aria-hidden="true" />
-          <div className="relative flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-gold">Tiến bộ học tập</p>
-              <h2 className="font-heading text-2xl font-bold tracking-tight sm:text-3xl">Quản lý điểm số</h2>
-              <p className="mt-2 max-w-xl text-sm leading-6 text-[hsl(var(--hero-foreground)/0.82)]">Ghi nhận kết quả thuyết trình và học kỳ, để mỗi bước tiến của đoàn viên được nhìn thấy.</p>
-            </div>
-            <div className="relative rounded-2xl border border-[hsl(var(--hero-foreground)/0.2)] bg-[hsl(var(--hero-foreground)/0.12)] px-5 py-3">
-              <p className="text-xs font-medium uppercase tracking-wider text-[hsl(var(--hero-foreground)/0.78)]">Lớp đang chọn</p>
-              <p className="mt-1 max-w-48 truncate text-sm font-bold">{selectedClassInfo?.name || 'Chưa chọn lớp'}</p>
-            </div>
-          </div>
-        </section>
-
         {/* Stats */}
         <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
           <Card variant="elevated">

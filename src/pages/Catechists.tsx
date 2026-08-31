@@ -179,21 +179,6 @@ export default function Catechists() {
       subtitle="Danh sách và thông tin GLV"
     >
       <div className="space-y-8">
-        <section className="relative overflow-hidden rounded-3xl gradient-primary px-6 py-7 text-[hsl(var(--hero-foreground))] shadow-custom-lg sm:px-8 sm:py-8">
-          <div className="absolute -right-10 -top-16 h-48 w-48 rounded-full bg-accent/15 blur-2xl" aria-hidden="true" />
-          <div className="relative flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-gold">Đội ngũ đồng hành</p>
-              <h2 className="font-heading text-2xl font-bold tracking-tight sm:text-3xl">Giáo lý viên</h2>
-              <p className="mt-2 max-w-xl text-sm leading-6 text-[hsl(var(--hero-foreground)/0.82)]">Quản lý đội ngũ đang đồng hành cùng các chi đoàn và theo dõi phân công phụ trách.</p>
-            </div>
-            <div className="relative rounded-2xl border border-[hsl(var(--hero-foreground)/0.2)] bg-[hsl(var(--hero-foreground)/0.12)] px-5 py-3">
-              <p className="text-3xl font-bold tracking-tight">{filteredCatechists.length}</p>
-              <p className="text-xs text-[hsl(var(--hero-foreground)/0.78)]">GLV trong danh sách</p>
-            </div>
-          </div>
-        </section>
-
         {/* Stats */}
         <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
           <Card variant="elevated">
