@@ -12,7 +12,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogT
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useClasses } from '@/hooks/useClasses';
 import { useActiveAcademicYear } from '@/hooks/useAcademicYears';
-import { useClassSchedules, useCreateClassSchedule, useCreateParishEvent, useCreateScheduleException, useScheduleExceptions } from '@/hooks/useSchedule';
+import { useClassSchedules, useCreateClassSchedule, useCreateParishEvent, useCreateScheduleException, useParishEvents, useScheduleExceptions } from '@/hooks/useSchedule';
 
 const WEEKDAYS = [
   { value: 1, label: 'Thứ Hai' }, { value: 2, label: 'Thứ Ba' }, { value: 3, label: 'Thứ Tư' },
