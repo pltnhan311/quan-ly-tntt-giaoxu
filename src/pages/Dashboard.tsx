@@ -249,7 +249,7 @@ export default function Dashboard() {
             <div className="max-w-2xl">
               <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-gold">Bảng điều hành</p>
               <h2 className="font-heading text-2xl font-bold tracking-tight sm:text-3xl">Một tuần sinh hoạt thật tốt nhé{user?.user_metadata?.name ? `, ${user.user_metadata.name}` : ''}.</h2>
-              <p className="mt-3 max-w-xl text-sm leading-6 text-[hsl(var(--hero-foreground)/0.82)]">Theo dõi lớp học, đoàn viên và lịch sinh hoạt của giáo xứ trong một không gian thống nhất.</p>
+              <p className="mt-3 max-w-xl text-sm leading-6 text-[hsl(var(--hero-foreground)/0.82)]">Quản lý lớp học, đoàn viên và lịch sinh hoạt tiện lợi, nhanh chóng.</p>
             </div>
             <Button variant="gold" className="w-fit shrink-0 shadow-gold" asChild>
               <Link to="/attendance">
