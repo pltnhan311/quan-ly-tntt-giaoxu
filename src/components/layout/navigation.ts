@@ -35,6 +35,7 @@ export const navigationGroups: NavigationGroup[] = [
       { icon: LayoutDashboard, label: 'Tổng quan', path: '/dashboard', roles: staffRoles },
       { icon: CalendarDays, label: 'Niên khóa', path: '/academic-years', roles: ['admin'] },
       { icon: GraduationCap, label: 'Chi đoàn', path: '/classes', roles: staffRoles },
+      { icon: CalendarDays, label: 'Lịch sinh hoạt', path: '/schedule', roles: staffRoles },
     ],
   },
   {

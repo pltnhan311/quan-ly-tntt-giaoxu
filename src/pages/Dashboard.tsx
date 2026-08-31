@@ -23,6 +23,9 @@ import {
   Layers
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { addDays, format, isWithinInterval, startOfDay } from 'date-fns';
+import { vi } from 'date-fns/locale';
+import { useClassSchedules, useParishEvents } from '@/hooks/useSchedule';
 
 const BRANCH_ORDER: Record<string, number> = {
   'Chiên Con': 1,
@@ -70,6 +73,8 @@ export default function Dashboard() {
   const { data: branches, isLoading: branchesLoading } = useBranches(activeYear?.id);
   const { data: myBranch, isLoading: myBranchLoading } = useMyBranch();
   const { data: materials, isLoading: materialsLoading } = useLearningMaterials();
+  const { data: classSchedules } = useClassSchedules();
+  const { data: parishEvents } = useParishEvents();
 
   const isLoading = 
     classesLoading || 
@@ -230,6 +235,24 @@ export default function Dashboard() {
         studentCount
       };
     });
+  })();
+
+  const upcomingSchedule = (() => {
+    const today = startOfDay(new Date());
+    const end = addDays(today, 7);
+    const items = (classSchedules || []).flatMap(schedule => {
+      const dates = Array.from({ length: 8 }, (_, index) => addDays(today, index));
+      return dates.filter(date => date.getDay() === schedule.weekday).map(date => ({
+        id: `${schedule.id}-${date.toISOString()}`,
+        date,
+        title: schedule.classes?.name || 'Chi đoàn',
+        time: `${schedule.start_time.slice(0, 5)} – ${schedule.end_time.slice(0, 5)}`,
+      }));
+    });
+    const events = (parishEvents || [])
+      .filter(event => isWithinInterval(new Date(`${event.event_date}T00:00:00`), { start: today, end }))
+      .map(event => ({ id: event.id, date: new Date(`${event.event_date}T00:00:00`), title: event.title, time: event.start_time?.slice(0, 5) || 'Cả ngày' }));
+    return [...items, ...events].sort((a, b) => a.date.getTime() - b.date.getTime()).slice(0, 5);
   })();
 
   return (
@@ -422,6 +445,16 @@ export default function Dashboard() {
             )}
           </div>
         </div>
+
+        <Card variant="elevated">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div><CardTitle>Lịch sắp tới</CardTitle><CardDescription>Trong 7 ngày tới</CardDescription></div>
+            <Button variant="outline" size="sm" asChild><Link to="/schedule">Xem lịch<ChevronRight className="ml-1 h-4 w-4" /></Link></Button>
+          </CardHeader>
+          <CardContent>
+            {upcomingSchedule.length ? <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">{upcomingSchedule.map(item => <div key={item.id} className="rounded-xl border border-border/80 bg-background/60 p-3"><p className="text-xs font-medium text-accent">{format(item.date, 'EEE, dd/MM', { locale: vi })}</p><p className="mt-1 truncate text-sm font-semibold">{item.title}</p><p className="mt-1 text-xs text-muted-foreground">{item.time}</p></div>)}</div> : <p className="text-sm text-muted-foreground">Chưa có lịch sắp tới.</p>}
+          </CardContent>
+        </Card>
 
         {/* Branch distribution Breakdown (Chỉ hiện cho Admin) */}
         {userRole === 'admin' && branchBreakdown.length > 0 && (
