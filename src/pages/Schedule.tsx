@@ -28,10 +28,10 @@ export default function Schedule() {
   const [scheduleOpen, setScheduleOpen] = useState(false);
   const [eventOpen, setEventOpen] = useState(false);
   const { data: activeYear } = useActiveAcademicYear();
-  const { data: classes } = useClasses(activeYear?.id);
-  const { data: schedules, isLoading: schedulesLoading } = useClassSchedules();
-  const { data: events } = useParishEvents();
-  const { data: exceptions } = useScheduleExceptions();
+  const { data: classes, isError: classesError } = useClasses(activeYear?.id);
+  const { data: schedules, isLoading: schedulesLoading, isError: schedulesError } = useClassSchedules();
+  const { data: events, isError: eventsError } = useParishEvents();
+  const { data: exceptions, isError: exceptionsError } = useScheduleExceptions();
   const createSchedule = useCreateClassSchedule();
   const createEvent = useCreateParishEvent();
   const createException = useCreateScheduleException();
@@ -126,6 +126,15 @@ export default function Schedule() {
             </Dialog>
           </div>
         </div>
+
+        {(classesError || schedulesError || eventsError || exceptionsError) && (
+          <Card className="border-destructive/30 bg-destructive/5">
+            <CardContent className="py-5">
+              <p className="font-medium text-destructive">Không thể tải dữ liệu lịch.</p>
+              <p className="mt-1 text-sm text-muted-foreground">Hãy kiểm tra migration lịch trên Supabase rồi tải lại trang.</p>
+            </CardContent>
+          </Card>
+        )}
 
         {schedulesLoading ? <Card><CardContent className="flex justify-center py-14"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></CardContent></Card> : view === 'week' ? (
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
