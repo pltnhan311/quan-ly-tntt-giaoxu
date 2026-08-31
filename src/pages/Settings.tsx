@@ -10,8 +10,6 @@ import {
   Clock, 
   Settings as SettingsIcon, 
   CalendarDays, 
-  KeyRound, 
-  Globe, 
   ShieldCheck
 } from 'lucide-react';
 
@@ -56,46 +54,6 @@ export default function Settings() {
                 <Badge variant="gold" className="text-sm px-3 py-1 font-semibold">
                   CN | 9:00 - 10:30
                 </Badge>
-              </div>
-            </div>
-
-            {/* Default Password Config */}
-            <div className="flex flex-col justify-between gap-4 p-5 transition-colors hover:bg-muted/10 sm:flex-row sm:items-center sm:p-6">
-              <div className="flex items-start gap-4">
-                <div className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                  <KeyRound className="h-5 w-5" />
-                </div>
-                <div>
-                  <p className="font-medium text-foreground">Mật khẩu tài khoản mới</p>
-                  <p className="text-sm text-muted-foreground">
-                    Mật khẩu mặc định được tạo tự động cho Giáo lý viên khi thực hiện import dữ liệu.
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center sm:self-center">
-                <Badge variant="secondary" className="text-sm px-3 py-1 font-mono">
-                  123456
-                </Badge>
-              </div>
-            </div>
-
-            {/* Timezone Config */}
-            <div className="flex flex-col justify-between gap-4 p-5 transition-colors hover:bg-muted/10 sm:flex-row sm:items-center sm:p-6">
-              <div className="flex items-start gap-4">
-                <div className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
-                  <Globe className="h-5 w-5" />
-                </div>
-                <div>
-                  <p className="font-medium text-foreground">Múi giờ hệ thống</p>
-                  <p className="text-sm text-muted-foreground">
-                    Sử dụng để ghi nhận thời gian điểm danh và cập nhật dữ liệu.
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center sm:self-center">
-                <span className="text-sm font-semibold text-foreground bg-muted px-3 py-1 rounded">
-                  Asia/Ho_Chi_Minh (GMT+7)
-                </span>
               </div>
             </div>
 
